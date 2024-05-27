@@ -26,7 +26,7 @@ find_package(catkin REQUIRED COMPONENTS
   urdf
 )
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/cmake)
 find_package(Gflags REQUIRED)
 
 catkin_package(

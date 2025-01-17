@@ -34,15 +34,15 @@ VEML6040_sensor::VEML6040_sensor(NodeData node_data, VEML6040Data veml_data,
   this->rgbw_service = nh->create_service<mirte_msgs::srv::GetColorRGBW>(
       "color/" + this->name + "/get_rgbw",
       std::bind(&VEML6040_sensor::get_rgbw_service_callback, this, _1, _2),
-      rclcpp::ServicesQoS().get_rmw_qos_profile(), this->callback_group);
+      rclcpp::ServicesQoS(), this->callback_group);
   this->rgba_service = nh->create_service<mirte_msgs::srv::GetColorRGBA>(
       "color/" + this->name + "/get_rgba",
       std::bind(&VEML6040_sensor::get_rgba_service_callback, this, _1, _2),
-      rclcpp::ServicesQoS().get_rmw_qos_profile(), this->callback_group);
+      rclcpp::ServicesQoS(), this->callback_group);
   this->hsl_service = nh->create_service<mirte_msgs::srv::GetColorHSL>(
       "color/" + this->name + "/get_hsl",
       std::bind(&VEML6040_sensor::get_hsl_service_callback, this, _1, _2),
-      rclcpp::ServicesQoS().get_rmw_qos_profile(), this->callback_group);
+      rclcpp::ServicesQoS(), this->callback_group);
 
   modules->add_sens(this->veml6040);
 }

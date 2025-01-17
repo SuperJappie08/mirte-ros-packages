@@ -59,7 +59,7 @@ HiWonderBus_module::HiWonderBus_module(
   this->enable_all_servos_service = nh->create_service<std_srvs::srv::SetBool>(
       "servo/" + servo_group + "enable_all_servos",
       std::bind(&HiWonderBus_module::enable_service_callback, this, _1, _2),
-      rclcpp::ServicesQoS().get_rmw_qos_profile(), this->callback_group);
+      rclcpp::ServicesQoS(), this->callback_group);
 }
 
 // TODO: Make result actually Reflect reality

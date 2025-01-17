@@ -60,7 +60,7 @@ DigitalIntensityMonitor::DigitalIntensityMonitor(NodeData node_data,
   intensity_service = nh->create_service<mirte_msgs::srv::GetIntensityDigital>(
       "intensity/" + intensity_data.name + "/get_digital",
       std::bind(&DigitalIntensityMonitor::service_callback, this, _1, _2),
-      rclcpp::ServicesQoS().get_rmw_qos_profile(), this->callback_group);
+      rclcpp::ServicesQoS(), this->callback_group);
 
   tmx->setPinMode(intensity_data.d_pin, tmx_cpp::TMX::PIN_MODES::DIGITAL_INPUT,
                   true, 0);
@@ -81,7 +81,7 @@ AnalogIntensityMonitor::AnalogIntensityMonitor(NodeData node_data,
   intensity_service = nh->create_service<mirte_msgs::srv::GetIntensity>(
       "intensity/" + intensity_data.name + "/get_analog",
       std::bind(&AnalogIntensityMonitor::service_callback, this, _1, _2),
-      rclcpp::ServicesQoS().get_rmw_qos_profile(), this->callback_group);
+      rclcpp::ServicesQoS(), this->callback_group);
 
   tmx->setPinMode(intensity_data.a_pin, tmx_cpp::TMX::PIN_MODES::ANALOG_INPUT,
                   true, 0);

@@ -39,7 +39,7 @@ PCA_Module::PCA_Module(NodeData node_data, PCAData pca_data,
   motor_service = nh->create_service<mirte_msgs::srv::SetSpeedMultiple>(
       "motor/" + this->name + "/set_multiple_speeds",
       std::bind(&PCA_Module::set_multi_speed_service_callback, this, _1, _2),
-      rclcpp::ServicesQoS().get_rmw_qos_profile(), this->callback_group);
+      rclcpp::ServicesQoS(), this->callback_group);
 
   modules->add_mod(pca9685);
 }

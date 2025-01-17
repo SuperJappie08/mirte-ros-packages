@@ -52,7 +52,7 @@ find_package(Boost REQUIRED COMPONENTS system thread)
 add_subdirectory(libs/tmx-cpp)
 include_directories(
   include/ libs/tmx-cpp/include/ libs/tmx-cpp/libs/async_serial/include/
-  ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
+  ${Boost_INCLUDE_DIRS})
 
 # include(CheckIPOSupported) check_ipo_supported(RESULT supported OUTPUT error)
 
@@ -132,6 +132,7 @@ ament_target_dependencies(
   color_util
   cv_bridge # DEPENDS
   backward_ros
+  ament_index_cpp
   # system_lib
 )
 

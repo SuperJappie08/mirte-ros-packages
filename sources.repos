@@ -1,0 +1,9 @@
+repositories:
+  usb_cam:
+    type: git
+    url: https://github.com/ArendJan/usb_cam.git
+    version: 9f456347c993df94aac2351b305a391506c406c4
+  web_video_server:
+    type: git
+    url: https://github.com/RobotWebTools/web_video_server.git
+    version: 1578b7763419b627e9ffd1836a9407c008e62988

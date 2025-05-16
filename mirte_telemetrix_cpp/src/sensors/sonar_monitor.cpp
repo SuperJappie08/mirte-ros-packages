@@ -35,7 +35,7 @@ SonarMonitor::SonarMonitor(NodeData node_data, SonarData sonar_data)
       "distance/" + sonar_data.name + "/get_range",
       std::bind(&SonarMonitor::service_callback, this, std::placeholders::_1,
                 std::placeholders::_2),
-      rclcpp::ServicesQoS().get_rmw_qos_profile(), this->callback_group);
+      rclcpp::ServicesQoS(), this->callback_group);
 
   tmx->attach_sonar(
       sonar_data.trigger, sonar_data.echo,
@@ -87,7 +87,8 @@ void SonarMonitor::update() {
                          12.0) // 15 degrees, according to the HC-SR04 datasheet
           .min_range(this->min_range)
           .max_range(this->max_range)
-          .range(this->distance);
+          .range(this->distance)
+          .variance(this->variance);
 
   this->sonar_pub->publish(msg);
   const std::lock_guard<std::mutex> lock(msg_mutex);

@@ -9,7 +9,7 @@ on: [
 jobs:
   colcon-lint:
     runs-on: ubuntu-latest
-    container: osrf/ros:humble-desktop-jammy #faster than using setup-ros
+    container: osrf/ros:jazzy-desktop-noble #faster than using setup-ros
     steps:
     - uses: actions/checkout@v4
       with:
@@ -25,9 +25,9 @@ jobs:
     - name: colcon lint
       shell: bash
       run: |
-        . /opt/ros/humble/setup.bash
+        . /opt/ros/jazzy/setup.bash
         rosdep update
-        rosdep install --from-paths ./ --ignore-src -y --rosdistro=humble -r
+        rosdep install --from-paths ./ --ignore-src -y --rosdistro=$ROS_DISTRO -r
         colcon build --continue-on-error --cmake-args -Wno-dev --trace-expand --trace-redirect=trace.log || true
         . ./install/setup.bash
         # for every folder in the workspace starting with mirte_ excluding mirte_teleop, run command

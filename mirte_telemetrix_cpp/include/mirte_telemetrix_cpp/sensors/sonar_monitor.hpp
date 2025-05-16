@@ -17,6 +17,8 @@ public:
   const double min_range = 0.02;
   /// @brief The maximum range in meters. 4.50 Meters for the HC-SR04.
   const double max_range = 4.5;
+  /// @brief The variance of the range. 0 for unkwown.
+  const double variance = 0.0;
 
   SonarMonitor(NodeData node_data, SonarData sonar_data);
 

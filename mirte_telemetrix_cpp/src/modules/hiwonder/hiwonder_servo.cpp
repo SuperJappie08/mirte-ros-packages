@@ -55,13 +55,13 @@ Hiwonder_servo::Hiwonder_servo(
   this->enable_service = nh->create_service<std_srvs::srv::SetBool>(
       "servo/" + servo_group + this->servo_data->name + "/set_enable",
       std::bind(&Hiwonder_servo::enable_service_callback, this, _1, _2),
-      rclcpp::ServicesQoS().get_rmw_qos_profile(), callback_group);
+      rclcpp::ServicesQoS(), callback_group);
 
   // create angle service
   this->angle_service = nh->create_service<mirte_msgs::srv::SetServoAngle>(
       "servo/" + servo_group + this->servo_data->name + "/set_angle",
       std::bind(&Hiwonder_servo::set_angle_service_callback, this, _1, _2),
-      rclcpp::ServicesQoS().get_rmw_qos_profile(), callback_group);
+      rclcpp::ServicesQoS(), callback_group);
 
   // create angle speed service
   this->angle_speed_service =
@@ -70,13 +70,13 @@ Hiwonder_servo::Hiwonder_servo(
               "/set_angle_with_speed",
           std::bind(&Hiwonder_servo::set_angle_with_speed_service_callback,
                     this, _1, _2),
-          rclcpp::ServicesQoS().get_rmw_qos_profile(), callback_group);
+          rclcpp::ServicesQoS(), callback_group);
 
   // create range service
   this->range_service = nh->create_service<mirte_msgs::srv::GetServoRange>(
       "servo/" + servo_group + this->servo_data->name + "/get_range",
       std::bind(&Hiwonder_servo::get_range_service_callback, this, _1, _2),
-      rclcpp::ServicesQoS().get_rmw_qos_profile(), callback_group);
+      rclcpp::ServicesQoS(), callback_group);
 
   // create publisher
   // Use default QoS for sensor publishers as specified in REP2003
@@ -88,13 +88,13 @@ Hiwonder_servo::Hiwonder_servo(
       "servo/" + servo_group + this->servo_data->name +
           "/_offset", // hidden service
       std::bind(&Hiwonder_servo::get_offset_service_callback, this, _1, _2),
-      rclcpp::ServicesQoS().get_rmw_qos_profile(), callback_group);
+      rclcpp::ServicesQoS(), callback_group);
   this->set_offset_service =
       nh->create_service<mirte_msgs::srv::SetServoOffset>(
           "servo/" + servo_group + this->servo_data->name +
               "/_set_offset", // hidden service
           std::bind(&Hiwonder_servo::set_offset_service_callback, this, _1, _2),
-          rclcpp::ServicesQoS().get_rmw_qos_profile(), callback_group);
+          rclcpp::ServicesQoS(), callback_group);
   // TODO: Maybe add to a separate callbackgroup?
   // Currently overpublishing slightly
   this->servo_timer = nh->create_wall_timer(
@@ -108,7 +108,7 @@ Hiwonder_servo::Hiwonder_servo(
                 "/set_motor_speed",
             std::bind(&Hiwonder_servo::set_motor_speed_service_callback, this,
                       _1, _2),
-            rclcpp::ServicesQoS().get_rmw_qos_profile(), callback_group);
+            rclcpp::ServicesQoS(), callback_group);
   }
 }
 

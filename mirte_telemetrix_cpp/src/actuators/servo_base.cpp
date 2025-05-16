@@ -24,13 +24,13 @@ ServoBase::ServoBase(NodeData node_data, std::vector<pin_t> pins,
       "servo/" + name + "/set_angle",
       std::bind(&ServoBase::set_angle_service_callback, this,
                 std::placeholders::_1, std::placeholders::_2),
-      rclcpp::ServicesQoS().get_rmw_qos_profile(), this->callback_group);
+      rclcpp::ServicesQoS(), this->callback_group);
 
   this->get_range_service = nh->create_service<mirte_msgs::srv::GetServoRange>(
       "servo/" + name + "/get_range",
       std::bind(&ServoBase::get_range_service_callback, this,
                 std::placeholders::_1, std::placeholders::_2),
-      rclcpp::ServicesQoS().get_rmw_qos_profile(), this->callback_group);
+      rclcpp::ServicesQoS(), this->callback_group);
 
   this->device_timer->cancel();
 }

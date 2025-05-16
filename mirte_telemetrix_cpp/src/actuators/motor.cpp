@@ -49,7 +49,7 @@ Motor::Motor(NodeData node_data, std::vector<pin_t> pins, DeviceData data,
   set_speed_service = nh->create_service<mirte_msgs::srv::SetMotorSpeed>(
       "motor/" + this->name + "/set_speed",
       std::bind(&Motor::set_speed_service_callback, this, _1, _2),
-      rclcpp::ServicesQoS().get_rmw_qos_profile(), this->callback_group);
+      rclcpp::ServicesQoS(), this->callback_group);
 
   rclcpp::SubscriptionOptions options;
   options.callback_group = this->callback_group;

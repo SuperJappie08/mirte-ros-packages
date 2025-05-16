@@ -9,7 +9,7 @@ Subloggers do not go to ROS out untill ROS Iron when no corresponding node handl
 ## Will Break
 This section describes things that will change when upgrading from ROS Humble.
 
-### QoS objects
-In ROS Humble, most `rclcpp::Node::create_*` take a `rmw_qos_profile_t` object instead of a `rclcpp::QoS` object this changes in.
-This will be deprecated in ROS Iron, with a warning and removed in ROS Kilted.
-To migrate just remove the `.get_rmw_qos_profile()` from the function signatures.
+<!-- ### QoS objects -->
+<!-- In ROS Humble, most `rclcpp::Node::create_*` take a `rmw_qos_profile_t` object instead of a `rclcpp::QoS` object this changes in. -->
+<!-- This will be deprecated in ROS Iron, with a warning and removed in ROS Kilted. -->
+<!-- To migrate just remove the `.get_rmw_qos_profile()` from the function signatures. -->

@@ -19,7 +19,7 @@ EncoderMonitor::EncoderMonitor(NodeData node_data, EncoderData encoder_data)
   encoder_service = nh->create_service<mirte_msgs::srv::GetEncoder>(
       "encoder/" + encoder_data.name + "/get_encoder",
       std::bind(&EncoderMonitor::service_callback, this, _1, _2),
-      rclcpp::ServicesQoS().get_rmw_qos_profile(), this->callback_group);
+      rclcpp::ServicesQoS(), this->callback_group);
 
   tmx->attach_encoder(
       encoder_data.pinA, encoder_data.pinB,

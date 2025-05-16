@@ -35,7 +35,7 @@ INA226_sensor::INA226_sensor(NodeData node_data, INA226Data ina_data,
   this->shutdown_service = nh->create_service<std_srvs::srv::SetBool>(
       "power/" + this->name + "/shutdown",
       std::bind(&INA226_sensor::shutdown_robot_service_callback, this, _1, _2),
-      rclcpp::ServicesQoS().get_rmw_qos_profile(), this->callback_group);
+      rclcpp::ServicesQoS(), this->callback_group);
 
   modules->add_sens(this->ina226);
   // TODO: add shutdown service

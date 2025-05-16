@@ -132,6 +132,7 @@ ament_target_dependencies(
   color_util
   cv_bridge # DEPENDS
   backward_ros
+  ament_index_cpp
   # system_lib
 )
 

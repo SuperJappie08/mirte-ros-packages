@@ -23,7 +23,7 @@ ADXL345_sensor::ADXL345_sensor(NodeData node_data, ADXL345Data imu_data,
   imu_service = nh->create_service<mirte_msgs::srv::GetImu>(
       "imu/" + this->name + "/get_data_raw",
       std::bind(&ADXL345_sensor::get_imu_service_callback, this, _1, _2),
-      rclcpp::ServicesQoS().get_rmw_qos_profile(), this->callback_group);
+      rclcpp::ServicesQoS(), this->callback_group);
 
   // NOTE: There is some covariance between the axes, but this is often
   // considered negligible. ( And unsure about how to convert value from data

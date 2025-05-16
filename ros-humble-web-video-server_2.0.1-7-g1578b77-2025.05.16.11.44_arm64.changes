@@ -1,0 +1,30 @@
+Format: 1.8
+Date: Sat, 26 Oct 2024 00:00:00 -0000
+Source: ros-humble-web-video-server
+Binary: ros-humble-web-video-server
+Built-For-Profiles: noudeb
+Architecture: arm64
+Version: 2.0.1-7-g1578b77-2025.05.16.11.44
+Distribution: jammy
+Urgency: high
+Maintainer: Błażej Sowa <blazej@fictionlab.pl>
+Changed-By: Błażej Sowa <blazej@fictionlab.pl>
+Description:
+ ros-humble-web-video-server - HTTP Streaming of ROS Image Topics in Multiple Formats
+Changes:
+ ros-humble-web-video-server (2.0.1-7-g1578b77-2025.05.16.11.44) jammy; urgency=high
+ .
+   * Add ros_environment to test dependencies (#166)
+   * Contributors: Błażej Sowa
+Checksums-Sha1:
+ cfb3d166813068050eb812ed4ef87cf8466dfae3 5901640 ros-humble-web-video-server-dbgsym_2.0.1-7-g1578b77-2025.05.16.11.44_arm64.ddeb
+ c0042118944ee5917b8c4449bc23f987dddecf4d 34829 ros-humble-web-video-server_2.0.1-7-g1578b77-2025.05.16.11.44_arm64.buildinfo
+ 6c830e6860a33c758900294820f4fa0bac61b0ad 173962 ros-humble-web-video-server_2.0.1-7-g1578b77-2025.05.16.11.44_arm64.deb
+Checksums-Sha256:
+ 5dfb6cbc1a3423b98d0d4cfea10a0d2fdae00fa4765c13e96cc2f521c9370e60 5901640 ros-humble-web-video-server-dbgsym_2.0.1-7-g1578b77-2025.05.16.11.44_arm64.ddeb
+ 647e6c6f5720ce5db9febf8be7cdec646c913ecc82efbf902289e25bb9dec868 34829 ros-humble-web-video-server_2.0.1-7-g1578b77-2025.05.16.11.44_arm64.buildinfo
+ 859839397998e5f77c0e1a1ca5417491527085000547f56fdc728432066336d2 173962 ros-humble-web-video-server_2.0.1-7-g1578b77-2025.05.16.11.44_arm64.deb
+Files:
+ 1604ca62ee7380dbddf8bc5f424bd032 5901640 debug optional ros-humble-web-video-server-dbgsym_2.0.1-7-g1578b77-2025.05.16.11.44_arm64.ddeb
+ 6c73c35f4239f4e7cfc120ac055dddd2 34829 misc optional ros-humble-web-video-server_2.0.1-7-g1578b77-2025.05.16.11.44_arm64.buildinfo
+ 05c84e1aa84622e7577103175191af99 173962 misc optional ros-humble-web-video-server_2.0.1-7-g1578b77-2025.05.16.11.44_arm64.deb

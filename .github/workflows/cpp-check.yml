@@ -25,5 +25,5 @@ jobs:
       with:
         source: './mirte_modular_hardware/'
         extensions: 'c,h,cpp,hpp'
-        clangFormatVersion: 18
+        clangFormatVersion: 18.1.3  # Ubuntu 24.04 LTS Version
         style: file

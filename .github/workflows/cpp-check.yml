@@ -11,7 +11,17 @@ jobs:
     - uses: DoozyX/clang-format-lint-action@v0.18
       with:
         source: '.'
-        exclude: './mirte_telemetrix_cpp/libs/*'
+        exclude: './mirte_telemetrix_cpp/libs/*,./mirte_modular_hardware/*'
         extensions: 'c,h,cpp,hpp'
         clangFormatVersion: 14
         style: llvm
+  ament_clang_format:
+    - uses: actions/checkout@v4
+    - name: Get ament-clang-format config
+      runs: wget https://raw.githubusercontent.com/ament/ament_lint/refs/heads/jazzy/ament_clang_format/ament_clang_format/configuration/.clang-format
+    - uses: DoozyX/clang-format-lint-action@v0.18
+      with:
+        source: './mirte_modular_hardware/'
+        extensions: 'c,h,cpp,hpp'
+        clangFormatVersion: 18
+        style: file

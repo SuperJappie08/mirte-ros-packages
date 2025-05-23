@@ -19,8 +19,8 @@
  * library cannot have, but the consuming code must have inorder to link.
  */
 
-#ifndef MIRTE_MODULAR_HARDWARE__VISIBILITY_CONTROL_H_
-#define MIRTE_MODULAR_HARDWARE__VISIBILITY_CONTROL_H_
+#ifndef MIRTE_MODULAR_HARDWARE__VISIBILITY_CONTROL_HPP_
+#define MIRTE_MODULAR_HARDWARE__VISIBILITY_CONTROL_HPP_
 
 // This logic was borrowed (then namespaced) from the examples on the gcc wiki:
 //     https://gcc.gnu.org/wiki/Visibility
@@ -53,4 +53,4 @@
 #define MIRTE_MODULAR_HARDWARE_PUBLIC_TYPE
 #endif
 
-#endif  // MIRTE_MODULAR_HARDWARE__VISIBILITY_CONTROL_H_
+#endif  // MIRTE_MODULAR_HARDWARE__VISIBILITY_CONTROL_HPP_

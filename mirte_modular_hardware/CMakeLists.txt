@@ -31,6 +31,7 @@ include_directories(include)
 
 add_library(${PROJECT_NAME} SHARED
   src/encoder_sensor.cpp
+  src/helpers.cpp
 )
 
 # # TODO: Is this desired???

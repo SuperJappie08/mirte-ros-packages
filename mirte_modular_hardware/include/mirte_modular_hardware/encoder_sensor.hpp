@@ -28,10 +28,12 @@
 #include <rclcpp/duration.hpp>
 #include <rclcpp/executors/static_single_threaded_executor.hpp>
 #include <rclcpp/macros.hpp>
+#include <rclcpp/time.hpp>
 #include <rclcpp_lifecycle/state.hpp>
 /* FIXME(SuperJappie08): TO SEPERATE INCLUDES */
 
-#include "mirte_modular_hardware/visibility_control.h"
+#include "mirte_modular_hardware/helpers.hpp"
+#include "mirte_modular_hardware/visibility_control.hpp"
 #include "mirte_msgs/msg/encoder.hpp"
 
 namespace mirte_modular_hardware
@@ -55,7 +57,7 @@ public:
     const rclcpp_lifecycle::State & previous_state) override;
 
   MIRTE_MODULAR_HARDWARE_PUBLIC
-  hardware_interface::CallbackReturn on_activate(
+  hardware_interface::CallbackReturn on_cleanup(
     const rclcpp_lifecycle::State & previous_state) override;
 
   MIRTE_MODULAR_HARDWARE_PUBLIC
@@ -74,11 +76,12 @@ private:
   // Parameters
   // NOTE(SuperJappie08): Maybe convert this to ticks/rad (or rad/ticks) whatever makes sense
   double ticks_per_rotation_ = std::numeric_limits<double>::quiet_NaN();
+  std::string encoder_topic_;
 
   /* NOTE(SuperJappie08): https://github.com/husarion/rosbot_hardware_interfaces/blob/main/src/rosbot_system.cpp
    and other use multithreaded, test this and non shared? */
   rclcpp::executors::SingleThreadedExecutor::SharedPtr executor_ = nullptr;
-  std::unique_ptr<std::thread> executor_thread_ = nullptr;
+  std::unique_ptr<std::thread, ThreadJoiner> executor_thread_ = nullptr;
   rclcpp::Node::SharedPtr node_ = nullptr;
 
   // FIXME: MIGTH NOT BE THE BEST TYPE -> CONTROLLERS USE BUFFER
@@ -86,6 +89,9 @@ private:
   realtime_tools::RealtimeBuffer<std::pair<EncoderMsg::ConstSharedPtr, EncoderMsg::ConstSharedPtr>>
     latest_msgs_{{nullptr, nullptr}};
   rclcpp::Subscription<EncoderMsg>::SharedPtr encoder_subscriber_ = nullptr;
+
+  void stop_executor() noexcept;
+  void cleanup_node_communication();
 };
 }  // namespace mirte_modular_hardware
 

@@ -20,7 +20,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Get ament-clang-format config
-      runs: wget https://raw.githubusercontent.com/ament/ament_lint/refs/heads/jazzy/ament_clang_format/ament_clang_format/configuration/.clang-format
+      run: wget https://raw.githubusercontent.com/ament/ament_lint/refs/heads/jazzy/ament_clang_format/ament_clang_format/configuration/.clang-format
     - uses: DoozyX/clang-format-lint-action@v0.18
       with:
         source: './mirte_modular_hardware/'

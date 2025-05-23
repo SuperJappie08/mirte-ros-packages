@@ -11,7 +11,7 @@ jobs:
     - uses: DoozyX/clang-format-lint-action@v0.18
       with:
         source: '.'
-        exclude: './mirte_telemetrix_cpp/libs/*,./mirte_modular_hardware/*'
+        exclude: './mirte_telemetrix_cpp/libs/* ./mirte_modular_hardware/*'
         extensions: 'c,h,cpp,hpp'
         clangFormatVersion: 14
         style: llvm

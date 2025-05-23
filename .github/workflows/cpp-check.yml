@@ -16,6 +16,8 @@ jobs:
         clangFormatVersion: 14
         style: llvm
   ament_clang_format:
+    runs-on: ubuntu-latest
+    steps:
     - uses: actions/checkout@v4
     - name: Get ament-clang-format config
       runs: wget https://raw.githubusercontent.com/ament/ament_lint/refs/heads/jazzy/ament_clang_format/ament_clang_format/configuration/.clang-format

@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="mirte_modular_hardware_encoder"
+    params="hardware_namespace:='io' hw_name joint_name ticks_per_rotation:=50">
+    <!-- Strip leading slash -->
+    <xacro:property name="hardware_namespace_"
+      value="${hardware_namespace[:-1] if hardware_namespace[-1] == '/' else hardware_namespace}"
+      scope="parent" />
+    <!-- <xacro:property name="topic_" value= scope="parent"/> -->
+
+    <ros2_control name="${hw_name}" type="sensor">
+      <hardware>
+        <plugin>mirte_modular_hardware/EncoderSensor</plugin>
+        <!-- TODO: PARAMS GO HERE-->
+        <!-- TODO(SuperJappie08): Check if last / already added-->
+        <!-- TODO(SuperJappie08): Ability to override topic -->
+        <!-- TODO(SuperJappie08): Ability to run inside of a namespace -->
+        <param name="topic">${hardware_namespace_}/encoder/${joint_name}</param>
+        <param name="ticks_per_rotation">${ticks_per_rotation}</param>
+      </hardware>
+      <joint name="${joint_name}">
+        <!-- TODO: EXTRA CONFIG LIKE WRAPPING AND LIMITS -->
+        <state_interface name="position" />
+        <!-- TODO(SuperJappie08): Possibly make toggleable state interface velocity? -->
+        <state_interface name="velocity" />
+      </joint>
+    </ros2_control>
+  </xacro:macro>
+</robot>

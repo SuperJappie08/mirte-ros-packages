@@ -1,0 +1,9 @@
+<library path="mirte_modular_hardware">
+  <class name="mirte_modular_hardware/EncoderSensor"
+         type="mirte_modular_hardware::EncoderSensor"
+         base_class_type="hardware_interface::SensorInterface">
+    <description>
+      The ros2_control hardware interface for a MIRTE encoder device.
+    </description>
+  </class>
+</library>

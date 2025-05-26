@@ -14,6 +14,7 @@
 //
 // Authors: Jasper van Brakel
 
+#include <chrono>
 #include <memory>
 #include <numbers>
 #include <thread>
@@ -23,6 +24,7 @@
 #include <hardware_interface/lifecycle_helpers.hpp>
 #include <hardware_interface/sensor_interface.hpp>
 #include <hardware_interface/types/hardware_interface_type_values.hpp>
+#include <hardware_interface/types/lifecycle_state_names.hpp>
 /* FIXME(SuperJappie08): TO SEPERATE INCLUDES */
 #include <rclcpp/context.hpp>
 #include <rclcpp/executor.hpp>
@@ -69,12 +71,13 @@ hardware_interface::CallbackReturn EncoderSensor::on_init(
     return hardware_interface::CallbackReturn::ERROR;
   }
 
-  if (auto encoder_topic = info_.hardware_parameters.find("topic");
-      encoder_topic != info_.hardware_parameters.end()) {
+  std::string encoder_topic;
+  if (auto encoder_topic_pair = info_.hardware_parameters.find("topic");
+      encoder_topic_pair != info_.hardware_parameters.end()) {
     RCLCPP_INFO(
       get_logger(), "Using '%s' as the topic name (relative to the hardware node).",
-      encoder_topic->second.c_str());
-    encoder_topic_ = encoder_topic->second;
+      encoder_topic_pair->second.c_str());
+    encoder_topic = encoder_topic_pair->second;
   } else {
     // TODO(SuperJappie08): Consider making this parameter optional.
     RCLCPP_FATAL(
@@ -82,6 +85,26 @@ hardware_interface::CallbackReturn EncoderSensor::on_init(
       "Missing required 'topic' hardware parameter, to indicate the topic (relative to the "
       "the hardware node).");
     return hardware_interface::CallbackReturn::ERROR;
+  }
+
+  // Optional hardware parameters
+  if (auto initial_message_timeout = info_.hardware_parameters.find("initial_message_timeout_ms");
+      initial_message_timeout != info_.hardware_parameters.end()) {
+    RCLCPP_INFO(
+      get_logger(),
+      "Attempting to parse 'initial_message_timeout_ms' parameter [int(in milliseconds)]. (use -1 "
+      "to disable timeout)");
+    initial_message_timeout_ =
+      std::chrono::milliseconds(std::stol(initial_message_timeout->second));
+  }
+
+  if (initial_message_timeout_ == std::chrono::milliseconds(-1)) {
+    RCLCPP_WARN(
+      get_logger(),
+      "The initial message timeout has been disabled, controller could wait indefinitely.");
+  } else {
+    RCLCPP_INFO_STREAM(
+      get_logger(), "Using initial message timeout of " << initial_message_timeout_ << ".");
   }
 
   // Validate if the configuration is valid.
@@ -186,15 +209,6 @@ hardware_interface::CallbackReturn EncoderSensor::on_init(
 
   // TODO: Check configuration of interfaces in urdf
 
-  // FIXME(SuperJappie08): Figure out if the executor (thread) should be started here? Since on_init should 'initialize containers and member variables'
-  //                       In that case keep the thread and executor arround until finalization
-
-  return hardware_interface::CallbackReturn::SUCCESS;
-}
-
-hardware_interface::CallbackReturn EncoderSensor::on_configure(
-  const rclcpp_lifecycle::State & /*previous_state*/)
-{
   auto node_options =
     rclcpp::NodeOptions().start_parameter_event_publisher(false).start_parameter_services(false);
   node_ = rclcpp::Node::make_shared(ENCODER_SENSOR_NODE_NAME_PREFIX + get_name(), node_options);
@@ -204,30 +218,48 @@ hardware_interface::CallbackReturn EncoderSensor::on_configure(
   //                    - Cons: If message arrive late it zeros the velocity, could introduce chatter
   encoder_subscriber_ = node_->create_subscription<mirte_msgs::msg::Encoder>(
     // FIXME(SuperJappie08): Figure out if keep_last(5) (default) or keep_last(1/2/3) is better
-    encoder_topic_, rclcpp::SensorDataQoS() /* .keep_last(1)*/,
+    encoder_topic, rclcpp::SensorDataQoS() /* .keep_last(1)*/,
     [this](const EncoderMsg::ConstSharedPtr msg) {
       this->latest_msgs_.writeFromNonRT({msg, this->latest_msgs_.readFromNonRT()->first});
     });
 
+  executor_ = rclcpp::executors::SingleThreadedExecutor::make_shared();
+  executor_thread_.reset(new std::thread(std::bind(&rclcpp::Executor::spin, executor_)));
+
+  return hardware_interface::CallbackReturn::SUCCESS;
+}
+
+hardware_interface::CallbackReturn EncoderSensor::on_configure(
+  const rclcpp_lifecycle::State & /*previous_state*/)
+{
   // Initialize the buffer, so the initial read will also be valid
   auto context = node_->get_node_options().context();
 
   RCLCPP_INFO(
     get_logger(), "Waiting for first two messages on '%s'", encoder_subscriber_->get_topic_name());
 
-  // FIXME(SuperJappie08): Add configurable timeout
   EncoderMsg first_msg;
-  if (!rclcpp::wait_for_message(first_msg, encoder_subscriber_, context)) {
-    // FIXME(SuperJappie08): Could be FAILURE as well but depends on what to do with the configuration states
-    // TODO(SuperJappie08): Add LOG message
-    return hardware_interface::CallbackReturn::ERROR;
+  if (!rclcpp::wait_for_message(
+        first_msg, encoder_subscriber_, context, initial_message_timeout_)) {
+    /* NOTE(SuperJappie08): Return failure since then we would revert to unconfigured (if started
+           from a non configured state). If the hardware interface fails when start requires a state
+           ros2_control crashes (https://github.com/ros-controls/ros2_control/issues/2290) */
+    RCLCPP_ERROR_STREAM(
+      get_logger(), "Timed out waiting for first Encoder message on '"
+                      << encoder_subscriber_->get_topic_name()
+                      << "'. [Timeout = " << initial_message_timeout_ << "]");
+    return hardware_interface::CallbackReturn::FAILURE;
   }
 
   EncoderMsg second_msg;
-  if (!rclcpp::wait_for_message(second_msg, encoder_subscriber_, context)) {
-    // FIXME(SuperJappie08): Could be FAILURE as well but depends on what to do with the configuration states
-    // TODO(SuperJappie08): Add LOG message
-    return hardware_interface::CallbackReturn::ERROR;
+  if (!rclcpp::wait_for_message(
+        second_msg, encoder_subscriber_, context, initial_message_timeout_)) {
+    RCLCPP_ERROR_STREAM(
+      get_logger(),
+      "Timed out waiting for second Encoder message on '"
+        << encoder_subscriber_->get_topic_name() << "'. [Timeout = " << initial_message_timeout_
+        << "] (hint: Check the frequency of '" << encoder_subscriber_->get_topic_name() << "')");
+    return hardware_interface::CallbackReturn::FAILURE;
   }
 
   RCLCPP_INFO(
@@ -238,11 +270,7 @@ hardware_interface::CallbackReturn EncoderSensor::on_configure(
     {std::make_shared<const EncoderMsg>(second_msg),
      std::make_shared<const EncoderMsg>(first_msg)});
 
-  executor_ = rclcpp::executors::SingleThreadedExecutor::make_shared();
-
   executor_->add_node(node_);
-
-  executor_thread_.reset(new std::thread(std::bind(&rclcpp::Executor::spin, executor_)));
 
   return hardware_interface::CallbackReturn::SUCCESS;
 }
@@ -250,7 +278,7 @@ hardware_interface::CallbackReturn EncoderSensor::on_configure(
 hardware_interface::CallbackReturn EncoderSensor::on_cleanup(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
-  cleanup_node_communication();
+  executor_->remove_node(node_);
 
   return hardware_interface::CallbackReturn::SUCCESS;
 }
@@ -258,13 +286,16 @@ hardware_interface::CallbackReturn EncoderSensor::on_cleanup(
 hardware_interface::CallbackReturn EncoderSensor::on_shutdown(
   const rclcpp_lifecycle::State & previous_state)
 {
-  // No action required in UNKNOWN, UNCONFIGURED and FINALIZED
-  if (hardware_interface::lifecycleStateThatRequiresNoAction(previous_state.id())) {
+  if (previous_state.label() == hardware_interface::lifecycle_state_names::UNKNOWN) {
     return hardware_interface::CallbackReturn::SUCCESS;
   }
 
+  if (previous_state.label() != hardware_interface::lifecycle_state_names::UNCONFIGURED) {
+    executor_->remove_node(node_);
+  }
+
   // In states INACTIVE and ACTIVE the executor is running
-  cleanup_node_communication();
+  stop_executor();
 
   return hardware_interface::CallbackReturn::SUCCESS;
 }
@@ -272,7 +303,14 @@ hardware_interface::CallbackReturn EncoderSensor::on_shutdown(
 hardware_interface::CallbackReturn EncoderSensor::on_error(
   const rclcpp_lifecycle::State & previous_state)
 {
-  return on_shutdown(previous_state);
+  auto label = previous_state.label();
+  if (
+    label == hardware_interface::lifecycle_state_names::ACTIVE ||
+    label == hardware_interface::lifecycle_state_names::INACTIVE) {
+    executor_->remove_node(node_);
+  }
+
+  return hardware_interface::CallbackReturn::SUCCESS;
 }
 
 hardware_interface::return_type EncoderSensor::read(
@@ -326,23 +364,6 @@ void EncoderSensor::stop_executor() noexcept
       executor_thread_->join();
     }
   }
-}
-
-void EncoderSensor::cleanup_node_communication()
-{
-  stop_executor();
-
-  executor_->remove_node(node_);
-
-  // NOTE(SuperJappie08): Cleaning up the executor thread might be uncessairy, however it is good
-  //                      practice and ensures the executor itself can be cleaned up.
-  executor_thread_.reset();
-  executor_.reset();
-
-  latest_msgs_.reset();
-
-  encoder_subscriber_.reset();
-  node_.reset();
 }
 
 }  // namespace mirte_modular_hardware

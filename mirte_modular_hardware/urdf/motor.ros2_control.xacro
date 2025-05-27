@@ -1,29 +1,27 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
-  <xacro:macro name="mirte_modular_hardware_encoder"
-    params="hardware_namespace:='io' hw_name joint_name ticks_per_rotation:=50 initial_message_timeout:=500">
+  <xacro:macro name="mirte_modular_hardware_motor"
+    params="hardware_namespace:='io' hw_name joint_name">
     <!-- Strip leading slash -->
     <xacro:property name="hardware_namespace_"
       value="${hardware_namespace[:-1] if hardware_namespace[-1] == '/' else hardware_namespace}"
       scope="parent" />
     <!-- <xacro:property name="topic_" value= scope="parent"/> -->
 
-    <ros2_control name="${hw_name}" type="sensor">
+    <ros2_control name="${hw_name}" type="actuator">
       <hardware>
-        <plugin>mirte_modular_hardware/EncoderSensor</plugin>
+        <plugin>mirte_modular_hardware/MotorActuator</plugin>
         <!-- TODO: PARAMS GO HERE-->
         <!-- TODO(SuperJappie08): Check if last / already added-->
         <!-- TODO(SuperJappie08): Ability to override topic -->
         <!-- TODO(SuperJappie08): Ability to run inside of a namespace -->
-        <param name="topic">${hardware_namespace_}/encoder/${joint_name}</param>
-        <param name="ticks_per_rotation">${ticks_per_rotation}</param>
-        <param name="initial_message_timeout_ms">${initial_message_timeout}</param>
+        <param name="topic">${hardware_namespace_}/motor/${joint_name}/speed</param>
+        <!-- <param name="ticks_per_rotation">${ticks_per_rotation}</param> -->
+        <!-- <param name="initial_message_timeout_ms">${initial_message_timeout}</param> -->
       </hardware>
       <joint name="${joint_name}">
+        <command_interface name="velocity"/>
         <!-- TODO: EXTRA CONFIG LIKE WRAPPING AND LIMITS -->
-        <state_interface name="position" />
-        <!-- TODO(SuperJappie08): Possibly make toggleable state interface velocity? -->
-        <state_interface name="velocity" />
       </joint>
     </ros2_control>
   </xacro:macro>

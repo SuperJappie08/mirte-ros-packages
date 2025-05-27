@@ -6,4 +6,11 @@
       The ros2_control hardware interface for a MIRTE encoder device.
     </description>
   </class>
+  <class name="mirte_modular_hardware/MotorActuator"
+         type="mirte_modular_hardware::MotorActuator"
+         base_class_type="hardware_interface::ActuatorInterface">
+    <description>
+      The ros2_control hardware interface for a MIRTE motor device.
+    </description>
+  </class>
 </library>

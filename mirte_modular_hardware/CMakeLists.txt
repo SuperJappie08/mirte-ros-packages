@@ -25,6 +25,7 @@ find_package(rclcpp_lifecycle REQUIRED)
 find_package(hardware_interface REQUIRED)
 find_package(realtime_tools REQUIRED)
 find_package(mirte_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
 find_package(pluginlib REQUIRED)
 
 include_directories(include)
@@ -32,6 +33,7 @@ include_directories(include)
 add_library(${PROJECT_NAME} SHARED
   src/encoder_sensor.cpp
   src/helpers.cpp
+  src/motor_actuator.cpp
 )
 
 # # TODO: Is this desired???
@@ -44,12 +46,12 @@ add_library(${PROJECT_NAME} SHARED
 target_link_libraries(${PROJECT_NAME}
 PUBLIC
   ${mirte_msgs_TARGETS}
+  ${std_msgs_TARGETS}
   hardware_interface::hardware_interface
   pluginlib::pluginlib
   rclcpp::rclcpp
   rclcpp_lifecycle::rclcpp_lifecycle
-  # Only need headers
-  # realtime_tools::realtime_tools
+  realtime_tools::realtime_tools
 )
 
 
@@ -79,14 +81,15 @@ ament_export_include_directories(include)
 ament_export_libraries(${PROJECT_NAME})
 ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
 ament_export_dependencies(
-# ament_cmake 
-backward_ros 
-hardware_interface 
-mirte_msgs 
-pluginlib 
-rclcpp 
-rclcpp_lifecycle 
-realtime_tools)
+  backward_ros 
+  rclcpp
+  rclcpp_lifecycle 
+  hardware_interface 
+  realtime_tools
+  pluginlib
+  mirte_msgs
+  std_msgs 
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

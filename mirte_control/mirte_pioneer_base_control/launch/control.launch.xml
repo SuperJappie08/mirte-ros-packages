@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="start_controller_manager" default="True"
+    description="If a controller manager needs to be started" />
+  <arg name="controller_manager_node" default="controller_manager"
+    description="The name of the controller_manager node to be used" />
+  <arg name="frame_prefix" default=""
+    description="An arbitrary prefix to add to the published tf2 frames. Defaults to the empty string." />
+  <arg name="hardware_namespace" default="io"
+    description="The namespace containing the Telemetrix Node and the hardware peripherals" />
+
+  <!-- TODO(SuperJappie08): Add Encoder and PID SUPPORT -->
+
+  <!-- NOTE(SuperJappie08): The next argument allows for shell escaping, which could be a security
+        risk. However it provides unrestricted functionality in the most flexible way -->
+  <arg name="extra_xacro_args" default="" description="Additional xacro configuration commands" />
+
+  <let name="_extra_xacro_args"
+    value="hardware_namespace:='$(var hardware_namespace)' $(var extra_xacro_args)" />
+  <let name="robot_description"
+    value="$(command 'xacro $(find-pkg-share mirte_pioneer_base_control)/urdf/mirte_pioneer_combined.urdf.xacro $(var _extra_xacro_args)')" />
+
+  <node pkg="robot_state_publisher" exec="robot_state_publisher">
+    <param name="robot_description" value="$(var robot_description)" />
+    <param name="frame_prefix" value="$(var frame_prefix)" />
+  </node>
+
+  <node pkg="controller_manager" exec="ros2_control_node" name="$(var controller_manager_node)"
+    if="$(var start_controller_manager)">
+    <param from="$(find-pkg-share mirte_pioneer_base_control)/config/pioneer_controllers.yaml" />
+  </node>
+
+  <!-- <node pkg="controller_manager" exec="spawner" args=""/> -->
+
+  <!-- <> -->
+
+</launch>

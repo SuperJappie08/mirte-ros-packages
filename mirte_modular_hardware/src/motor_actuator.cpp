@@ -185,7 +185,7 @@ hardware_interface::CallbackReturn MotorActuator::on_init(
 // }
 
 hardware_interface::CallbackReturn MotorActuator::on_activate(
-  const rclcpp_lifecycle::State & previous_state)
+  const rclcpp_lifecycle::State & /*previous_state*/)
 {
   for (auto joint_command : joint_commands_) {
     if (joint_command->get_interface_name() == hardware_interface::HW_IF_VELOCITY) {
@@ -217,7 +217,10 @@ hardware_interface::CallbackReturn MotorActuator::on_deactivate(
 {
   // FIXME(SuperJappie08): Implement everything
 
-  // FIXME(SuperJappie08): Make this untmp
+  // Make sure the speed is 0 when deactivated
+  speed_publisher_rt_->lock();
+  speed_publisher_rt_->msg_.data = 0;
+  speed_publisher_rt_->unlockAndPublish();
 
   return hardware_interface::CallbackReturn::SUCCESS;
 }
@@ -231,14 +234,16 @@ hardware_interface::return_type MotorActuator::perform_command_mode_switch(
   // TODO(SuperJappie08): When switching controllers (deactivate A, activate B) will send an intermediate 0.0 velocity to the motors.
   //                      Is this an issue?
   for (auto stopped_cmd_name : stop_interfaces) {
-    if (stopped_cmd_name.ends_with(hardware_interface::HW_IF_VELOCITY)) {
-      set_command(stopped_cmd_name, 0.0);
-
-    } else [[unlikely]] {
-      RCLCPP_ERROR(
-        get_logger(), "Command interface '%s' is being stopped, however it is not supported.",
-        stopped_cmd_name.c_str());
-      return hardware_interface::return_type::ERROR;
+    if (auto joint_command = std::find_if(
+          joint_commands_.begin(), joint_commands_.end(),
+          [stopped_cmd_name](auto iter) { return iter->get_name() == stopped_cmd_name; });
+        joint_command != joint_commands_.end()) {
+      if (!joint_command->get()->set_value(0.0)) {
+        RCLCPP_ERROR(
+          get_logger(), "Failed to set value for command interface '%s'.",
+          joint_command->get()->get_name().c_str());
+        return hardware_interface::return_type::ERROR;
+      }
     }
   }
 
@@ -246,9 +251,10 @@ hardware_interface::return_type MotorActuator::perform_command_mode_switch(
 }
 
 hardware_interface::return_type MotorActuator::read(
-  const rclcpp::Time & time, const rclcpp::Duration & duration)
+  const rclcpp::Time & /*time*/, const rclcpp::Duration & /*duration*/)
 {
   // FIXME(SuperJappie08): Implement everything
+  // TODO(SuperJappie08): Maybe add optional current command speed for diff drive controller
   return hardware_interface::return_type::OK;
 }
 
@@ -263,6 +269,7 @@ hardware_interface::return_type MotorActuator::write(
     if (joint_command->get_interface_name() == hardware_interface::HW_IF_VELOCITY) [[likely]] {
       auto commanded_velocity = joint_command->get_optional();
 
+      // Silently continue if the speed cannot be published, assume controller frequency is high enough
       if (commanded_velocity.has_value() && speed_publisher_rt_->trylock()) {
         // FIXME(SuperJappie08): Make this a propper speed (with calculations).
         auto data = (int)commanded_velocity.value();
@@ -279,10 +286,7 @@ hardware_interface::return_type MotorActuator::write(
         } else {
           speed_publisher_rt_->unlock();
         }
-      } else {
-        // FIXME(SuperJappie08): TMP LOG
-        RCLCPP_WARN(get_logger(), "SOME LOG GOES HERE");
-      }
+      } 
 
       continue;
     }

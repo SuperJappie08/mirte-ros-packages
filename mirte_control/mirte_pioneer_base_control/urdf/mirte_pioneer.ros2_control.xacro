@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:include filename="$(find mirte_modular_hardware)/urdf/encoder.ros2_control.xacro" />
+  <xacro:include filename="$(find mirte_modular_hardware)/urdf/motor.ros2_control.xacro" />
+
+  <!-- TODO(SuperJappie08) use YAML FOR SOME CONFIGURATION -->
+
+  <!-- Assumes the device name of the encoder and the motor match -->
+  <xacro:macro name="mirte_pioneer_base_control_motor"
+    params="hardware_namespace:='io' joint_name ticks_per_rotation:=0">
+    <xacro:mirte_modular_hardware_motor hardware_namespace="${hardware_namespace}"
+      hw_name="pioneer_motor_${joint_name}" joint_name="${joint_name}" />
+
+    <xacro:if value="${ticks_per_rotation > 0}">
+      <xacro:mirte_modular_hardware_encoder hardware_namespace="${hardware_namespace}"
+        hw_name="pioneer_encoder_${joint_name}"
+        joint_name="${joint_name}" ticks_per_rotation="${ticks_per_rotation}"
+      />
+    </xacro:if>
+
+  </xacro:macro>
+
+</robot>

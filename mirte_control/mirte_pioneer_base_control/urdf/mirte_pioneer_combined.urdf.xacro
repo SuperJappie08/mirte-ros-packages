@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="mirte">
+  <xacro:include filename="$(find mirte_pioneer_description)/urdf/mirte/mirte.xacro" />
+  <xacro:include filename="$(find mirte_pioneer_base_control)/urdf/mirte_pioneer.ros2_control.xacro" />
+
+  <xacro:arg name="hardware_namespace" default="io" />
+
+  <!-- TODO(SuperJappie08) Add other param configurations  -->
+  <xacro:mirte_pioneer_base_control_motor hardware_namespace="$(arg hardware_namespace)"
+    joint_name="joint_left_wheel" />
+  <xacro:mirte_pioneer_base_control_motor hardware_namespace="$(arg hardware_namespace)"
+    joint_name="joint_right_wheel" />
+</robot>

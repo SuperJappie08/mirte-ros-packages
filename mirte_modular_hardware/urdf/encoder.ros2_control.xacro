@@ -11,18 +11,18 @@
     <ros2_control name="${hw_name}" type="sensor">
       <hardware>
         <plugin>mirte_modular_hardware/EncoderSensor</plugin>
-        <!-- TODO: PARAMS GO HERE-->
-        <!-- TODO(SuperJappie08): Check if last / already added-->
-        <!-- TODO(SuperJappie08): Ability to override topic -->
-        <!-- TODO(SuperJappie08): Ability to run inside of a namespace -->
+        <!-- TODO PARAMS GO HERE-->
+        <!-- TODO(SuperJappie08) Check if last / already added-->
+        <!-- TODO(SuperJappie08) Ability to override topic -->
+        <!-- TODO(SuperJappie08) Ability to run inside of a namespace -->
         <param name="topic">${hardware_namespace_}/encoder/${joint_name}</param>
         <param name="ticks_per_rotation">${ticks_per_rotation}</param>
         <param name="initial_message_timeout_ms">${initial_message_timeout}</param>
       </hardware>
       <joint name="${joint_name}">
-        <!-- TODO: EXTRA CONFIG LIKE WRAPPING AND LIMITS -->
+        <!-- TODO EXTRA CONFIG LIKE WRAPPING AND LIMITS -->
         <state_interface name="position" />
-        <!-- TODO(SuperJappie08): Possibly make toggleable state interface velocity? -->
+        <!-- TODO(SuperJappie08) Possibly make toggleable state interface velocity? -->
         <state_interface name="velocity" />
       </joint>
     </ros2_control>

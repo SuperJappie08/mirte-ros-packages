@@ -4,10 +4,19 @@
   <xacro:include filename="$(find mirte_pioneer_base_control)/urdf/mirte_pioneer.ros2_control.xacro" />
 
   <xacro:arg name="hardware_namespace" default="io" />
+  <!-- ticks per rotation, when set to 0, encoders are disabled. Default: 0 -->
+  <xacro:arg name="ticks_per_rotation" default="0" />
+
+  <!-- NOTE; this *highly* depends on the voltage of the motors!!!! -->
+  <!-- For 5V power bank; 255 pwm = 90 ticks/sec -> ca 2 rot/s (4*pi) -->
+  <!-- For 6V power supply; 255 pwm = 120 ticks/sec -> ca 3 rot/s (6*pi) -->
+  <xacro:arg name="max_motor_speed" default="${6.0*pi}" />
 
   <!-- TODO(SuperJappie08) Add other param configurations  -->
   <xacro:mirte_pioneer_base_control_motor hardware_namespace="$(arg hardware_namespace)"
-    joint_name="joint_left_wheel" />
+    joint_name="joint_left_wheel" hw_device_name="left"
+    ticks_per_rotation="$(arg ticks_per_rotation)" max_motor_speed="$(arg max_motor_speed)" />
   <xacro:mirte_pioneer_base_control_motor hardware_namespace="$(arg hardware_namespace)"
-    joint_name="joint_right_wheel" />
+    joint_name="joint_right_wheel" hw_device_name="right"
+    ticks_per_rotation="$(arg ticks_per_rotation)" max_motor_speed="$(arg max_motor_speed)" />
 </robot>

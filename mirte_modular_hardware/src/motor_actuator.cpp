@@ -17,6 +17,7 @@
 /* FIXME(SuperJappie08): TO SEPERATE INCLUDES */
 #include <hardware_interface/actuator_interface.hpp>
 #include <hardware_interface/hardware_info.hpp>
+#include <hardware_interface/lexical_casts.hpp>
 #include <hardware_interface/types/hardware_interface_return_values.hpp>
 #include <hardware_interface/types/hardware_interface_type_values.hpp>
 #include <hardware_interface/types/lifecycle_state_names.hpp>
@@ -61,8 +62,21 @@ hardware_interface::CallbackReturn MotorActuator::on_init(
     // TODO(SuperJappie08): Consider making this parameter optional.
     RCLCPP_FATAL(
       get_logger(),
-      "Missing required 'topic' hardware parameter, to indicate the topic (relative to the "
+      "Missing the required 'topic' hardware parameter, to indicate the topic (relative to the "
       "the hardware node).");
+    return hardware_interface::CallbackReturn::ERROR;
+  }
+
+  if (auto max_motor_speed_raw = info_.hardware_parameters.find("max_motor_speed");
+      max_motor_speed_raw != info_.hardware_parameters.end()) {
+    max_motor_speed_ = hardware_interface::stod(max_motor_speed_raw->second);
+    RCLCPP_INFO(get_logger(), "Loaded 'max_motor_speed' [%f rad/s]", max_motor_speed_);
+  } else {
+    // TODO(SuperJappie08): Consider making this parameter optional
+    RCLCPP_FATAL(
+      get_logger(),
+      "Missing the required 'max_motor_speed' hardware parameter [double, rad/s]. This is used in "
+      "the conversion to the percentage based command speed.");
     return hardware_interface::CallbackReturn::ERROR;
   }
 
@@ -271,8 +285,7 @@ hardware_interface::return_type MotorActuator::write(
 
       // Silently continue if the speed cannot be published, assume controller frequency is high enough
       if (commanded_velocity.has_value() && speed_publisher_rt_->trylock()) {
-        // FIXME(SuperJappie08): Make this a propper speed (with calculations).
-        auto data = (int)commanded_velocity.value();
+        auto data = (int)(commanded_velocity.value() / max_motor_speed_ * 100.0);
 
         auto & msg = speed_publisher_rt_->msg_;
 
@@ -286,7 +299,7 @@ hardware_interface::return_type MotorActuator::write(
         } else {
           speed_publisher_rt_->unlock();
         }
-      } 
+      }
 
       continue;
     }

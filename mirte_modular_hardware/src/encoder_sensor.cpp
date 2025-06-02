@@ -359,6 +359,13 @@ hardware_interface::return_type EncoderSensor::read(
       // FIXME(SuperJappie08): It works with senconds?
       auto dt =
         (rclcpp::Time(newest_msg->header.stamp) - rclcpp::Time(older_msg->header.stamp)).seconds();
+
+      RCLCPP_WARN_EXPRESSION(
+        get_logger(), dt <= 0.0,
+        "The time difference between the encoder steps is %fs, check if its source is setup "
+        "correctly.",
+        dt);
+
       double velocity = difference / dt;
 
       if (joint_state->set_value(velocity)) [[likely]] {

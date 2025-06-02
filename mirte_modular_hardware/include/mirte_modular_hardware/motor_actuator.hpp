@@ -17,6 +17,7 @@
 #ifndef MIRTE_MODULAR_HARDWARE__MOTOR_ACTUATOR_HPP_
 #define MIRTE_MODULAR_HARDWARE__MOTOR_ACTUATOR_HPP_
 
+#include <limits>
 /* FIXME(SuperJappie08): TO SEPERATE INCLUDES */
 #include <hardware_interface/actuator_interface.hpp>
 #include <hardware_interface/hardware_info.hpp>
@@ -75,6 +76,8 @@ public:
     const rclcpp::Time & time, const rclcpp::Duration & period) override;
 
 private:
+  double max_motor_speed_ = std::numeric_limits<double>::quiet_NaN();
+
   /* NOTE(SuperJappie08): https://github.com/husarion/rosbot_hardware_interfaces/blob/main/src/rosbot_system.cpp
    and other use multithreaded, test this and non shared? */
   // FIXME(SuperJappie08): Do we need an executor in this case?

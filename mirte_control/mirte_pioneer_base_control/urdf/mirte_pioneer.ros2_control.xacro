@@ -3,21 +3,24 @@
   <xacro:include filename="$(find mirte_modular_hardware)/urdf/encoder.ros2_control.xacro" />
   <xacro:include filename="$(find mirte_modular_hardware)/urdf/motor.ros2_control.xacro" />
 
-  <!-- TODO(SuperJappie08) use YAML FOR SOME CONFIGURATION -->
+  <!-- NOTE; this *highly* depends on the voltage of the motors!!!! -->
+  <!-- For 5V power bank; 255 pwm = 90 ticks/sec -> ca 2 rot/s (4*pi) -->
+  <!-- For 6V power supply; 255 pwm = 120 ticks/sec -> ca 3 rot/s (6*pi) -->
+
+  <!-- NOTE; The standard slot encoders compatible with the yellow TT motors of the MIRTE Pioneer,
+             have 20 ticks per rotations -->
 
   <!-- Assumes the device name of the encoder and the motor match -->
   <xacro:macro name="mirte_pioneer_base_control_motor"
-    params="hardware_namespace:='io' joint_name ticks_per_rotation:=0">
+    params="hardware_namespace:='io' hw_device_name joint_name ticks_per_rotation:=0 max_motor_speed='${6.0*pi}'">
     <xacro:mirte_modular_hardware_motor hardware_namespace="${hardware_namespace}"
-      hw_name="pioneer_motor_${joint_name}" joint_name="${joint_name}" />
+      hw_device_name="${hw_device_name}" joint_name="${joint_name}"
+      max_motor_speed="${max_motor_speed}" />
 
     <xacro:if value="${ticks_per_rotation > 0}">
       <xacro:mirte_modular_hardware_encoder hardware_namespace="${hardware_namespace}"
-        hw_name="pioneer_encoder_${joint_name}"
-        joint_name="${joint_name}" ticks_per_rotation="${ticks_per_rotation}"
-      />
+        hw_device_name="${hw_device_name}" joint_name="${joint_name}"
+        ticks_per_rotation="${ticks_per_rotation}" />
     </xacro:if>
-
   </xacro:macro>
-
 </robot>

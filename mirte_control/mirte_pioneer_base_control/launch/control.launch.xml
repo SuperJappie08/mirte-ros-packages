@@ -9,14 +9,25 @@
   <arg name="hardware_namespace" default="io"
     description="The namespace containing the Telemetrix Node and the hardware peripherals" />
 
-  <!-- TODO(SuperJappie08): Add Encoder and PID SUPPORT -->
+  <arg name="ticks_per_rotation" default="0"
+    description="Ticks per rotation for the encoders. When set to 0, the encoders are disabled. The slot encoders compatible with the MIRTE Pioneers yellow TT motors have 20 ticks per rotation." />
+
+  <!--
+    NOTE: this *highly* depends on the voltage of the motors!!!!
+    For 5V power bank: 255 pwm = 90 ticks/sec -> ca 2 rot/s (4*pi)
+    For 6V power supply: 255 pwm = 120 ticks/sec -> ca 3 rot/s (6*pi)
+   -->
+  <arg name="max_motor_speed" default="$(eval '6.0*pi')"
+    description="The max motor speed in rad/s. NOTE: This is highly depends on the voltage. 5V Power Bank -> ~2 rot/s (~4pi rad/s). 6V Power Supply -> ~3 rot/s (~6pi rad/s)." />
+
+  <!-- TODO(SuperJappie08): Add PID SUPPORT? -->
 
   <!-- NOTE(SuperJappie08): The next argument allows for shell escaping, which could be a security
         risk. However it provides unrestricted functionality in the most flexible way -->
   <arg name="extra_xacro_args" default="" description="Additional xacro configuration commands" />
 
   <let name="_extra_xacro_args"
-    value="hardware_namespace:='$(var hardware_namespace)' $(var extra_xacro_args)" />
+    value="hardware_namespace:='$(var hardware_namespace)' ticks_per_rotation:=$(var ticks_per_rotation) max_motor_speed:=$(var max_motor_speed) $(var extra_xacro_args)" />
   <let name="robot_description"
     value="$(command 'xacro $(find-pkg-share mirte_pioneer_base_control)/urdf/mirte_pioneer_combined.urdf.xacro $(var _extra_xacro_args)')" />
 
@@ -28,6 +39,7 @@
   <node pkg="controller_manager" exec="ros2_control_node" name="$(var controller_manager_node)"
     if="$(var start_controller_manager)">
     <param from="$(find-pkg-share mirte_pioneer_base_control)/config/pioneer_controllers.yaml" />
+    <param name="open_loop" value="$(not $(eval '$(var ticks_per_rotation) > 0'))" />
   </node>
 
   <!-- <node pkg="controller_manager" exec="spawner" args=""/> -->

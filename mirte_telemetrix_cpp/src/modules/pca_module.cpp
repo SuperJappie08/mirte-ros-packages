@@ -1,6 +1,9 @@
 #include <algorithm>
 #include <functional>
 
+#include <rclcpp/logging.hpp>
+#include <rclcpp/qos.hpp>
+
 #include <mirte_telemetrix_cpp/modules/pca_module.hpp>
 
 using namespace std::placeholders; // for _1, _2, _3...
@@ -38,6 +41,14 @@ PCA_Module::PCA_Module(NodeData node_data, PCAData pca_data,
         std::make_shared<PCAServo>(node_data, servo, pca9685));
   }
 
+  rclcpp::SubscriptionOptions options;
+  options.callback_group = this->callback_group;
+  multi_speed_subscriber =
+      nh->create_subscription<mirte_msgs::msg::SetSpeedNamedArray>(
+          "motor/" + this->name + "/multi_speed", rclcpp::SystemDefaultsQoS(),
+          std::bind(&PCA_Module::multi_speed_subscription_callback, this, _1),
+          options);
+
   motor_service = nh->create_service<mirte_msgs::srv::SetSpeedMultiple>(
       "motor/" + this->name + "/set_multiple_speeds",
       std::bind(&PCA_Module::set_multi_speed_service_callback, this, _1, _2),
@@ -46,37 +57,57 @@ PCA_Module::PCA_Module(NodeData node_data, PCAData pca_data,
   modules->add_mod(pca9685);
 }
 
+void PCA_Module::multi_speed_subscription_callback(
+    const mirte_msgs::msg::SetSpeedNamedArray &msg) {
+  if (!set_multi_speed(msg.speeds)) {
+    RCLCPP_ERROR(logger,
+                 "An error occurred when trying to set multiple speeds!");
+  }
+}
+
 void PCA_Module::set_multi_speed_service_callback(
     const mirte_msgs::srv::SetSpeedMultiple::Request::ConstSharedPtr req,
     mirte_msgs::srv::SetSpeedMultiple::Response::SharedPtr res) {
+  res->success = set_multi_speed(req->speeds);
+  if (!res->success) {
+    RCLCPP_ERROR(logger,
+                 "An error occurred when trying to set multiple speeds!");
+  }
+}
+
+bool PCA_Module::set_multi_speed(const MultiSpeedType &speeds) {
+  if (speeds.empty()) {
+    RCLCPP_WARN(
+        logger,
+        "Tried to set multiple motor speeds, but no speeds where provided.");
+    return false;
+  }
+
   std::vector<tmx_cpp::PCA9685_module::PWM_val> pwm_vals;
-  if (req->speeds.size() == 0) {
-    res->success = false;
-    return;
-  }
 
-  for (auto speed : req->speeds) {
-    auto name = speed.name;
-    auto motor = std::find_if(motors.begin(), motors.end(), [name](auto motor) {
-      return motor->motor_data->name == name;
-    });
-
-    if (motor == motors.end()) {
-      RCLCPP_ERROR(logger,
-                   "PCA Motor '%s' could not be found. Ignored for set multi "
-                   "speed command",
-                   name.c_str());
-      continue;
+  for (auto speed : speeds) {
+    auto motor_name = speed.name;
+    if (auto motor = std::find_if(
+            motors.begin(), motors.end(),
+            [motor_name](auto motor) { return motor->name == motor_name; });
+        motor != motors.end()) {
+      auto motor_pwm_vals = (*motor)->get_multi_speed_pwm(speed.speed);
+      pwm_vals.insert(pwm_vals.end(), motor_pwm_vals.begin(),
+                      motor_pwm_vals.end());
+    } else {
+      RCLCPP_WARN(logger,
+                  "PCA Motor '%s' could not be found. Ignored for multiple "
+                  "motor speed request.",
+                  motor_name.c_str());
     }
-
-    auto motor_pwm_vals = (*motor)->get_multi_speed_pwm(speed.speed);
-    pwm_vals.insert(pwm_vals.end(), motor_pwm_vals.begin(),
-                    motor_pwm_vals.end());
   }
 
-  if (pwm_vals.size() > 0) {
-    pca9685->set_multiple_pwm(pwm_vals);
+  if (pwm_vals.empty()) {
+    RCLCPP_ERROR(
+        logger,
+        "None of the named motor speeds where found inn the PCA Motors.");
+    return false;
   }
 
-  res->success = true;
+  return pca9685->set_multiple_pwm(pwm_vals);
 }

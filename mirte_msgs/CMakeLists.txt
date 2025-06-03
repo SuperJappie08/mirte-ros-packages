@@ -21,7 +21,8 @@ set(msg_files
     "msg/IntensityDigital.msg"
     "msg/Keypad.msg"
     "msg/ServoPosition.msg"
-    "msg/SetSpeedNamed.msg")
+    "msg/SetSpeedNamed.msg"
+    "msg/SetSpeedNamedArray.msg")
 
 set(srv_files
     "srv/GetAnalogPinValue.srv"

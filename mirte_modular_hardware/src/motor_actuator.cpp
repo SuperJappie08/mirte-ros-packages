@@ -190,14 +190,6 @@ hardware_interface::CallbackReturn MotorActuator::on_init(
   return hardware_interface::CallbackReturn::SUCCESS;
 }
 
-// hardware_interface::CallbackReturn MotorActuator::on_configure(
-//   const rclcpp_lifecycle::State & previous_state
-// ) {
-
-//   // REGISTER_ROS2_CONTROL_INTROSPECTION("velocity", get_command())
-//   return hardware_interface::CallbackReturn::SUCCESS;
-// }
-
 hardware_interface::CallbackReturn MotorActuator::on_activate(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
@@ -227,7 +219,7 @@ hardware_interface::CallbackReturn MotorActuator::on_activate(
 }
 
 hardware_interface::CallbackReturn MotorActuator::on_deactivate(
-  const rclcpp_lifecycle::State & previous_state)
+  const rclcpp_lifecycle::State & /*previous_state*/)
 {
   // FIXME(SuperJappie08): Implement everything
 

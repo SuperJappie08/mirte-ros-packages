@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
-  <arg name="start_controller_manager" default="True"
-    description="If a controller manager needs to be started" />
+  <!-- <arg name="start_controller_manager" default="True"
+    description="If a controller manager needs to be started" /> -->
   <arg name="controller_manager_node" default="controller_manager"
     description="The name of the controller_manager node to be used" />
   <arg name="frame_prefix" default=""
@@ -36,14 +36,16 @@
     <param name="frame_prefix" value="$(var frame_prefix)" />
   </node>
 
-  <node pkg="controller_manager" exec="ros2_control_node" name="$(var controller_manager_node)"
-    if="$(var start_controller_manager)">
+  <let name="is_open_loop" value="$(not $(eval '$(var ticks_per_rotation) > 0'))" />
+
+  <node pkg="controller_manager" exec="ros2_control_node" name="$(var controller_manager_node)">
     <param from="$(find-pkg-share mirte_pioneer_base_control)/config/pioneer_controllers.yaml" />
-    <param name="open_loop" value="$(not $(eval '$(var ticks_per_rotation) > 0'))" />
+    <param name="open_loop" value="$(var is_open_loop)" />
   </node>
 
-  <!-- <node pkg="controller_manager" exec="spawner" args=""/> -->
+  <node pkg="controller_manager" exec="spawner"
+    args="mirte_base_controller -c $(var controller_manager_node)" />
 
-  <!-- <> -->
-
+  <node pkg="controller_manager" exec="spawner"
+    args="joint_state_broadcaster -c $(var controller_manager_node)" unless="$(var is_open_loop)" />
 </launch>

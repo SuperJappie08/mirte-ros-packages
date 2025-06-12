@@ -32,7 +32,7 @@
     </visual>
   </link>
 
-  <xacro:mirte_modular_hardware_encoder hw_name="test_encoder" joint_name="test_joint" />
-  <xacro:mirte_modular_hardware_motor hw_name="test_motor" joint_name="test_joint" />
+  <xacro:mirte_modular_hardware_encoder hw_device_name="test_encoder" joint_name="test_joint" />
+  <xacro:mirte_modular_hardware_motor hw_device_name="test_motor" joint_name="test_joint" />
 
 </robot>

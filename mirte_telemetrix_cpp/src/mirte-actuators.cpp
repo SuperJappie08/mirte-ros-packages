@@ -1,6 +1,7 @@
 #include <tmx_cpp/tmx.hpp>
 
 #include <mirte_telemetrix_cpp/actuators/motor.hpp>
+#include <mirte_telemetrix_cpp/actuators/multi_motor.hpp>
 #include <mirte_telemetrix_cpp/actuators/servo/servo.hpp>
 #include <mirte_telemetrix_cpp/mirte-actuators.hpp>
 
@@ -9,10 +10,16 @@ Mirte_Actuators::Mirte_Actuators(NodeData node_data,
     : tmx(node_data.tmx), nh(node_data.nh), board(node_data.board) {
   using namespace std::placeholders;
 
-  this->actuators = Motor::get_motors(node_data, parser);
+  this->actuators = {};
+  auto motors = Motor::get_motors(node_data, parser);
+  this->actuators.insert(this->actuators.end(), motors.begin(), motors.end());
 
   auto servos = Servo::get_servos(node_data, parser);
   this->actuators.insert(this->actuators.end(), servos.begin(), servos.end());
+
+  auto multi_motors = MultiMotor::get_multi_motors(node_data, parser, motors);
+  this->actuators.insert(this->actuators.end(), multi_motors.begin(),
+                         multi_motors.end());
 
   this->digital_pin_service =
       nh->create_service<mirte_msgs::srv::SetDigitalPinValue>(

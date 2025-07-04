@@ -13,9 +13,9 @@
 
 using namespace std::placeholders;
 
-std::vector<std::shared_ptr<TelemetrixDevice>>
+std::vector<std::shared_ptr<Motor>>
 Motor::get_motors(NodeData node_data, std::shared_ptr<Parser> parser) {
-  std::vector<std::shared_ptr<TelemetrixDevice>> motors;
+  std::vector<std::shared_ptr<Motor>> motors;
   auto motor_datas = parse_all<MotorData>(parser, node_data.board);
   for (auto motor_data : motor_datas) {
     if (motor_data.check()) {

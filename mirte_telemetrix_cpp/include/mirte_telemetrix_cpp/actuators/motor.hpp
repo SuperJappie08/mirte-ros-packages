@@ -23,7 +23,7 @@ public:
   bool inverted;
   int max_pwm;
 
-  static std::vector<std::shared_ptr<TelemetrixDevice>>
+  static std::vector<std::shared_ptr<Motor>>
   get_motors(NodeData node_data, std::shared_ptr<Parser> parser);
 
   virtual void set_speed(int speed) = 0;

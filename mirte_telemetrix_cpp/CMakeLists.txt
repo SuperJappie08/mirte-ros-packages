@@ -81,12 +81,14 @@ add_executable(
   src/actuators/servo_base.cpp
   src/actuators/servo/servo.cpp
   src/actuators/motor.cpp
+  src/actuators/multi_motor.cpp
   src/actuators/motor/ddp_motor.cpp
   src/actuators/motor/dp_motor.cpp
   src/actuators/motor/pp_motor.cpp
   src/parsers/parsers.cpp
   src/parsers/device_data.cpp
   src/parsers/actuators/motor_data.cpp
+  src/parsers/actuators/multi_motor_data.cpp
   src/parsers/actuators/servo_data.cpp
   src/parsers/sensors/base_sensor_data.cpp
   src/parsers/sensors/encoder_data.cpp

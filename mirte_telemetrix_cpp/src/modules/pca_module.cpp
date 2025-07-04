@@ -105,7 +105,7 @@ bool PCA_Module::set_multi_speed(const MultiSpeedType &speeds) {
   if (pwm_vals.empty()) {
     RCLCPP_ERROR(
         logger,
-        "None of the named motor speeds where found inn the PCA Motors.");
+        "None of the named motor speeds where found in the PCA Motors.");
     return false;
   }
 

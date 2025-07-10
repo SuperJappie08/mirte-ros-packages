@@ -1,0 +1,6 @@
+# For packages specifically for the MIRTE Master, which are built elsewhere (or shouldn't be packaged at all)
+repositories:
+  ros2_astra_camera:
+    type: git
+    url: https://github.com/ArendJan/ros2_astra_camera/
+    version: fix-ros-jammy # TODO: get this merged + other fixed for camera

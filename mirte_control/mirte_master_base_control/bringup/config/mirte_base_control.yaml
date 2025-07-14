@@ -9,7 +9,7 @@
       type: pid_controller/PidController
 
     mirte_base_controller:
-      type: clearpath_mecanum_drive_controller/MecanumDriveController
+      type: mecanum_drive_controller/MecanumDriveController
 
 /**/mirte_base_controller:
   ros__parameters:
@@ -18,8 +18,17 @@
     use_stamped_vel: false  # Stamped will be the future default
     reference_timeout: 0.25
     command_timeout: 0.25
-    command_joint_names: ["pid_wheels_controller/front_left_wheel_joint", "pid_wheels_controller/rear_left_wheel_joint", "pid_wheels_controller/rear_right_wheel_joint", "pid_wheels_controller/front_right_wheel_joint"]
-    state_joint_names: ["front_left_wheel_joint", "rear_left_wheel_joint", "rear_right_wheel_joint", "front_right_wheel_joint"]
+    # command_joint_names: ["pid_wheels_controller/front_left_wheel_joint", "pid_wheels_controller/rear_left_wheel_joint", "pid_wheels_controller/rear_right_wheel_joint", "pid_wheels_controller/front_right_wheel_joint"]
+    front_left_wheel_command_joint_name: "pid_wheels_controller/front_left_wheel_joint"
+    front_right_wheel_command_joint_name: "pid_wheels_controller/front_right_wheel_joint"
+    rear_left_wheel_command_joint_name: "pid_wheels_controller/rear_left_wheel_joint"
+    rear_right_wheel_command_joint_name: "pid_wheels_controller/rear_right_wheel_joint"
+    # state_joint_names: ["front_left_wheel_joint", "rear_left_wheel_joint", "rear_right_wheel_joint", "front_right_wheel_joint"]
+    front_left_wheel_state_joint_name: "front_left_wheel_joint"
+    front_right_wheel_state_joint_name: "front_right_wheel_joint"
+    rear_left_wheel_state_joint_name: "rear_left_wheel_joint"
+    rear_right_wheel_state_joint_name: "rear_right_wheel_joint"
+
     interface_name: velocity
 
     kinematics:
@@ -43,8 +52,8 @@
 
     enable_odom_tf: true
 
+    # FIXME(SuperJappie08): On what are these values based?
     twist_covariance_diagonal: [0.0, 7.0, 14.0, 21.0, 28.0, 35.0]
-
     pose_covariance_diagonal: [0.0, 7.0, 14.0, 21.0, 28.0, 35.0]
 
 

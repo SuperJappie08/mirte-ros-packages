@@ -66,7 +66,7 @@ def generate_launch_description():
         executable="ros2_control_node",
         parameters=[robot_controllers],
         output="both",
-        remappings=[("~/robot_description", "robot_description")],
+        # remappings=[("~/robot_description", "robot_description")],
     )
     robot_state_pub_node = Node(
         package="robot_state_publisher",

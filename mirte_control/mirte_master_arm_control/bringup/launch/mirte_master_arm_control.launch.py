@@ -84,7 +84,6 @@ def generate_launch_description():
         parameters=[ParameterFile(robot_controllers, allow_substs=True)],
         output="both",
         remappings=[
-            ("~/robot_description", "robot_description"),
             ("~/tf_odometry", "/tf"),
         ],
         condition=IfCondition(start_controller_manager),

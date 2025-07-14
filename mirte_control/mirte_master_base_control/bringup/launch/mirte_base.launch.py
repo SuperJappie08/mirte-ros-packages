@@ -87,7 +87,6 @@ def generate_launch_description():
         parameters=[ParameterFile(robot_controllers, allow_substs=True)],
         output="both",
         remappings=[
-            ("~/robot_description", "robot_description"),
             ("~/tf_odometry", "/tf"),
         ],
         condition=IfCondition(start_controller_manager),
@@ -112,6 +111,8 @@ def generate_launch_description():
         package="controller_manager",
         executable="spawner",
         arguments=[
+            "--controller-ros-args", "-r mirte_base_controller:~/odometry:=~/odom",
+            "--controller-ros-args", "-r mirte_base_controller:~/reference:=~/cmd_vel",
             "pid_wheels_controller",
             "mirte_base_controller",
         ],
@@ -122,6 +123,8 @@ def generate_launch_description():
         package="controller_manager",
         executable="spawner",
         arguments=[
+            "--controller-ros-args", "-r mirte_base_controller:~/odometry:=~/odom",
+            "--controller-ros-args", "-r mirte_base_controller:~/reference:=~/cmd_vel",
             "mirte_base_controller",
         ],
         condition=UnlessCondition(use_pid_control),

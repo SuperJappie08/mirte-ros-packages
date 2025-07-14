@@ -13,6 +13,8 @@ find_package(hardware_interface REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
+find_package(yaml_cpp_vendor REQUIRED)
+find_package(yaml-cpp REQUIRED)
 # find dependencies
 set(THIS_PACKAGE_INCLUDE_DEPENDS
     hardware_interface
@@ -40,6 +42,7 @@ target_include_directories(
   ${PROJECT_NAME}
   PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/hardware/include>
          $<INSTALL_INTERFACE:include/${PROJECT_NAME}>)
+target_link_libraries(${PROJECT_NAME} PRIVATE yaml-cpp::yaml-cpp)
 ament_target_dependencies(${PROJECT_NAME} PUBLIC
                           ${THIS_PACKAGE_INCLUDE_DEPENDS})
 
@@ -70,5 +73,5 @@ endif()
 
 # EXPORTS
 ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
-ament_export_dependencies(${THIS_PACKAGE_INCLUDE_DEPENDS})
+ament_export_dependencies(${THIS_PACKAGE_INCLUDE_DEPENDS} "yaml-cpp")
 ament_package()

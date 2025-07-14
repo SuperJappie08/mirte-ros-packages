@@ -1,5 +1,5 @@
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
-#include "params.hpp"
+#include "params.hpp" // NOTE: This is unused
 #include <algorithm>
 #include <mirte_base_control.hpp>
 namespace mirte_base_control {

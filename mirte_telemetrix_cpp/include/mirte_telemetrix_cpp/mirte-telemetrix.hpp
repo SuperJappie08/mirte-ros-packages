@@ -21,7 +21,8 @@ class TelemetrixNode {
 private:
   /* data */
   std::shared_ptr<rclcpp::Node> node_;
-  std::shared_ptr<rclcpp::ParameterEventHandler> parameter_event_handler_;
+  std::shared_ptr<rclcpp::ParameterEventHandler> parameter_event_handler_ =
+      nullptr;
   std::shared_ptr<DeviceServiceIntrospection> global_srv_manager_;
 
 public:

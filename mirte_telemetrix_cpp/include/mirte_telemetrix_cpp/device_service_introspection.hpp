@@ -5,8 +5,10 @@
 #include <string>
 #include <vector>
 
+#include <rcl/service_introspection.h>
 #include <rclcpp/node.hpp>
 #include <rclcpp/parameter_event_handler.hpp>
+#include <rclcpp/qos.hpp>
 #include <rclcpp/service.hpp>
 
 class DeviceServiceIntrospection {
@@ -30,6 +32,12 @@ public:
     this->service_introspection_calls_.push_back(
         std::bind(&rclcpp::Service<ServiceT>::configure_introspection, service,
                   _1, _2, _3));
+
+    if (this->introspect_enable_) {
+      service->configure_introspection(this->node_->get_clock(),
+                                       rclcpp::ParameterEventsQoS(),
+                                       RCL_SERVICE_INTROSPECTION_CONTENTS);
+    }
 
     return service;
   }

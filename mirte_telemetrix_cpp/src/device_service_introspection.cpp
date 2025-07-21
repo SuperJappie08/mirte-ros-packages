@@ -13,7 +13,14 @@ DeviceServiceIntrospection::DeviceServiceIntrospection(
   auto parameter_name = !this->device_param_key.empty()
                             ? this->device_param_key + ".service_introspection"
                             : "service_introspection";
-  this->node_->declare_parameter(parameter_name, false);
+
+  auto descriptor = rcl_interfaces::msg::ParameterDescriptor();
+  descriptor.description =
+      "If the services from this device have service introspection enabled.";
+  descriptor.read_only = !(bool)param_event_handler;
+
+  this->introspect_enable_ =
+      this->node_->declare_parameter(parameter_name, false);
 
   auto cb = [this](const rclcpp::Parameter &p) {
     auto enable_introspect = p.as_bool();
@@ -33,7 +40,8 @@ DeviceServiceIntrospection::DeviceServiceIntrospection(
     this->introspect_enable_ = enable_introspect;
   };
 
-  cb(this->node_->get_parameter(parameter_name));
-  this->introspect_param_callback_ =
-      param_event_handler->add_parameter_callback(parameter_name, cb);
+  if (param_event_handler) {
+    this->introspect_param_callback_ =
+        param_event_handler->add_parameter_callback(parameter_name, cb);
+  }
 }

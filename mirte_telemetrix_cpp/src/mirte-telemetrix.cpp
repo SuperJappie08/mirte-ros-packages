@@ -47,10 +47,13 @@ TelemetrixNode::TelemetrixNode(const rclcpp::NodeOptions &options)
               .allow_undeclared_parameters(true)
               .automatically_declare_parameters_from_overrides(true))) {
 
-  parameter_event_handler_ =
-      std::make_shared<rclcpp::ParameterEventHandler>(node_);
+  if (node_->get_parameter_or("device.mirte.enable_parameter_events", false)) {
+    RCLCPP_INFO(node_->get_logger(), "Enabling ParameterEventHandler");
+    parameter_event_handler_ =
+        std::make_shared<rclcpp::ParameterEventHandler>(node_);
+  }
   global_srv_manager_ = std::make_shared<DeviceServiceIntrospection>(
-      node_, parameter_event_handler_, "");
+      node_, parameter_event_handler_, "device.mirte");
 
   if (!this->start()) {
     rclcpp::shutdown();

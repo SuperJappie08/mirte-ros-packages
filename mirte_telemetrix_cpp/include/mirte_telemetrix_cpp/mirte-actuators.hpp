@@ -10,6 +10,7 @@
 #include <tmx_cpp/tmx.hpp>
 
 #include <mirte_telemetrix_cpp/device.hpp>
+#include <mirte_telemetrix_cpp/device_service_introspection.hpp>
 #include <mirte_telemetrix_cpp/mirte-board.hpp>
 #include <mirte_telemetrix_cpp/node_data.hpp>
 
@@ -18,7 +19,8 @@
 
 class Mirte_Actuators {
 public:
-  Mirte_Actuators(NodeData data, std::shared_ptr<Parser> parser);
+  Mirte_Actuators(NodeData data, std::shared_ptr<Parser> parser,
+                  std::shared_ptr<DeviceServiceIntrospection> srv_manager);
 
   std::shared_ptr<tmx_cpp::TMX> tmx;
   std::shared_ptr<rclcpp::Node> nh;

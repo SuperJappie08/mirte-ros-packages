@@ -49,6 +49,8 @@ TelemetrixNode::TelemetrixNode(const rclcpp::NodeOptions &options)
 
   parameter_event_handler_ =
       std::make_shared<rclcpp::ParameterEventHandler>(node_);
+  global_srv_manager_ = std::make_shared<DeviceServiceIntrospection>(
+      node_, parameter_event_handler_, "");
 
   if (!this->start()) {
     rclcpp::shutdown();
@@ -69,10 +71,12 @@ bool TelemetrixNode::start() {
   this->board = Mirte_Board::create(parser);
 
   this->characteristics_service =
-      node_->create_service<mirte_msgs::srv::GetBoardCharacteristics>(
-          "get_board_characteristics",
-          std::bind(&Mirte_Board::get_board_characteristics_service_callback,
-                    this->board, _1, _2));
+      global_srv_manager_
+          ->create_service<mirte_msgs::srv::GetBoardCharacteristics>(
+              "get_board_characteristics",
+              std::bind(
+                  &Mirte_Board::get_board_characteristics_service_callback,
+                  this->board, _1, _2));
 
   auto ports = tmx_cpp::TMX::get_available_ports();
   decltype(ports) available_ports;
@@ -139,8 +143,10 @@ bool TelemetrixNode::start() {
 
   std::cout << "Start adding" << std::endl;
 
-  this->actuators = std::make_shared<Mirte_Actuators>(node_data, parser);
-  this->monitor = std::make_shared<Mirte_Sensors>(node_data, parser);
+  this->actuators =
+      std::make_shared<Mirte_Actuators>(node_data, parser, global_srv_manager_);
+  this->monitor =
+      std::make_shared<Mirte_Sensors>(node_data, parser, global_srv_manager_);
   this->modules = std::make_shared<Mirte_modules>(node_data, parser);
   std::cout << "Done adding" << std::endl;
   return true;

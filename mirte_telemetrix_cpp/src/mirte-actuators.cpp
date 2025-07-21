@@ -5,8 +5,9 @@
 #include <mirte_telemetrix_cpp/actuators/servo/servo.hpp>
 #include <mirte_telemetrix_cpp/mirte-actuators.hpp>
 
-Mirte_Actuators::Mirte_Actuators(NodeData node_data,
-                                 std::shared_ptr<Parser> parser)
+Mirte_Actuators::Mirte_Actuators(
+    NodeData node_data, std::shared_ptr<Parser> parser,
+    std::shared_ptr<DeviceServiceIntrospection> srv_manager)
     : tmx(node_data.tmx), nh(node_data.nh), board(node_data.board) {
   using namespace std::placeholders;
 
@@ -22,13 +23,14 @@ Mirte_Actuators::Mirte_Actuators(NodeData node_data,
                          multi_motors.end());
 
   this->digital_pin_service =
-      nh->create_service<mirte_msgs::srv::SetDigitalPinValue>(
+      srv_manager->create_service<mirte_msgs::srv::SetDigitalPinValue>(
           "set_digital_pin_value",
           std::bind(&Mirte_Actuators::digital_pin_service_callback, this, _1,
                     _2));
-  this->pwm_pin_service = nh->create_service<mirte_msgs::srv::SetPWMPinValue>(
-      "set_pwm_pin_value",
-      std::bind(&Mirte_Actuators::pwm_pin_service_callback, this, _1, _2));
+  this->pwm_pin_service =
+      srv_manager->create_service<mirte_msgs::srv::SetPWMPinValue>(
+          "set_pwm_pin_value",
+          std::bind(&Mirte_Actuators::pwm_pin_service_callback, this, _1, _2));
 }
 
 void Mirte_Actuators::digital_pin_service_callback(

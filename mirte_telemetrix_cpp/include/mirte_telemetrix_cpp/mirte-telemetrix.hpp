@@ -9,6 +9,7 @@
 
 #include <tmx_cpp/tmx.hpp>
 
+#include <mirte_telemetrix_cpp/device_service_introspection.hpp>
 #include <mirte_telemetrix_cpp/mirte-actuators.hpp>
 #include <mirte_telemetrix_cpp/mirte-board.hpp>
 #include <mirte_telemetrix_cpp/mirte-modules.hpp>
@@ -21,6 +22,7 @@ private:
   /* data */
   std::shared_ptr<rclcpp::Node> node_;
   std::shared_ptr<rclcpp::ParameterEventHandler> parameter_event_handler_;
+  std::shared_ptr<DeviceServiceIntrospection> global_srv_manager_;
 
 public:
   TelemetrixNode(const rclcpp::NodeOptions &options = rclcpp::NodeOptions());

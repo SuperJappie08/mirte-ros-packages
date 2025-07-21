@@ -5,7 +5,9 @@
 #include <mirte_telemetrix_cpp/sensors/keypad_monitor.hpp>
 #include <mirte_telemetrix_cpp/sensors/sonar_monitor.hpp>
 
-Mirte_Sensors::Mirte_Sensors(NodeData node_data, std::shared_ptr<Parser> parser)
+Mirte_Sensors::Mirte_Sensors(
+    NodeData node_data, std::shared_ptr<Parser> parser,
+    std::shared_ptr<DeviceServiceIntrospection> srv_manager)
     : tmx(node_data.tmx), nh(node_data.nh), board(node_data.board) {
   using namespace std::placeholders;
 
@@ -22,12 +24,12 @@ Mirte_Sensors::Mirte_Sensors(NodeData node_data, std::shared_ptr<Parser> parser)
   this->sensors.insert(this->sensors.end(), encoders.begin(), encoders.end());
 
   this->digital_pin_service =
-      nh->create_service<mirte_msgs::srv::GetDigitalPinValue>(
+      srv_manager->create_service<mirte_msgs::srv::GetDigitalPinValue>(
           "get_digital_pin_value",
           std::bind(&Mirte_Sensors::digital_pin_service_callback, this, _1,
                     _2));
   this->analog_pin_service =
-      nh->create_service<mirte_msgs::srv::GetAnalogPinValue>(
+      srv_manager->create_service<mirte_msgs::srv::GetAnalogPinValue>(
           "get_analog_pin_value",
           std::bind(&Mirte_Sensors::analog_pin_service_callback, this, _1, _2));
 }

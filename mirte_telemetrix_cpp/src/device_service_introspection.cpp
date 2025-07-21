@@ -10,7 +10,9 @@ DeviceServiceIntrospection::DeviceServiceIntrospection(
     std::string device_param_key)
     : device_param_key(device_param_key), node_(node),
       service_introspection_calls_({}), introspect_enable_(false) {
-  auto parameter_name = this->device_param_key + ".service_introspection";
+  auto parameter_name = !this->device_param_key.empty()
+                            ? this->device_param_key + ".service_introspection"
+                            : "service_introspection";
   this->node_->declare_parameter(parameter_name, false);
 
   auto cb = [this](const rclcpp::Parameter &p) {

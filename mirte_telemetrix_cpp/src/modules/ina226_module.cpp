@@ -16,6 +16,10 @@ INA226_sensor::INA226_sensor(NodeData node_data, INA226Data ina_data,
     : Mirte_module(node_data, {ina_data.scl, ina_data.sda},
                    (ModuleData)ina_data),
       data(ina_data) {
+  this->srv_manager = std::make_shared<DeviceServiceIntrospection>(
+      node_data.nh, node_data.param_event_handler,
+      get_device_key<INA226Data>(&ina_data));
+
   tmx->setI2CPins(ina_data.sda, ina_data.scl, ina_data.port);
 
   this->used_time = nh->now();
@@ -32,7 +36,7 @@ INA226_sensor::INA226_sensor(NodeData node_data, INA226Data ina_data,
   this->used_pub = nh->create_publisher<std_msgs::msg::Int32>(
       "power/" + this->name + "/used", rclcpp::SystemDefaultsQoS());
 
-  this->shutdown_service = nh->create_service<std_srvs::srv::SetBool>(
+  this->shutdown_service = srv_manager->create_service<std_srvs::srv::SetBool>(
       "power/" + this->name + "/shutdown",
       std::bind(&INA226_sensor::shutdown_robot_service_callback, this, _1, _2),
       rclcpp::ServicesQoS(), this->callback_group);

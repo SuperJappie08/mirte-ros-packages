@@ -46,6 +46,10 @@ TelemetrixNode::TelemetrixNode(const rclcpp::NodeOptions &options)
           rclcpp::NodeOptions(options)
               .allow_undeclared_parameters(true)
               .automatically_declare_parameters_from_overrides(true))) {
+
+  parameter_event_handler_ =
+      std::make_shared<rclcpp::ParameterEventHandler>(node_);
+
   if (!this->start()) {
     rclcpp::shutdown();
   }
@@ -131,7 +135,7 @@ bool TelemetrixNode::start() {
   tmx->sendMessage(tmx_cpp::MESSAGE_TYPE::GET_PICO_UNIQUE_ID, {});
   tmx->setScanDelay(1000 / parser->get_frequency());
 
-  NodeData node_data{node_, tmx, board};
+  NodeData node_data{node_, tmx, board, parameter_event_handler_};
 
   std::cout << "Start adding" << std::endl;
 

@@ -11,7 +11,11 @@
 IntensityMonitor::IntensityMonitor(NodeData node_data, std::vector<pin_t> pins,
                                    IntensityData intensity_data)
     : Mirte_Sensor(node_data, pins, (SensorData)intensity_data),
-      intensity_data(intensity_data) {}
+      intensity_data(intensity_data) {
+  this->srv_manager = std::make_shared<DeviceServiceIntrospection>(
+      node_data.nh, node_data.param_event_handler,
+      get_device_key<IntensityData>(&intensity_data));
+}
 
 std::vector<std::shared_ptr<IntensityMonitor>>
 IntensityMonitor::get_intensity_monitors(NodeData node_data,
@@ -57,10 +61,11 @@ DigitalIntensityMonitor::DigitalIntensityMonitor(NodeData node_data,
       "intensity/" + intensity_data.name + "/digital",
       rclcpp::SystemDefaultsQoS());
 
-  intensity_service = nh->create_service<mirte_msgs::srv::GetIntensityDigital>(
-      "intensity/" + intensity_data.name + "/get_digital",
-      std::bind(&DigitalIntensityMonitor::service_callback, this, _1, _2),
-      rclcpp::ServicesQoS(), this->callback_group);
+  intensity_service =
+      srv_manager->create_service<mirte_msgs::srv::GetIntensityDigital>(
+          "intensity/" + intensity_data.name + "/get_digital",
+          std::bind(&DigitalIntensityMonitor::service_callback, this, _1, _2),
+          rclcpp::ServicesQoS(), this->callback_group);
 
   tmx->setPinMode(intensity_data.d_pin, tmx_cpp::TMX::PIN_MODES::DIGITAL_INPUT,
                   true, 0);
@@ -78,10 +83,11 @@ AnalogIntensityMonitor::AnalogIntensityMonitor(NodeData node_data,
   intensity_pub = nh->create_publisher<mirte_msgs::msg::Intensity>(
       "intensity/" + intensity_data.name, rclcpp::SystemDefaultsQoS());
 
-  intensity_service = nh->create_service<mirte_msgs::srv::GetIntensity>(
-      "intensity/" + intensity_data.name + "/get_analog",
-      std::bind(&AnalogIntensityMonitor::service_callback, this, _1, _2),
-      rclcpp::ServicesQoS(), this->callback_group);
+  intensity_service =
+      srv_manager->create_service<mirte_msgs::srv::GetIntensity>(
+          "intensity/" + intensity_data.name + "/get_analog",
+          std::bind(&AnalogIntensityMonitor::service_callback, this, _1, _2),
+          rclcpp::ServicesQoS(), this->callback_group);
 
   tmx->setPinMode(intensity_data.a_pin, tmx_cpp::TMX::PIN_MODES::ANALOG_INPUT,
                   true, 0);

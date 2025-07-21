@@ -9,7 +9,7 @@ public:
 
   // No Pin Initializer, for use with motors on (sub)modules.
   PPMotor(NodeData node_data, pin_t pinA, pin_t pinB, DeviceData data,
-          bool inverted, int max_pwm);
+          bool inverted, int max_pwm, std::string device_key);
 
   std::tuple<uint32_t, uint32_t> calc_pwm_speed(int speed);
   virtual void set_speed(int speed) override;

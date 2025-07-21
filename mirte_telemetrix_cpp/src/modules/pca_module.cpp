@@ -27,18 +27,23 @@ PCA_Module::PCA_Module(NodeData node_data, PCAData pca_data,
     : Mirte_module(node_data, {pca_data.scl, pca_data.sda},
                    (ModuleData)pca_data) {
   this->device_timer->cancel();
+
+  auto module_key = get_device_key<PCAData>(&pca_data);
+  this->srv_manager = std::make_shared<DeviceServiceIntrospection>(
+      node_data.nh, node_data.param_event_handler, module_key);
+
   tmx->setI2CPins(pca_data.sda, pca_data.scl, pca_data.port);
 
   this->pca9685 = std::make_shared<tmx_cpp::PCA9685_module>(
       pca_data.port, pca_data.addr, pca_data.frequency);
 
   for (auto motor : pca_data.motors) {
-    this->motors.push_back(
-        std::make_shared<PCAMotor>(node_data, motor, pca9685));
+    this->motors.push_back(std::make_shared<PCAMotor>(
+        node_data, motor, pca9685, module_key + ".motors." + motor->name));
   }
   for (auto servo : pca_data.servos) {
-    this->servos.push_back(
-        std::make_shared<PCAServo>(node_data, servo, pca9685));
+    this->servos.push_back(std::make_shared<PCAServo>(
+        node_data, servo, pca9685, module_key + ".servos." + servo->name));
   }
 
   rclcpp::SubscriptionOptions options;
@@ -49,10 +54,12 @@ PCA_Module::PCA_Module(NodeData node_data, PCAData pca_data,
           std::bind(&PCA_Module::multi_speed_subscription_callback, this, _1),
           options);
 
-  motor_service = nh->create_service<mirte_msgs::srv::SetSpeedMultiple>(
-      "motor/" + this->name + "/set_multiple_speeds",
-      std::bind(&PCA_Module::set_multi_speed_service_callback, this, _1, _2),
-      rclcpp::ServicesQoS(), this->callback_group);
+  motor_service =
+      srv_manager->create_service<mirte_msgs::srv::SetSpeedMultiple>(
+          "motor/" + this->name + "/set_multiple_speeds",
+          std::bind(&PCA_Module::set_multi_speed_service_callback, this, _1,
+                    _2),
+          rclcpp::ServicesQoS(), this->callback_group);
 
   modules->add_mod(pca9685);
 }

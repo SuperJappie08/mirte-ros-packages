@@ -10,8 +10,8 @@ PPMotor::PPMotor(NodeData node_data, MotorData motor_data)
 }
 
 PPMotor::PPMotor(NodeData node_data, pin_t pinA, pin_t pinB, DeviceData data,
-                 bool inverted, int max_pwm)
-    : Motor(node_data, {}, data, inverted, max_pwm), pwmA_pin(pinA),
+                 bool inverted, int max_pwm, std::string device_key)
+    : Motor(node_data, {}, data, inverted, max_pwm, device_key), pwmA_pin(pinA),
       pwmB_pin(pinB) {}
 
 // NOTE/TODO: the speed is given as percentages.

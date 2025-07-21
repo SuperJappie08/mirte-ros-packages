@@ -9,6 +9,7 @@
 #include <tmx_cpp/modules/HiwonderServo.hpp>
 #include <tmx_cpp/tmx.hpp>
 
+#include <mirte_telemetrix_cpp/device_service_introspection.hpp>
 #include <mirte_telemetrix_cpp/mirte-board.hpp>
 #include <mirte_telemetrix_cpp/node_data.hpp>
 
@@ -30,7 +31,8 @@ public:
                  std::shared_ptr<HiWonderServoData> servo_data,
                  std::shared_ptr<tmx_cpp::HiwonderServo_module> bus,
                  std::string servo_group, DeviceData::DeviceDuration duration,
-                 rclcpp::CallbackGroup::SharedPtr callback_group);
+                 rclcpp::CallbackGroup::SharedPtr callback_group,
+                 std::string device_key);
 
   std::shared_ptr<HiWonderServoData> servo_data;
   std::shared_ptr<tmx_cpp::HiwonderServo_module> bus_mod;
@@ -48,6 +50,7 @@ public:
 
 private:
   std::shared_ptr<rclcpp::Node> nh;
+  std::shared_ptr<DeviceServiceIntrospection> srv_manager = nullptr;
 
   rclcpp::TimerBase::SharedPtr servo_timer;
 

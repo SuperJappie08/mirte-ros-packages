@@ -8,6 +8,7 @@
 
 #include <tmx_cpp/tmx.hpp>
 
+#include <mirte_telemetrix_cpp/device_service_introspection.hpp>
 #include <mirte_telemetrix_cpp/mirte-board.hpp>
 #include <mirte_telemetrix_cpp/node_data.hpp>
 
@@ -49,6 +50,8 @@ public:
 
 protected:
   rclcpp::TimerBase::SharedPtr device_timer;
+
+  std::shared_ptr<DeviceServiceIntrospection> srv_manager = nullptr;
 };
 
 // }  // namespace mirte_telemetrix_cpp

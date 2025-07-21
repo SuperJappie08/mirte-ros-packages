@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include <rclcpp/service.hpp>
@@ -15,9 +16,10 @@
 
 class Motor : public TelemetrixDevice {
 public:
-  Motor(NodeData node_data, std::vector<pin_t> pins, MotorData motor_data);
+  Motor(NodeData node_data, std::vector<pin_t> pins, MotorData motor_data,
+        std::optional<std::string> device_key = {});
   Motor(NodeData node_data, std::vector<pin_t> pins, DeviceData data,
-        bool inverted, int max_pwm);
+        bool inverted, int max_pwm, std::string device_key);
 
   int last_speed = 0;
   bool inverted;

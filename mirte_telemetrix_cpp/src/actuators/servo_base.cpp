@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <functional>
 #include <numbers>
+#include <optional>
 
 #include <rclcpp/callback_group.hpp>
 #include <rclcpp/qos.hpp>
@@ -16,21 +17,29 @@
  * callback does not influence the hardware. */
 ServoBase::ServoBase(NodeData node_data, std::vector<pin_t> pins,
                      ServoData servo_data,
+                     std::optional<std::string> device_key,
                      rclcpp::CallbackGroupType callback_group_type)
     : TelemetrixDevice(node_data, pins, (DeviceData)servo_data,
                        callback_group_type),
       data(servo_data) {
-  this->set_angle_service = nh->create_service<mirte_msgs::srv::SetServoAngle>(
-      "servo/" + name + "/set_angle",
-      std::bind(&ServoBase::set_angle_service_callback, this,
-                std::placeholders::_1, std::placeholders::_2),
-      rclcpp::ServicesQoS(), this->callback_group);
+  using namespace std::placeholders;
 
-  this->get_range_service = nh->create_service<mirte_msgs::srv::GetServoRange>(
-      "servo/" + name + "/get_range",
-      std::bind(&ServoBase::get_range_service_callback, this,
-                std::placeholders::_1, std::placeholders::_2),
-      rclcpp::ServicesQoS(), this->callback_group);
+  auto device_key_value =
+      device_key.value_or(get_device_key<ServoData>(&servo_data));
+  this->srv_manager = std::make_shared<DeviceServiceIntrospection>(
+      node_data.nh, node_data.param_event_handler, device_key_value);
+
+  this->set_angle_service =
+      srv_manager->create_service<mirte_msgs::srv::SetServoAngle>(
+          "servo/" + name + "/set_angle",
+          std::bind(&ServoBase::set_angle_service_callback, this, _1, _2),
+          rclcpp::ServicesQoS(), this->callback_group);
+
+  this->get_range_service =
+      srv_manager->create_service<mirte_msgs::srv::GetServoRange>(
+          "servo/" + name + "/get_range",
+          std::bind(&ServoBase::get_range_service_callback, this, _1, _2),
+          rclcpp::ServicesQoS(), this->callback_group);
 
   this->device_timer->cancel();
 }

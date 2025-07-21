@@ -49,6 +49,10 @@ SSD1306_module::SSD1306_module(NodeData node_data, SSD1306Data oled_data,
   this->logger =
       this->logger.get_child(data.get_device_class()).get_child(data.name);
 
+  this->srv_manager = std::make_shared<DeviceServiceIntrospection>(
+      node_data.nh, node_data.param_event_handler,
+      get_device_key<SSD1306Data>(&oled_data));
+
   tmx->setI2CPins(data.sda, data.scl, data.port);
 
   this->ssd1306 = std::make_shared<tmx_cpp::SSD1306_module>(
@@ -56,26 +60,26 @@ SSD1306_module::SSD1306_module(NodeData node_data, SSD1306Data oled_data,
 
   if (data.legacy) {
     this->set_oled_service_legacy =
-        nh->create_service<mirte_msgs::srv::SetOLEDImageLegacy>(
+        srv_manager->create_service<mirte_msgs::srv::SetOLEDImageLegacy>(
             "oled/" + data.name + "/set_image_legacy",
             std::bind(&SSD1306_module::set_oled_callback_legacy, this, _1, _2),
             rclcpp::ServicesQoS(), this->callback_group);
   }
 
   this->set_oled_text_service =
-      nh->create_service<mirte_msgs::srv::SetOLEDText>(
+      srv_manager->create_service<mirte_msgs::srv::SetOLEDText>(
           "oled/" + data.name + "/set_text",
           std::bind(&SSD1306_module::set_oled_text_callback, this, _1, _2),
           rclcpp::ServicesQoS(), this->callback_group);
 
   this->set_oled_image_service =
-      nh->create_service<mirte_msgs::srv::SetOLEDImage>(
+      srv_manager->create_service<mirte_msgs::srv::SetOLEDImage>(
           "oled/" + data.name + "/set_image",
           std::bind(&SSD1306_module::set_oled_image_callback, this, _1, _2),
           rclcpp::ServicesQoS(), this->callback_group);
 
   this->set_oled_file_service =
-      nh->create_service<mirte_msgs::srv::SetOLEDFile>(
+      srv_manager->create_service<mirte_msgs::srv::SetOLEDFile>(
           "oled/" + data.name + "/set_file",
           std::bind(&SSD1306_module::set_oled_file_callback, this, _1, _2),
           rclcpp::ServicesQoS(), this->callback_group);

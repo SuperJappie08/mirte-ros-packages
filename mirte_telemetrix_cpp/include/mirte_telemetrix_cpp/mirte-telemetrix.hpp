@@ -4,6 +4,7 @@
 #include <rclcpp/node.hpp>
 #include <rclcpp/node_interfaces/node_base_interface.hpp>
 #include <rclcpp/node_options.hpp>
+#include <rclcpp/parameter_event_handler.hpp>
 #include <rclcpp/service.hpp>
 
 #include <tmx_cpp/tmx.hpp>
@@ -19,6 +20,7 @@ class TelemetrixNode {
 private:
   /* data */
   std::shared_ptr<rclcpp::Node> node_;
+  std::shared_ptr<rclcpp::ParameterEventHandler> parameter_event_handler_;
 
 public:
   TelemetrixNode(const rclcpp::NodeOptions &options = rclcpp::NodeOptions());

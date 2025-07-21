@@ -26,6 +26,10 @@ HiWonderBus_module::HiWonderBus_module(
   this->logger =
       this->logger.get_child(data.get_device_class()).get_child(data.name);
 
+  auto bus_key = get_device_key<HiWonderBusData>(&bus_data);
+  this->srv_manager = std::make_shared<DeviceServiceIntrospection>(
+      node_data.nh, node_data.param_event_handler, bus_key);
+
   // Create a list of ID's
   std::vector<uint8_t> servo_ids;
   // Don't pre-add ids since it can cause errors on missing servos
@@ -48,7 +52,7 @@ HiWonderBus_module::HiWonderBus_module(
     if (this->bus->verify_id(servo_data->id)) {
       this->servos.push_back(std::make_shared<Hiwonder_servo>(
           node_data, servo_data, this->bus, servo_group, bus_data.duration,
-          this->callback_group));
+          this->callback_group, bus_key + ".servos." + servo_data->name));
     } else {
       RCLCPP_ERROR(
           this->logger,
@@ -58,10 +62,11 @@ HiWonderBus_module::HiWonderBus_module(
   }
 
   // Create Bus ROS services
-  this->enable_all_servos_service = nh->create_service<std_srvs::srv::SetBool>(
-      "servo/" + servo_group + "enable_all_servos",
-      std::bind(&HiWonderBus_module::enable_service_callback, this, _1, _2),
-      rclcpp::ServicesQoS(), this->callback_group);
+  this->enable_all_servos_service =
+      srv_manager->create_service<std_srvs::srv::SetBool>(
+          "servo/" + servo_group + "enable_all_servos",
+          std::bind(&HiWonderBus_module::enable_service_callback, this, _1, _2),
+          rclcpp::ServicesQoS(), this->callback_group);
 }
 
 // TODO: Make result actually Reflect reality

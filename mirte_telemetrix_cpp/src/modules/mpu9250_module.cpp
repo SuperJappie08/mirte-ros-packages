@@ -11,6 +11,10 @@ MPU9250_sensor::MPU9250_sensor(NodeData node_data, MPU9250Data imu_data,
     : Mirte_module(node_data, {imu_data.scl, imu_data.sda},
                    (ModuleData)imu_data),
       data(imu_data) {
+  this->srv_manager = std::make_shared<DeviceServiceIntrospection>(
+      node_data.nh, node_data.param_event_handler,
+      get_device_key<MPU9250Data>(&imu_data));
+
   tmx->setI2CPins(imu_data.sda, imu_data.scl, imu_data.port);
 
   this->mpu9250 = std::make_shared<tmx_cpp::MPU9250_module>(
@@ -20,7 +24,7 @@ MPU9250_sensor::MPU9250_sensor(NodeData node_data, MPU9250Data imu_data,
   imu_pub = nh->create_publisher<sensor_msgs::msg::Imu>(
       "imu/" + this->name + "/data", rclcpp::SystemDefaultsQoS());
 
-  imu_service = nh->create_service<mirte_msgs::srv::GetImu>(
+  imu_service = srv_manager->create_service<mirte_msgs::srv::GetImu>(
       "imu/" + this->name + "/get_data",
       std::bind(&MPU9250_sensor::get_imu_service_callback, this, _1, _2),
       rclcpp::ServicesQoS(), this->callback_group);

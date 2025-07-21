@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <optional>
 
 #include <rclcpp/callback_group.hpp>
 #include <rclcpp/service.hpp>
@@ -14,6 +15,7 @@
 class ServoBase : public TelemetrixDevice {
 public:
   ServoBase(NodeData node_data, std::vector<pin_t> pins, ServoData servo_data,
+            std::optional<std::string> device_key = {},
             rclcpp::CallbackGroupType callback_group_type =
                 rclcpp::CallbackGroupType::Reentrant);
 

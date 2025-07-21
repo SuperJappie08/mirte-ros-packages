@@ -18,6 +18,10 @@ VEML6040_sensor::VEML6040_sensor(NodeData node_data, VEML6040Data veml_data,
       data(veml_data) {
   using namespace std::placeholders;
 
+  this->srv_manager = std::make_shared<DeviceServiceIntrospection>(
+      node_data.nh, node_data.param_event_handler,
+      get_device_key<VEML6040Data>(&veml_data));
+
   tmx->setI2CPins(veml_data.sda, veml_data.scl, veml_data.port);
 
   this->veml6040 = std::make_shared<tmx_cpp::VEML6040_module>(
@@ -31,15 +35,17 @@ VEML6040_sensor::VEML6040_sensor(NodeData node_data, VEML6040Data veml_data,
   this->hsl_pub = nh->create_publisher<mirte_msgs::msg::ColorHSLStamped>(
       "color/" + this->name + "/hsl", rclcpp::SystemDefaultsQoS());
 
-  this->rgbw_service = nh->create_service<mirte_msgs::srv::GetColorRGBW>(
-      "color/" + this->name + "/get_rgbw",
-      std::bind(&VEML6040_sensor::get_rgbw_service_callback, this, _1, _2),
-      rclcpp::ServicesQoS(), this->callback_group);
-  this->rgba_service = nh->create_service<mirte_msgs::srv::GetColorRGBA>(
-      "color/" + this->name + "/get_rgba",
-      std::bind(&VEML6040_sensor::get_rgba_service_callback, this, _1, _2),
-      rclcpp::ServicesQoS(), this->callback_group);
-  this->hsl_service = nh->create_service<mirte_msgs::srv::GetColorHSL>(
+  this->rgbw_service =
+      srv_manager->create_service<mirte_msgs::srv::GetColorRGBW>(
+          "color/" + this->name + "/get_rgbw",
+          std::bind(&VEML6040_sensor::get_rgbw_service_callback, this, _1, _2),
+          rclcpp::ServicesQoS(), this->callback_group);
+  this->rgba_service =
+      srv_manager->create_service<mirte_msgs::srv::GetColorRGBA>(
+          "color/" + this->name + "/get_rgba",
+          std::bind(&VEML6040_sensor::get_rgba_service_callback, this, _1, _2),
+          rclcpp::ServicesQoS(), this->callback_group);
+  this->hsl_service = srv_manager->create_service<mirte_msgs::srv::GetColorHSL>(
       "color/" + this->name + "/get_hsl",
       std::bind(&VEML6040_sensor::get_hsl_service_callback, this, _1, _2),
       rclcpp::ServicesQoS(), this->callback_group);

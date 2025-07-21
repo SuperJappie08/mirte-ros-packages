@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <functional>
+#include <memory>
 #include <vector>
 
 #include <rclcpp/logging.hpp>
@@ -41,6 +42,10 @@ MultiMotor::MultiMotor(NodeData node_data, MultiMotorData multi_motor_data,
     : TelemetrixDevice(node_data, {}, (DeviceData)multi_motor_data,
                        rclcpp::CallbackGroupType::MutuallyExclusive),
       motors(motors) {
+  this->srv_manager = std::make_shared<DeviceServiceIntrospection>(
+      node_data.nh, node_data.param_event_handler,
+      get_device_key<MultiMotorData>(&multi_motor_data));
+
   rclcpp::SubscriptionOptions options;
   options.callback_group = this->callback_group;
   multi_speed_subscriber =
@@ -49,10 +54,12 @@ MultiMotor::MultiMotor(NodeData node_data, MultiMotorData multi_motor_data,
           std::bind(&MultiMotor::multi_speed_subscription_callback, this, _1),
           options);
 
-  motor_service = nh->create_service<mirte_msgs::srv::SetSpeedMultiple>(
-      "motor/" + this->name + "/set_multiple_speeds",
-      std::bind(&MultiMotor::set_multi_speed_service_callback, this, _1, _2),
-      rclcpp::ServicesQoS(), this->callback_group);
+  motor_service =
+      srv_manager->create_service<mirte_msgs::srv::SetSpeedMultiple>(
+          "motor/" + this->name + "/set_multiple_speeds",
+          std::bind(&MultiMotor::set_multi_speed_service_callback, this, _1,
+                    _2),
+          rclcpp::ServicesQoS(), this->callback_group);
 
   this->device_timer->cancel();
 }

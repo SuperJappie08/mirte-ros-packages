@@ -1,3 +1,4 @@
+#include "mirte_telemetrix_cpp/parsers/device_data.hpp"
 #include <rclcpp/qos.hpp>
 #include <rclcpp/rclcpp.hpp>
 
@@ -11,12 +12,15 @@ EncoderMonitor::EncoderMonitor(NodeData node_data, EncoderData encoder_data)
                    (SensorData)encoder_data),
       encoder_data(encoder_data) {
   using namespace std::placeholders;
+  this->srv_manager = std::make_shared<DeviceServiceIntrospection>(
+      node_data.nh, node_data.param_event_handler,
+      get_device_key<EncoderData>(&encoder_data));
 
   // Use default QOS for sensor publishers as specified in REP2003
   encoder_pub = nh->create_publisher<mirte_msgs::msg::Encoder>(
       "encoder/" + encoder_data.name, rclcpp::SystemDefaultsQoS());
 
-  encoder_service = nh->create_service<mirte_msgs::srv::GetEncoder>(
+  encoder_service = srv_manager->create_service<mirte_msgs::srv::GetEncoder>(
       "encoder/" + encoder_data.name + "/get_encoder",
       std::bind(&EncoderMonitor::service_callback, this, _1, _2),
       rclcpp::ServicesQoS(), this->callback_group);

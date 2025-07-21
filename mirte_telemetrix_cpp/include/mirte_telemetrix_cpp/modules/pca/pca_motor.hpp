@@ -11,7 +11,8 @@
 class PCAMotor : public PPMotor {
 public:
   PCAMotor(NodeData node_data, std::shared_ptr<PCA_Motor_data> motor_data,
-           std::shared_ptr<tmx_cpp::PCA9685_module> pca9685);
+           std::shared_ptr<tmx_cpp::PCA9685_module> pca9685,
+           std::string device_key);
 
   // TODO: Stored but unused. Keep or remove?
   std::shared_ptr<PCA_Motor_data> motor_data;

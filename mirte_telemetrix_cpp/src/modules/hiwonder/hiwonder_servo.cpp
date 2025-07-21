@@ -10,10 +10,13 @@ Hiwonder_servo::Hiwonder_servo(
     NodeData node_data, std::shared_ptr<HiWonderServoData> servo_data,
     std::shared_ptr<tmx_cpp::HiwonderServo_module> bus_mod,
     std::string servo_group, DeviceData::DeviceDuration duration,
-    rclcpp::CallbackGroup::SharedPtr callback_group)
+    rclcpp::CallbackGroup::SharedPtr callback_group, std::string device_key)
     : servo_data(servo_data), bus_mod(bus_mod), nh(node_data.nh) {
   using namespace std::placeholders;
   auto logger = nh->get_logger();
+
+  this->srv_manager = std::make_shared<DeviceServiceIntrospection>(
+      node_data.nh, node_data.param_event_handler, device_key);
 
   if (!this->bus_mod->verify_id(this->servo_data->id)) {
     RCLCPP_ERROR(logger,
@@ -52,20 +55,21 @@ Hiwonder_servo::Hiwonder_servo(
   }
 
   // create enable service
-  this->enable_service = nh->create_service<std_srvs::srv::SetBool>(
+  this->enable_service = srv_manager->create_service<std_srvs::srv::SetBool>(
       "servo/" + servo_group + this->servo_data->name + "/set_enable",
       std::bind(&Hiwonder_servo::enable_service_callback, this, _1, _2),
       rclcpp::ServicesQoS(), callback_group);
 
   // create angle service
-  this->angle_service = nh->create_service<mirte_msgs::srv::SetServoAngle>(
-      "servo/" + servo_group + this->servo_data->name + "/set_angle",
-      std::bind(&Hiwonder_servo::set_angle_service_callback, this, _1, _2),
-      rclcpp::ServicesQoS(), callback_group);
+  this->angle_service =
+      srv_manager->create_service<mirte_msgs::srv::SetServoAngle>(
+          "servo/" + servo_group + this->servo_data->name + "/set_angle",
+          std::bind(&Hiwonder_servo::set_angle_service_callback, this, _1, _2),
+          rclcpp::ServicesQoS(), callback_group);
 
   // create angle speed service
   this->angle_speed_service =
-      nh->create_service<mirte_msgs::srv::SetServoAngleWithSpeed>(
+      srv_manager->create_service<mirte_msgs::srv::SetServoAngleWithSpeed>(
           "servo/" + servo_group + this->servo_data->name +
               "/set_angle_with_speed",
           std::bind(&Hiwonder_servo::set_angle_with_speed_service_callback,
@@ -73,10 +77,11 @@ Hiwonder_servo::Hiwonder_servo(
           rclcpp::ServicesQoS(), callback_group);
 
   // create range service
-  this->range_service = nh->create_service<mirte_msgs::srv::GetServoRange>(
-      "servo/" + servo_group + this->servo_data->name + "/get_range",
-      std::bind(&Hiwonder_servo::get_range_service_callback, this, _1, _2),
-      rclcpp::ServicesQoS(), callback_group);
+  this->range_service =
+      srv_manager->create_service<mirte_msgs::srv::GetServoRange>(
+          "servo/" + servo_group + this->servo_data->name + "/get_range",
+          std::bind(&Hiwonder_servo::get_range_service_callback, this, _1, _2),
+          rclcpp::ServicesQoS(), callback_group);
 
   // create publisher
   // Use default QoS for sensor publishers as specified in REP2003
@@ -84,13 +89,14 @@ Hiwonder_servo::Hiwonder_servo(
       "servo/" + servo_group + this->servo_data->name + "/position",
       rclcpp::SystemDefaultsQoS());
 
-  this->offset_service = nh->create_service<mirte_msgs::srv::GetServoOffset>(
-      "servo/" + servo_group + this->servo_data->name +
-          "/_offset", // hidden service
-      std::bind(&Hiwonder_servo::get_offset_service_callback, this, _1, _2),
-      rclcpp::ServicesQoS(), callback_group);
+  this->offset_service =
+      srv_manager->create_service<mirte_msgs::srv::GetServoOffset>(
+          "servo/" + servo_group + this->servo_data->name +
+              "/_offset", // hidden service
+          std::bind(&Hiwonder_servo::get_offset_service_callback, this, _1, _2),
+          rclcpp::ServicesQoS(), callback_group);
   this->set_offset_service =
-      nh->create_service<mirte_msgs::srv::SetServoOffset>(
+      srv_manager->create_service<mirte_msgs::srv::SetServoOffset>(
           "servo/" + servo_group + this->servo_data->name +
               "/_set_offset", // hidden service
           std::bind(&Hiwonder_servo::set_offset_service_callback, this, _1, _2),
@@ -103,7 +109,7 @@ Hiwonder_servo::Hiwonder_servo(
   if (this->servo_data->enable_motor) {
     // this->bus_mod->motor_mode_write(this->servo_data->id, 1);
     this->motor_speed_service =
-        nh->create_service<mirte_msgs::srv::SetMotorSpeed>(
+        srv_manager->create_service<mirte_msgs::srv::SetMotorSpeed>(
             "servo/" + servo_group + this->servo_data->name +
                 "/set_motor_speed",
             std::bind(&Hiwonder_servo::set_motor_speed_service_callback, this,

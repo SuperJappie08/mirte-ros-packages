@@ -27,11 +27,15 @@ SonarMonitor::SonarMonitor(NodeData node_data, SonarData sonar_data)
   this->logger = this->logger.get_child(sonar_data.get_device_class())
                      .get_child(sonar_data.name);
 
+  this->srv_manager = std::make_shared<DeviceServiceIntrospection>(
+      node_data.nh, node_data.param_event_handler,
+      get_device_key<SonarData>(&sonar_data));
+
   // Use default QOS for sensor publishers as specified in REP2003
   sonar_pub = nh->create_publisher<sensor_msgs::msg::Range>(
       "distance/" + sonar_data.name, rclcpp::SystemDefaultsQoS());
 
-  sonar_service = nh->create_service<mirte_msgs::srv::GetRange>(
+  sonar_service = srv_manager->create_service<mirte_msgs::srv::GetRange>(
       "distance/" + sonar_data.name + "/get_range",
       std::bind(&SonarMonitor::service_callback, this, std::placeholders::_1,
                 std::placeholders::_2),

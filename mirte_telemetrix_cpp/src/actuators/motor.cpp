@@ -1,4 +1,5 @@
 #include <functional>
+#include <optional>
 #include <vector>
 
 #include <rclcpp/callback_group.hpp>
@@ -37,19 +38,26 @@ Motor::get_motors(NodeData node_data, std::shared_ptr<Parser> parser) {
   return motors;
 }
 
-Motor::Motor(NodeData node_data, std::vector<pin_t> pins, MotorData motor_data)
+Motor::Motor(NodeData node_data, std::vector<pin_t> pins, MotorData motor_data,
+             std::optional<std::string> device_key)
     : Motor(node_data, pins, (DeviceData)motor_data, motor_data.inverted,
-            node_data.board->get_max_pwm()) {}
+            node_data.board->get_max_pwm(),
+            device_key.value_or(get_device_key<MotorData>(&motor_data))) {}
 
 Motor::Motor(NodeData node_data, std::vector<pin_t> pins, DeviceData data,
-             bool inverted, int max_pwm)
+             bool inverted, int max_pwm, std::string device_key)
     : TelemetrixDevice(node_data, pins, data,
                        rclcpp::CallbackGroupType::MutuallyExclusive),
       inverted(inverted), max_pwm(max_pwm) {
-  set_speed_service = nh->create_service<mirte_msgs::srv::SetMotorSpeed>(
-      "motor/" + this->name + "/set_speed",
-      std::bind(&Motor::set_speed_service_callback, this, _1, _2),
-      rclcpp::ServicesQoS(), this->callback_group);
+
+  this->srv_manager = std::make_shared<DeviceServiceIntrospection>(
+      node_data.nh, node_data.param_event_handler, device_key);
+
+  set_speed_service =
+      srv_manager->create_service<mirte_msgs::srv::SetMotorSpeed>(
+          "motor/" + this->name + "/set_speed",
+          std::bind(&Motor::set_speed_service_callback, this, _1, _2),
+          rclcpp::ServicesQoS(), this->callback_group);
 
   rclcpp::SubscriptionOptions options;
   options.callback_group = this->callback_group;

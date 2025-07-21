@@ -26,6 +26,9 @@ KeypadMonitor::KeypadMonitor(NodeData node_data, KeypadData keypad_data)
     : Mirte_Sensor(node_data, {keypad_data.pin}, (SensorData)keypad_data),
       keypad_data(keypad_data) {
   using namespace std::placeholders;
+  this->srv_manager = std::make_shared<DeviceServiceIntrospection>(
+      node_data.nh, node_data.param_event_handler,
+      get_device_key<KeypadData>(&keypad_data));
 
   // Use default QOS for sensor publishers as specified in REP2003
   keypad_pub = nh->create_publisher<mirte_msgs::msg::Keypad>(
@@ -33,7 +36,7 @@ KeypadMonitor::KeypadMonitor(NodeData node_data, KeypadData keypad_data)
   keypad_pressed_pub = nh->create_publisher<mirte_msgs::msg::Keypad>(
       "keypad/" + keypad_data.name + "/pressed", rclcpp::SystemDefaultsQoS());
 
-  keypad_service = nh->create_service<mirte_msgs::srv::GetKeypad>(
+  keypad_service = srv_manager->create_service<mirte_msgs::srv::GetKeypad>(
       "keypad/" + keypad_data.name + "/get_key",
       std::bind(&KeypadMonitor::keypad_service_callback, this, _1, _2),
       rclcpp::ServicesQoS(), this->callback_group);

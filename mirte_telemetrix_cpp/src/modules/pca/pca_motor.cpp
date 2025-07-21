@@ -7,9 +7,11 @@ using namespace std::placeholders;
 
 PCAMotor::PCAMotor(NodeData node_data,
                    std::shared_ptr<PCA_Motor_data> motor_data,
-                   std::shared_ptr<tmx_cpp::PCA9685_module> pca9685)
+                   std::shared_ptr<tmx_cpp::PCA9685_module> pca9685,
+                   std::string device_key)
     : PPMotor(node_data, motor_data->pinA, motor_data->pinB,
-              DeviceData(motor_data->name), motor_data->invert, (1 << 12) - 1),
+              DeviceData(motor_data->name), motor_data->invert, (1 << 12) - 1,
+              device_key),
       motor_data(motor_data), pca9685_mod(pca9685) {
   RCLCPP_INFO(logger, "Added PCA Motor %s", this->name.c_str());
 }

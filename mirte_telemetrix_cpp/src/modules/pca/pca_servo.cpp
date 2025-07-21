@@ -2,11 +2,13 @@
 
 PCAServo::PCAServo(NodeData node_data,
                    std::shared_ptr<PCA_Servo_data> servo_data,
-                   std::shared_ptr<tmx_cpp::PCA9685_module> pca9685)
+                   std::shared_ptr<tmx_cpp::PCA9685_module> pca9685,
+                   std::string device_key)
     : ServoBase(node_data, {},
                 ServoData(servo_data->pin, servo_data->min_pulse,
                           servo_data->max_pulse, servo_data->min_angle,
-                          servo_data->max_angle, servo_data->name)),
+                          servo_data->max_angle, servo_data->name),
+                {device_key}),
       servo_data(servo_data), pca9685_mod(pca9685) {
   RCLCPP_INFO(logger, "Added PCA Servo %s", this->name.c_str());
 }

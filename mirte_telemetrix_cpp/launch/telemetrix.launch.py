@@ -41,6 +41,11 @@ def generate_launch_description():
         DeclareLaunchArgument(
             "frame_prefix", default_value="", description="The TF2 frame prefix"
         ),
+        DeclareLaunchArgument(
+            "enable_parameter_events",
+            default_value="False",
+            description="Enable the ParameterEventHandler to respond to parameter changes. (Only used for Service Introspection)",
+        ),
     ]
 
     ld = LaunchDescription(launch_arguments)
@@ -51,7 +56,12 @@ def generate_launch_description():
         executable="mirte_telemetrix_cpp_node",
         parameters=[
             LaunchConfiguration("config_path"),
-            {"frame_prefix": LaunchConfiguration("frame_prefix")},
+            {
+                "frame_prefix": LaunchConfiguration("frame_prefix"),
+                "device.mirte.enable_parameter_events": LaunchConfiguration(
+                    "enable_parameter_events"
+                ),
+            },
         ],
         prefix=prefix,
         output="screen",
@@ -61,6 +71,7 @@ def generate_launch_description():
         respawn_delay=5,
         ros_arguments=telemetrix_ros_arguments,
         # TODO: Not avialable yet in humble (avialable starting from jazzy)
+        # NOTE: respawn and on_exit="Shutdown(...)" don't mix
         # respawn_max_retries=10,
         # Makes Node required
         # on_exit=Shutdown(

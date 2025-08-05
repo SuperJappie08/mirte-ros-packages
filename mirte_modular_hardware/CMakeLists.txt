@@ -34,6 +34,7 @@ add_library(${PROJECT_NAME} SHARED
   src/encoder_sensor.cpp
   src/helpers.cpp
   src/motor_actuator.cpp
+  src/multi_motor_actuator.cpp
 )
 
 # # TODO: Is this desired???

@@ -49,8 +49,6 @@ hardware_interface::CallbackReturn MotorActuator::on_init(
 
   // Retrieve general parameters
 
-  // FIXME(SuperJappie08): Add configurable speed scaling factor
-
   std::string topic_name;
   if (auto topic_pair = info_.hardware_parameters.find("topic");
       topic_pair != info_.hardware_parameters.end()) {
@@ -179,6 +177,8 @@ hardware_interface::CallbackReturn MotorActuator::on_init(
 
   // FIXME(SuperJappie08): Implement everything
 
+  // TODO(SuperJappie08): This might need to be moved to activate
+  // Setup the communication
   auto node_options =
     rclcpp::NodeOptions().start_parameter_event_publisher(false).start_parameter_services(false);
   node_ = rclcpp::Node::make_shared(MOTOR_ACTUATOR_NODE_NAME_PREFIX + get_name(), node_options);
@@ -259,8 +259,6 @@ hardware_interface::return_type MotorActuator::perform_command_mode_switch(
 hardware_interface::return_type MotorActuator::read(
   const rclcpp::Time & /*time*/, const rclcpp::Duration & /*duration*/)
 {
-  // FIXME(SuperJappie08): Implement everything
-  // TODO(SuperJappie08): Maybe add optional current command speed for diff drive controller
   return hardware_interface::return_type::OK;
 }
 

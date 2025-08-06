@@ -48,7 +48,6 @@ hardware_interface::CallbackReturn MotorActuator::on_init(
   }
 
   // Retrieve general parameters
-
   std::string topic_name;
   if (auto topic_pair = info_.hardware_parameters.find("topic");
       topic_pair != info_.hardware_parameters.end()) {
@@ -158,6 +157,21 @@ hardware_interface::CallbackReturn MotorActuator::on_init(
     if (auto velocity_interface = find_interface(hardware_interface::HW_IF_VELOCITY);
         velocity_interface != joint.command_interfaces.cend()) {
       // FIXME(SuperJappie08): Check velocity interface
+
+      // NOTE(SuperJappie08): Currently threating .NAN as zero
+      // if (velocity_interface->initial_value.empty()) {
+      //   if (auto joint_handle = std::find_if(
+      //         joint_commands_.begin(), joint_commands_.end(),
+      //         [joint](auto iter) {
+      //           return iter->get_prefix_name() == joint.name &&
+      //                  iter->get_interface_name() == hardware_interface::HW_IF_VELOCITY;
+      //         });
+      //       joint_handle != joint_commands_.end()) {
+      //     if (!joint_handle->get()->set_value(0.0)) {
+      //       return hardware_interface::CallbackReturn::ERROR;
+      //     }
+      //   }
+      // }
     } else {
       RCLCPP_FATAL(
         get_logger(),
@@ -275,7 +289,9 @@ hardware_interface::return_type MotorActuator::write(
 
       // Silently continue if the speed cannot be published, assume controller frequency is high enough
       if (commanded_velocity.has_value() && speed_publisher_rt_->trylock()) {
-        auto data = (int)(commanded_velocity.value() / max_motor_speed_ * 100.0);
+        auto cmd_vel_raw = commanded_velocity.value();
+        auto cmd_vel = (std::isfinite(cmd_vel_raw)) ? cmd_vel_raw : 0.0;
+        auto data = (int)(cmd_vel / max_motor_speed_ * 100.0);
 
         auto & msg = speed_publisher_rt_->msg_;
 

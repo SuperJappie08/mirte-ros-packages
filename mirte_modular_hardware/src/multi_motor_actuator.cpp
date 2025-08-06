@@ -14,8 +14,8 @@
 //
 // Authors: Jasper van Brakel
 
-/* FIXME(SuperJappie08): TO SEPERATE INCLUDES */
 #include <cmath>
+/* FIXME(SuperJappie08): TO SEPERATE INCLUDES */
 #include <hardware_interface/actuator_interface.hpp>
 #include <hardware_interface/lexical_casts.hpp>
 #include <hardware_interface/types/hardware_interface_return_values.hpp>
@@ -24,6 +24,7 @@
 #include <joint_limits/joint_limits.hpp>
 #include <rclcpp/logging.hpp>
 #include <rclcpp_lifecycle/state.hpp>
+#include <utility>
 /* FIXME(SuperJappie08): TO SEPERATE INCLUDES */
 
 #include "mirte_modular_hardware/multi_motor_actuator.hpp"
@@ -236,7 +237,7 @@ hardware_interface::CallbackReturn MultiMotorActuator::on_deactivate(
 
   // Make sure the speed is 0 when deactivated
   multi_speed_publisher_rt_->lock();
-  for (auto speed : multi_speed_publisher_rt_->msg_.speeds) {
+  for (auto & speed : multi_speed_publisher_rt_->msg_.speeds) {
     speed.speed = 0;
   }
   multi_speed_publisher_rt_->unlockAndPublish();
@@ -254,10 +255,12 @@ hardware_interface::return_type MultiMotorActuator::perform_command_mode_switch(
   //                      Is this an issue?
   for (auto stopped_cmd_name : stop_interfaces) {
     // TODO(SuperJappie08): Consider stop->start switch (do reset?)
-    // if (auto start_cmd_name = std::find_if(
-    //       start_interfaces.cbegin(), start_interfaces.cend(),
-    //       [stopped_cmd_name](auto interface) { return interface == stopped_cmd_name; });
-    //     start_cmd_name != start_interfaces.cend()) {
+    //                      Most controllers reset their state on deactivation, so it might not be worth the effort
+
+    // // NOTE(SuperJappie08): Ranges available in cpp 20 -> std::ranges::find(start_interfaces, stopped_cmd_name) !=
+    // if (
+    //   std::find(start_interfaces.cbegin(), start_interfaces.cend(), stopped_cmd_name) !=
+    //   start_interfaces.cend()) {
     //   // If the command interface switches controller, the speed doesn't have to be reset.
     //   continue;
     // }
@@ -297,7 +300,7 @@ hardware_interface::return_type MultiMotorActuator::write(
     auto & msg = multi_speed_publisher_rt_->msg_;
     auto changed = false;
 
-    for (auto joint_command : joint_commands_) {
+    for (auto & joint_command : joint_commands_) {
       if (joint_command->get_interface_name() == hardware_interface::HW_IF_VELOCITY) [[likely]] {
         auto commanded_velocity = joint_command->get_optional();
 
@@ -331,7 +334,6 @@ hardware_interface::return_type MultiMotorActuator::write(
     RCLCPP_WARN(get_logger(), "Unable to lock publisher");
   }
 
-  // FIXME(SuperJappie08): Implement
   return hardware_interface::return_type::OK;
 }
 

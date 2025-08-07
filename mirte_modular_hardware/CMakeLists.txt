@@ -107,13 +107,23 @@ if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
 
   # GTests
+  set(THIS_PACKAGE_HW_INTERFACES_TEST_DEPENDS
+    rclcpp::rclcpp
+    hardware_interface::hardware_interface
+    ros2_control_test_assets::ros2_control_test_assets
+  )
+
+  ament_add_gtest(test_encoder_sensor test/test_encoder_sensor.cpp)
+  target_link_libraries(test_encoder_sensor ${PROJECT_NAME})
+  target_link_libraries(test_encoder_sensor ${THIS_PACKAGE_HW_INTERFACES_TEST_DEPENDS})
+
+  ament_add_gtest(test_motor_actuator test/test_motor_actuator.cpp)
+  target_link_libraries(test_motor_actuator ${PROJECT_NAME})
+  target_link_libraries(test_motor_actuator ${THIS_PACKAGE_HW_INTERFACES_TEST_DEPENDS})
+
   ament_add_gtest(test_multi_motor_actuator test/test_multi_motor_actuator.cpp)
-  target_link_libraries(test_multi_motor_actuator
-    ${PROJECT_NAME})
-  target_link_libraries(test_multi_motor_actuator
-                        rclcpp::rclcpp
-                        hardware_interface::hardware_interface
-                        ros2_control_test_assets::ros2_control_test_assets)
+  target_link_libraries(test_multi_motor_actuator ${PROJECT_NAME})
+  target_link_libraries(test_multi_motor_actuator ${THIS_PACKAGE_HW_INTERFACES_TEST_DEPENDS})
 endif()
 
 ament_package()

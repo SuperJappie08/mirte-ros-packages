@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <!-- <xacro:macro name="command_interface" params="name min:='' max:=''"> -->
+  <!-- <xacro:if value="${any((min,max))}"> -->
+  <!-- ${xacro.error('not implemented')} -->
+  <!-- </xacro:if> -->
+
+  <!-- <command_interface name="${name}" /> -->
+  <!-- </xacro:macro> -->
+
+  <xacro:macro name="optional_param" params="name value">
+    <xacro:if value="${bool(value) or (python.isinstance(value, float|int) and bool(str(value)))}">
+      <param name="${name}">${value}</param>
+    </xacro:if>
+  </xacro:macro>
+
+</robot>

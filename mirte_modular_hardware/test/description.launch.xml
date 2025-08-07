@@ -1,0 +1,12 @@
+<launch>
+  <arg name="urdf_package_path"
+    description="The path to the robot description relative to the package test directory" />
+
+  <let name="urdf_path" value="$(dirname)/$(var urdf_package_path)" />
+
+  <let name="robot_description" value="$(command 'xacro $(var urdf_path)')" />
+
+  <node pkg="robot_state_publisher" exec="robot_state_publisher">
+    <param name="robot_description" value="$(var robot_description)" />
+  </node>
+</launch>

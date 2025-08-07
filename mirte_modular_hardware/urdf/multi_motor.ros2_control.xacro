@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:include filename="$(find mirte_modular_hardware)/urdf/common.xacro" />
+  <xacro:include filename="$(find mirte_modular_hardware)/urdf/ros2_control.xacro" />
+
+  <xacro:macro name="multi_motor_actuator"
+    params="hardware_namespace:='io' hw_device_name max_motor_speed:='${6.0*pi}' **joints">
+
+    <!-- Strip trailing slash -->
+    <xacro:strip_trailing_slash source="${hardware_namespace}" dest="hardware_namespace_" />
+
+    <ros2_control name="mirte_modular_hardware_multi_motor_${hw_device_name}" type="actuator">
+      <hardware>
+        <plugin>mirte_modular_hardware/MultiMotorActuator</plugin>
+        <param name="topic">${hardware_namespace_}/motor/${hw_device_name}/multi_speed</param>
+        <param name="max_motor_speed">${max_motor_speed}</param>
+      </hardware>
+      <xacro:insert_block name="joints" />
+    </ros2_control>
+  </xacro:macro>
+
+  <xacro:macro name="multi_motor_joint"
+    params="joint_name tmx_motor_name:=${None} max_speed:=${None} min_speed:=${None} initial_value:=${0.0}">
+    <joint name="${joint_name}">
+      <xacro:optional_param name="tmx_motor" value="${tmx_motor_name}" />
+      <command_interface name="velocity">
+        <!-- TODO; Maybe use MIN and MAX as Scaling factors? -->
+        <xacro:optional_param name="max" value="${max_speed}" />
+        <xacro:optional_param name="min" value="${min_speed}" />
+
+        <xacro:optional_param name="initial_value" value="${initial_value}" />
+      </command_interface>
+    </joint>
+  </xacro:macro>
+</robot>

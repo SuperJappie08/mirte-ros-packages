@@ -1,0 +1,22 @@
+<launch>
+  <arg name="urdf_package_path"
+    description="The path to the robot description relative to the package test directory" />
+
+  <arg name="jsp_gui" default="True"
+    description="Flag to enable joint_state_publisher_gui">
+    <choice value="True" />
+    <choice value="False" />
+  </arg>
+
+  <arg name="rviz_config" default="$(find-pkg-share urdf_launch)/config/urdf.rviz"
+    description="Absolute path to rviz config file" />
+
+  <include file="$(dirname)/description.launch.xml">
+    <arg name="urdf_package_path" value="$(var urdf_package_path)" />
+  </include>
+
+  <node pkg="joint_state_publisher" exec="joint_state_publisher" unless="$(var jsp_gui)" />
+  <node pkg="joint_state_publisher_gui" exec="joint_state_publisher_gui" if="$(var jsp_gui)" />
+
+  <node pkg="rviz2" exec="rviz2" output="screen" args="-d $(var rviz_config)" />
+</launch>

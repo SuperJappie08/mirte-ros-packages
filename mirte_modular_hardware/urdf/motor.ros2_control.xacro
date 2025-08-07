@@ -1,11 +1,12 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:include filename="$(find mirte_modular_hardware)/urdf/common.xacro" />
+
   <xacro:macro name="mirte_modular_hardware_motor"
     params="hardware_namespace:='io' hw_device_name joint_name max_motor_speed:='${6.0*pi}'">
-    <!-- Strip leading slash -->
-    <xacro:property name="hardware_namespace_"
-      value="${hardware_namespace[:-1] if hardware_namespace[-1] == '/' else hardware_namespace}"
-      scope="parent" />
+
+    <!-- Strip trailing slash -->
+    <xacro:strip_trailing_slash source="${hardware_namespace}" dest="hardware_namespace_" />
     <!-- <xacro:property name="topic_" value= scope="parent"/> -->
 
     <!-- NOTE; this *highly* depends on the voltage of the motors!!!! -->

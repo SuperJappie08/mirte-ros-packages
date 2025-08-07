@@ -1,14 +1,13 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:include filename="$(find mirte_modular_hardware)/urdf/common.xacro" />
 
   <!-- NOTE; The standard slot encoders compatible with the yellow TT motors of the MIRTE Pioneer,
              have 20 ticks per rotations -->
   <xacro:macro name="mirte_modular_hardware_encoder"
     params="hardware_namespace:='io' hw_device_name joint_name ticks_per_rotation:=20 initial_message_timeout:=500">
     <!-- Strip leading slash -->
-    <xacro:property name="hardware_namespace_"
-      value="${hardware_namespace[:-1] if hardware_namespace[-1] == '/' else hardware_namespace}"
-      scope="parent" />
+    <xacro:strip_trailing_slash source="${hardware_namespace}" dest="hardware_namespace_" />
     <!-- <xacro:property name="topic_" value= scope="parent"/> -->
 
     <ros2_control name="mirte_modular_hardware_encoder_${hw_device_name}" type="sensor">

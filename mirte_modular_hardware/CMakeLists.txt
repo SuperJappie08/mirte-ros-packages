@@ -82,14 +82,14 @@ ament_export_include_directories(include)
 ament_export_libraries(${PROJECT_NAME})
 ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
 ament_export_dependencies(
-  backward_ros 
+  backward_ros
   rclcpp
-  rclcpp_lifecycle 
-  hardware_interface 
+  rclcpp_lifecycle
+  hardware_interface
   realtime_tools
   pluginlib
   mirte_msgs
-  std_msgs 
+  std_msgs
 )
 
 if(BUILD_TESTING)
@@ -102,6 +102,18 @@ if(BUILD_TESTING)
   # a copyright and license is added to all source files
   set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
+
+  find_package(ros2_control_test_assets REQUIRED)
+  find_package(ament_cmake_gtest REQUIRED)
+
+  # GTests
+  ament_add_gtest(test_multi_motor_actuator test/test_multi_motor_actuator.cpp)
+  target_link_libraries(test_multi_motor_actuator
+    ${PROJECT_NAME})
+  target_link_libraries(test_multi_motor_actuator
+                        rclcpp::rclcpp
+                        hardware_interface::hardware_interface
+                        ros2_control_test_assets::ros2_control_test_assets)
 endif()
 
 ament_package()

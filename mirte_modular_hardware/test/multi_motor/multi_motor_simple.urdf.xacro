@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- <?xml-model href="https://raw.githubusercontent.com/ros/urdfdom/refs/heads/master/xsd/urdf.xsd"
+schematypens="http://www.w3.org/2001/XMLSchema"?> -->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="test_multi_motor_simple">
+  <xacro:include filename="$(find mirte_modular_hardware)/urdf/multi_motor.ros2_control.xacro" />
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <box size="0.9 0.6 0.2" />
+      </geometry>
+      <material name="base_link_material">
+        <color rgba="0.5 0 0.5 1" />
+      </material>
+    </visual>
+  </link>
+
+  <joint name="test_joint" type="continuous">
+    <parent link="base_link" />
+    <child link="attachment" />
+    <origin xyz="0.45 0 0" />
+  </joint>
+
+  <link name="attachment">
+    <visual>
+      <geometry>
+        <box size="0.3 0.2 0.1" />
+      </geometry>
+      <material name="red">
+        <color rgba="1 0 0 1" />
+      </material>
+    </visual>
+  </link>
+
+  <joint name="another_joint" type="continuous">
+    <parent link="base_link" />
+    <child link="another_attachment" />
+    <origin xyz="-0.45 0 0" rpy="0 0 ${pi}" />
+    <axisi xyz="-1 0 0" />
+  </joint>
+
+  <link name="another_attachment">
+    <visual>
+      <geometry>
+        <box size="0.3 0.2 0.1" />
+      </geometry>
+      <material name="green">
+        <color rgba="0 1 0 1" />
+      </material>
+    </visual>
+  </link>
+
+  <!-- <xacro:mirte_modular_hardware_encoder hw_device_name="test_encoder" joint_name="test_joint"
+  /> -->
+  <xacro:multi_motor_actuator hw_device_name="test_multi_motor">
+    <joints>
+      <xacro:multi_motor_joint joint_name="test_joint" />
+      <xacro:multi_motor_joint joint_name="second_joint" tmx_motor_name="top_left" max_speed="10"/>
+    </joints>
+  </xacro:multi_motor_actuator>
+
+</robot>

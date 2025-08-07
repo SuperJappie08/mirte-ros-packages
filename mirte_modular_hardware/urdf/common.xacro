@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="strip_trailing_slash"
+    params="source dest">
+    <xacro:property name="${dest}"
+      value="${source[:-1] if source[-1] == '/' else source}"
+      scope="parent" />
+  </xacro:macro>
+</robot>

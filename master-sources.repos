@@ -2,5 +2,5 @@
 repositories:
   ros2_astra_camera:
     type: git
-    url: https://github.com/ArendJan/ros2_astra_camera/
+    url: https://github.com/ArendJan/ros2_astra_camera.git
     version: fix-ros-jammy # TODO: get this merged + other fixed for camera

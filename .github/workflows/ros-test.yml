@@ -1,0 +1,67 @@
+name: ROS Lint and Test
+
+on: [push, pull_request]
+
+jobs:
+  ament_lint:
+    runs-on: ubuntu-latest
+    container:
+      image: rostooling/setup-ros-docker:ubuntu-${{ matrix.ubuntu }}-ros-${{ matrix.ros_distro }}-ros-base-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        package: [mirte_modular_hardware]
+        linter:
+          - xmllint
+          - copyright
+          - pep257
+          - lint_cmake
+          - cppcheck
+          - clang_format
+        ros_distro: [jazzy]
+        include:
+          - ros_distro: jazzy
+            ubuntu: noble
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Run Linter
+        env:
+          AMENT_CPPCHECK_ALLOW_SLOW_VERSIONS: 1
+        uses: ros-tooling/action-ros-lint@v0.1
+        with:
+          linter: ${{ matrix.linter }}
+          distribution: ${{ matrix.ros_distro }}
+          package-name: ${{ matrix.package }}
+
+  build_and_test:
+    runs-on: ubuntu-latest
+    container:
+      image: rostooling/setup-ros-docker:ubuntu-${{ matrix.ubuntu }}-ros-${{ matrix.ros_distro }}-ros-base-latest
+
+    needs: ament_lint
+
+    strategy:
+      matrix:
+        ros_distro: [jazzy]
+        include:
+          - ros_distro: jazzy
+            ubuntu: noble
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Combine soureces.repos and master-sources.repos
+        run: |
+          echo "repositories:" > /tmp/dev.repos
+          grep --no-filename "^  " *.repos >> /tmp/dev.repos
+          cat /tmp/dev.repos
+      - name: Build and run tests
+        uses: ros-tooling/action-ros-ci@v0.4
+        with:
+          package-name: |
+            mirte_modular_hardware
+          target-ros2-distro: ${{ matrix.ros_distro }}
+          vcs-repo-file-url: /tmp/dev.repos
+

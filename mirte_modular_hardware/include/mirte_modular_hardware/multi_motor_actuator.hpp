@@ -83,6 +83,7 @@ private:
   std::vector<MotorHandle> motor_handles_;
 
   rclcpp::Node::SharedPtr node_ = nullptr;
+  rclcpp::Node::SharedPtr get_node() const { return node_; }
 
   rclcpp::Publisher<MultiSpeedMsg>::SharedPtr multi_speed_publisher_ = nullptr;
   realtime_tools::RealtimePublisher<MultiSpeedMsg>::SharedPtr multi_speed_publisher_rt_ = nullptr;

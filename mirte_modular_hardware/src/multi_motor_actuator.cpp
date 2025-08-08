@@ -204,7 +204,7 @@ hardware_interface::CallbackReturn MultiMotorActuator::on_configure(
 {
   // FIXME(SuperJappie08): Check if QoS makes sense when only sending updates?
   multi_speed_publisher_ =
-    node_->create_publisher<MultiSpeedMsg>(topic_name_, rclcpp::SensorDataQoS());
+    get_node()->create_publisher<MultiSpeedMsg>(topic_name_, rclcpp::SensorDataQoS());
   multi_speed_publisher_rt_.reset(
     new realtime_tools::RealtimePublisher<MultiSpeedMsg>(multi_speed_publisher_));
 

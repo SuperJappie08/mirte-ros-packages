@@ -84,6 +84,7 @@ private:
   rclcpp::executors::SingleThreadedExecutor::SharedPtr executor_ = nullptr;
   std::unique_ptr<std::thread, ThreadJoiner> executor_thread_ = nullptr;
   rclcpp::Node::SharedPtr node_ = nullptr;
+  rclcpp::Node::SharedPtr get_node() const { return node_; }
 
   realtime_tools::RealtimeBuffer<std::pair<EncoderMsg::ConstSharedPtr, EncoderMsg::ConstSharedPtr>>
     latest_msgs_{{nullptr, nullptr}};

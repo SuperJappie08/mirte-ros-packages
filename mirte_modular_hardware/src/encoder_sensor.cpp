@@ -236,7 +236,7 @@ hardware_interface::CallbackReturn EncoderSensor::on_init(
   //                    crashed
   //                    - Cons: If message arrive late it zeros the velocity,
   //                    could introduce chatter
-  encoder_subscriber_ = node_->create_subscription<mirte_msgs::msg::Encoder>(
+  encoder_subscriber_ = get_node()->create_subscription<mirte_msgs::msg::Encoder>(
     // FIXME(SuperJappie08): Figure out if keep_last(5) (default) or
     // keep_last(1/2/3) is better
     encoder_topic, rclcpp::SensorDataQoS() /* .keep_last(1)*/,
@@ -254,7 +254,7 @@ hardware_interface::CallbackReturn EncoderSensor::on_configure(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
   // Initialize the buffer, so the initial read will also be valid
-  auto context = node_->get_node_options().context();
+  auto context = get_node()->get_node_options().context();
 
   RCLCPP_INFO(
     get_logger(), "Waiting for first two messages on '%s'", encoder_subscriber_->get_topic_name());
@@ -292,7 +292,7 @@ hardware_interface::CallbackReturn EncoderSensor::on_configure(
     {std::make_shared<const EncoderMsg>(second_msg),
      std::make_shared<const EncoderMsg>(first_msg)});
 
-  executor_->add_node(node_);
+  executor_->add_node(get_node());
 
   return hardware_interface::CallbackReturn::SUCCESS;
 }
@@ -300,7 +300,7 @@ hardware_interface::CallbackReturn EncoderSensor::on_configure(
 hardware_interface::CallbackReturn EncoderSensor::on_cleanup(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
-  executor_->remove_node(node_);
+  executor_->remove_node(get_node());
 
   return hardware_interface::CallbackReturn::SUCCESS;
 }
@@ -313,7 +313,7 @@ hardware_interface::CallbackReturn EncoderSensor::on_shutdown(
   }
 
   if (previous_state.label() != hardware_interface::lifecycle_state_names::UNCONFIGURED) {
-    executor_->remove_node(node_);
+    executor_->remove_node(get_node());
   }
 
   // In states INACTIVE and ACTIVE the executor is running
@@ -329,7 +329,7 @@ hardware_interface::CallbackReturn EncoderSensor::on_error(
   if (
     label == hardware_interface::lifecycle_state_names::ACTIVE ||
     label == hardware_interface::lifecycle_state_names::INACTIVE) {
-    executor_->remove_node(node_);
+    executor_->remove_node(get_node());
   }
 
   return hardware_interface::CallbackReturn::SUCCESS;

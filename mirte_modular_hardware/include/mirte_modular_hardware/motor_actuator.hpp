@@ -31,7 +31,6 @@
 #include <rclcpp_lifecycle/state.hpp>
 /* FIXME(SuperJappie08): TO SEPERATE INCLUDES */
 
-#include "mirte_modular_hardware/helpers.hpp"
 #include "mirte_modular_hardware/visibility_control.hpp"
 #include "std_msgs/msg/int32.hpp"
 
@@ -74,12 +73,8 @@ public:
 private:
   double max_motor_speed_ = std::numeric_limits<double>::quiet_NaN();
 
-  /* NOTE(SuperJappie08): https://github.com/husarion/rosbot_hardware_interfaces/blob/main/src/rosbot_system.cpp
-   and other use multithreaded, test this and non shared? */
-  // FIXME(SuperJappie08): Do we need an executor in this case?
-  // rclcpp::executors::SingleThreadedExecutor::SharedPtr executor_ = nullptr;
-  // std::unique_ptr<std::thread, ThreadJoiner> executor_thread_ = nullptr;
   rclcpp::Node::SharedPtr node_ = nullptr;
+  rclcpp::Node::SharedPtr get_node() const { return node_; }
 
   rclcpp::Publisher<SpeedMsg>::SharedPtr speed_publisher_ = nullptr;
   realtime_tools::RealtimePublisher<SpeedMsg>::SharedPtr speed_publisher_rt_ = nullptr;

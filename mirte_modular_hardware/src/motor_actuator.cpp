@@ -87,8 +87,7 @@ hardware_interface::CallbackReturn MotorActuator::on_init(
   if (!info_.transmissions.empty()) {
     RCLCPP_FATAL(
       get_logger(),
-      "Transmission components are not supported on the '%s' interface type, but they were "
-      "defined.",
+      "Transmissions are not supported on the '%s' interface type, but they were defined.",
       info_.hardware_plugin_name.c_str());
     return hardware_interface::CallbackReturn::ERROR;
   }
@@ -198,7 +197,7 @@ hardware_interface::CallbackReturn MotorActuator::on_init(
   node_ = rclcpp::Node::make_shared(MOTOR_ACTUATOR_NODE_NAME_PREFIX + get_name(), node_options);
 
   // FIXME(SuperJappie08): Check if QoS makes sense when only sending updates?
-  speed_publisher_ = node_->create_publisher<SpeedMsg>(topic_name, rclcpp::SensorDataQoS());
+  speed_publisher_ = get_node()->create_publisher<SpeedMsg>(topic_name, rclcpp::SensorDataQoS());
   speed_publisher_rt_.reset(new realtime_tools::RealtimePublisher<SpeedMsg>(speed_publisher_));
 
   return hardware_interface::CallbackReturn::SUCCESS;

@@ -27,6 +27,7 @@
 #include <hardware_interface/types/hardware_interface_type_values.hpp>
 #include <hardware_interface/types/lifecycle_state_names.hpp>
 /* FIXME(SuperJappie08): TO SEPERATE INCLUDES */
+#include <rclcpp/callback_group.hpp>
 #include <rclcpp/context.hpp>
 #include <rclcpp/executor.hpp>
 #include <rclcpp/executors/single_threaded_executor.hpp>
@@ -34,11 +35,11 @@
 #include <rclcpp/node.hpp>
 #include <rclcpp/node_options.hpp>
 #include <rclcpp/qos.hpp>
+#include <rclcpp/subscription_options.hpp>
 #include <rclcpp/wait_for_message.hpp>
 #include <rclcpp_lifecycle/state.hpp>
 
 #include "mirte_modular_hardware/encoder_sensor.hpp"
-#include "mirte_msgs/msg/encoder.hpp"
 
 namespace
 {
@@ -78,12 +79,10 @@ hardware_interface::CallbackReturn EncoderSensor::on_init(
     return hardware_interface::CallbackReturn::ERROR;
   }
 
-  std::string encoder_topic;
   if (get_hardware_info().hardware_parameters.contains(kTopicKey)) {
-    encoder_topic = get_hardware_info().hardware_parameters.at(kTopicKey);
     RCLCPP_INFO(
       get_logger(), "Using '%s' as the topic name (relative to the hardware node).",
-      encoder_topic.c_str());
+      get_hardware_info().hardware_parameters.at(kTopicKey).c_str());
   } else {
     RCLCPP_FATAL(
       get_logger(),
@@ -212,30 +211,14 @@ hardware_interface::CallbackReturn EncoderSensor::on_init(
 
   // TODO(SuperJappie08): Process general Parameters
 
-  // TODO(SuperJappie08): Setup initialize encoder communication
-
-  // TODO: Check configuration of interfaces in urdf
-
   auto node_options =
     rclcpp::NodeOptions().start_parameter_event_publisher(false).start_parameter_services(false);
   node_ = rclcpp::Node::make_shared(kNodeNamePrefix + get_name(), node_options);
 
-  // TODO(SuperJappie08): Investigate if a single message buffer (1 msg) could
-  // be used if the previous position state is used to calculate the speed.
-  //                    - Pros: Less confusing and coping, out-zeroing when
-  //                    crashed
-  //                    - Cons: If message arrive late it zeros the velocity,
-  //                    could introduce chatter
-  encoder_subscriber_ = get_node()->create_subscription<mirte_msgs::msg::Encoder>(
-    // FIXME(SuperJappie08): Figure out if keep_last(5) (default) or
-    // keep_last(1/2/3) is better
-    encoder_topic, rclcpp::SensorDataQoS() /* .keep_last(1)*/,
-    [this](const EncoderMsg::ConstSharedPtr msg) {
-      this->latest_msgs_.writeFromNonRT({msg, this->latest_msgs_.readFromNonRT()->first});
-    });
-
   executor_ = rclcpp::executors::SingleThreadedExecutor::make_shared();
   executor_thread_.reset(new std::thread(std::bind(&rclcpp::Executor::spin, executor_)));
+
+  executor_->add_node(get_node());
 
   return hardware_interface::CallbackReturn::SUCCESS;
 }
@@ -246,31 +229,44 @@ hardware_interface::CallbackReturn EncoderSensor::on_configure(
   const auto topic_name = get_hardware_info().hardware_parameters.at(kTopicKey);
 
   // Initialize the buffer, so the initial read will also be valid
-  auto context = get_node()->get_node_options().context();
 
   RCLCPP_INFO(get_logger(), "Waiting for first two messages on '%s'", topic_name.c_str());
 
+  // FIXME(SuperJappie08): Figure out if keep_last(5) (default) or keep_last(1/2/3) is better
+  const auto qos = rclcpp::SensorDataQoS() /* .keep_last(1)*/;
+
   EncoderMsg first_msg;
-  if (!rclcpp::wait_for_message(
-        first_msg, encoder_subscriber_, context, initial_message_timeout_)) {
-    /* NOTE(SuperJappie08): Return failure since then we would revert to
+  EncoderMsg second_msg;
+  {
+    // NOTE(SuperJappie08): Need to make a temporary callback group and subscriber.
+    //                      Since Node already part of an Executor.
+    auto context = get_node()->get_node_options().context();
+    auto callback_group =
+      get_node()->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive, false);
+    auto sub_options = rclcpp::SubscriptionOptions();
+    sub_options.callback_group = callback_group;
+
+    auto subscriber = get_node()->create_subscription<EncoderMsg>(
+      topic_name, qos, [](const EncoderMsg::ConstSharedPtr) { return; }, sub_options);
+
+    if (!rclcpp::wait_for_message(first_msg, subscriber, context, initial_message_timeout_)) {
+      /* NOTE(SuperJappie08): Return failure since then we would revert to
        unconfigured (if started from a non configured state). If the hardware
        interface fails when start requires a state ros2_control crashes
        (https://github.com/ros-controls/ros2_control/issues/2290) */
-    RCLCPP_ERROR_STREAM(
-      get_logger(), "Timed out waiting for first Encoder message on '"
-                      << topic_name << "'. [Timeout = " << initial_message_timeout_ << "]");
-    return hardware_interface::CallbackReturn::FAILURE;
-  }
+      RCLCPP_ERROR_STREAM(
+        get_logger(), "Timed out waiting for first Encoder message on '"
+                        << topic_name << "'. [Timeout = " << initial_message_timeout_ << "]");
+      return hardware_interface::CallbackReturn::FAILURE;
+    }
 
-  EncoderMsg second_msg;
-  if (!rclcpp::wait_for_message(
-        second_msg, encoder_subscriber_, context, initial_message_timeout_)) {
-    RCLCPP_ERROR_STREAM(
-      get_logger(), "Timed out waiting for second Encoder message on '"
-                      << topic_name << "'. [Timeout = " << initial_message_timeout_
-                      << "] (hint: Check the frequency of '" << topic_name << "')");
-    return hardware_interface::CallbackReturn::FAILURE;
+    if (!rclcpp::wait_for_message(second_msg, subscriber, context, initial_message_timeout_)) {
+      RCLCPP_ERROR_STREAM(
+        get_logger(), "Timed out waiting for second Encoder message on '"
+                        << topic_name << "'. [Timeout = " << initial_message_timeout_
+                        << "] (hint: Check the frequency of '" << topic_name << "')");
+      return hardware_interface::CallbackReturn::FAILURE;
+    }
   }
 
   RCLCPP_INFO(get_logger(), "Recieved the intial two messages on '%s'", topic_name.c_str());
@@ -279,7 +275,14 @@ hardware_interface::CallbackReturn EncoderSensor::on_configure(
     {std::make_shared<const EncoderMsg>(second_msg),
      std::make_shared<const EncoderMsg>(first_msg)});
 
-  executor_->add_node(get_node());
+  // TODO(SuperJappie08): Investigate if a single message buffer (1 msg) could
+  // be used if the previous position state is used to calculate the speed.
+  //                    - Pros: Less confusing and coping, out-zeroing when crashed
+  //                    - Cons: If message arrive late it zeros the velocity, could introduce chatter
+  encoder_subscriber_ = get_node()->create_subscription<EncoderMsg>(
+    topic_name, qos, [this](const EncoderMsg::ConstSharedPtr msg) {
+      this->latest_msgs_.writeFromNonRT({msg, this->latest_msgs_.readFromNonRT()->first});
+    });
 
   return hardware_interface::CallbackReturn::SUCCESS;
 }
@@ -287,37 +290,15 @@ hardware_interface::CallbackReturn EncoderSensor::on_configure(
 hardware_interface::CallbackReturn EncoderSensor::on_cleanup(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
-  executor_->remove_node(get_node());
-
-  return hardware_interface::CallbackReturn::SUCCESS;
-}
-
-hardware_interface::CallbackReturn EncoderSensor::on_shutdown(
-  const rclcpp_lifecycle::State & previous_state)
-{
-  if (previous_state.label() == hardware_interface::lifecycle_state_names::UNKNOWN) {
-    return hardware_interface::CallbackReturn::SUCCESS;
-  }
-
-  if (previous_state.label() != hardware_interface::lifecycle_state_names::UNCONFIGURED) {
-    executor_->remove_node(get_node());
-  }
-
-  // In states INACTIVE and ACTIVE the executor is running
-  stop_executor();
+  encoder_subscriber_.reset();
 
   return hardware_interface::CallbackReturn::SUCCESS;
 }
 
 hardware_interface::CallbackReturn EncoderSensor::on_error(
-  const rclcpp_lifecycle::State & previous_state)
+  const rclcpp_lifecycle::State & /*previous_state*/)
 {
-  auto label = previous_state.label();
-  if (
-    label == hardware_interface::lifecycle_state_names::ACTIVE ||
-    label == hardware_interface::lifecycle_state_names::INACTIVE) {
-    executor_->remove_node(get_node());
-  }
+  encoder_subscriber_.reset();
 
   return hardware_interface::CallbackReturn::SUCCESS;
 }
@@ -343,14 +324,13 @@ hardware_interface::return_type EncoderSensor::read(
     } else if (joint_state->get_interface_name() == hardware_interface::HW_IF_VELOCITY) {
       double difference = ((double)(newest_msg->value - older_msg->value)) / ticks_per_rotation_ *
                           std::numbers::pi * 2.0;
-      // FIXME(SuperJappie08): It works with senconds?
       auto dt =
         (rclcpp::Time(newest_msg->header.stamp) - rclcpp::Time(older_msg->header.stamp)).seconds();
 
       RCLCPP_WARN_EXPRESSION(
         get_logger(), dt <= 0.0,
-        "The time difference between the encoder steps is %fs, check if its source is setup "
-        "correctly.",
+        "The time difference between the encoder steps is %fs, "
+        "check if its source is setup correctly.",
         dt);
 
       double velocity = difference / dt;
@@ -370,6 +350,14 @@ hardware_interface::return_type EncoderSensor::read(
   }
 
   return hardware_interface::return_type::OK;
+}
+
+hardware_interface::CallbackReturn EncoderSensor::on_shutdown(
+  const rclcpp_lifecycle::State & /*previous_state*/)
+{
+  stop_executor();
+
+  return hardware_interface::CallbackReturn::SUCCESS;
 }
 
 void EncoderSensor::stop_executor() noexcept

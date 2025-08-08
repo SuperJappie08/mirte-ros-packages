@@ -62,10 +62,6 @@ public:
     const rclcpp_lifecycle::State & previous_state) override;
 
   MIRTE_MODULAR_HARDWARE_PUBLIC
-  hardware_interface::CallbackReturn on_shutdown(
-    const rclcpp_lifecycle::State & previous_state) override;
-
-  MIRTE_MODULAR_HARDWARE_PUBLIC
   hardware_interface::CallbackReturn on_error(
     const rclcpp_lifecycle::State & previous_state) override;
 
@@ -79,16 +75,22 @@ private:
   double ticks_per_rotation_ = std::numeric_limits<double>::quiet_NaN();
   std::chrono::milliseconds initial_message_timeout_{500};
 
+  realtime_tools::RealtimeBuffer<std::pair<EncoderMsg::ConstSharedPtr, EncoderMsg::ConstSharedPtr>>
+    latest_msgs_{{nullptr, nullptr}};
+  rclcpp::Subscription<EncoderMsg>::SharedPtr encoder_subscriber_ = nullptr;
+
+public:
+  MIRTE_MODULAR_HARDWARE_PUBLIC
+  hardware_interface::CallbackReturn on_shutdown(
+    const rclcpp_lifecycle::State & previous_state) override;
+
+private:
   /* NOTE(SuperJappie08): https://github.com/husarion/rosbot_hardware_interfaces/blob/main/src/rosbot_system.cpp
    and other use multithreaded, test this and non shared? */
   rclcpp::executors::SingleThreadedExecutor::SharedPtr executor_ = nullptr;
   std::unique_ptr<std::thread, ThreadJoiner> executor_thread_ = nullptr;
   rclcpp::Node::SharedPtr node_ = nullptr;
   rclcpp::Node::SharedPtr get_node() const { return node_; }
-
-  realtime_tools::RealtimeBuffer<std::pair<EncoderMsg::ConstSharedPtr, EncoderMsg::ConstSharedPtr>>
-    latest_msgs_{{nullptr, nullptr}};
-  rclcpp::Subscription<EncoderMsg>::SharedPtr encoder_subscriber_ = nullptr;
 
   void stop_executor() noexcept;
 };

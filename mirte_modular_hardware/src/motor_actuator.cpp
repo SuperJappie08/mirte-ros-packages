@@ -33,10 +33,16 @@
 #include "mirte_modular_hardware/motor_actuator.hpp"
 #include "std_msgs/msg/int32.hpp"
 
+namespace
+{
+constexpr const auto kTopicKey = "topic";
+constexpr const auto kMaxMotorSpeedKey = "max_motor_speed";
+
+constexpr const auto kNodeNamePrefix = "mirte_modular_hardware_motor_actuator_";
+}  // namespace
+
 namespace mirte_modular_hardware
 {
-
-const std::string MOTOR_ACTUATOR_NODE_NAME_PREFIX = "mirte_modular_hardware_motor_actuator_";
 
 hardware_interface::CallbackReturn MotorActuator::on_init(
   const hardware_interface::HardwareInfo & info)
@@ -47,33 +53,36 @@ hardware_interface::CallbackReturn MotorActuator::on_init(
     return hardware_interface::CallbackReturn::ERROR;
   }
 
+  const auto hardware_plugin_name = get_hardware_info().hardware_plugin_name;
+
   // Retrieve general parameters
   std::string topic_name;
-  if (auto topic_pair = info_.hardware_parameters.find("topic");
-      topic_pair != info_.hardware_parameters.end()) {
+  if (get_hardware_info().hardware_parameters.contains(kTopicKey)) {
+    topic_name = get_hardware_info().hardware_parameters.at(kTopicKey);
     RCLCPP_INFO(
       get_logger(), "Using '%s' as the topic name (relative to the hardware node).",
-      topic_pair->second.c_str());
-    topic_name = topic_pair->second;
+      topic_name.c_str());
   } else {
     // TODO(SuperJappie08): Consider making this parameter optional.
     RCLCPP_FATAL(
       get_logger(),
-      "Missing the required 'topic' hardware parameter, to indicate the topic (relative to the "
-      "the hardware node).");
+      "Missing the required '%s' hardware parameter, "
+      "to indicate the topic (relative to the hardware node).",
+      kTopicKey);
     return hardware_interface::CallbackReturn::ERROR;
   }
 
-  if (auto max_motor_speed_raw = info_.hardware_parameters.find("max_motor_speed");
-      max_motor_speed_raw != info_.hardware_parameters.end()) {
-    max_motor_speed_ = hardware_interface::stod(max_motor_speed_raw->second);
-    RCLCPP_INFO(get_logger(), "Loaded 'max_motor_speed' [%f rad/s]", max_motor_speed_);
+  // TODO(SuperJappie08): Replace if command limit param
+  if (get_hardware_info().hardware_parameters.contains(kMaxMotorSpeedKey)) {
+    max_motor_speed_ =
+      hardware_interface::stod(get_hardware_info().hardware_parameters.at(kMaxMotorSpeedKey));
+    RCLCPP_INFO(get_logger(), "Loaded '%s' [%f rad/s]", kMaxMotorSpeedKey, max_motor_speed_);
   } else {
-    // TODO(SuperJappie08): Consider making this parameter optional
     RCLCPP_FATAL(
       get_logger(),
-      "Missing the required 'max_motor_speed' hardware parameter [double, rad/s]. This is used in "
-      "the conversion to the percentage based command speed.");
+      "Missing the required '%s' hardware parameter [double, rad/s]. "
+      "This is used in the conversion to the percentage based command speed.",
+      kMaxMotorSpeedKey);
     return hardware_interface::CallbackReturn::ERROR;
   }
 
@@ -84,46 +93,46 @@ hardware_interface::CallbackReturn MotorActuator::on_init(
 
   // Validate if the configuration is valid.
 
-  if (!info_.transmissions.empty()) {
+  if (!get_hardware_info().transmissions.empty()) {
     RCLCPP_FATAL(
       get_logger(),
       "Transmissions are not supported on the '%s' interface type, but they were defined.",
-      info_.hardware_plugin_name.c_str());
+      hardware_plugin_name.c_str());
     return hardware_interface::CallbackReturn::ERROR;
   }
 
-  if (!info_.sensors.empty()) {
+  if (!get_hardware_info().sensors.empty()) {
     RCLCPP_FATAL(
       get_logger(),
       "Sensor components are not supported on the '%s' interface type, but they were defined.",
-      info_.hardware_plugin_name.c_str());
+      hardware_plugin_name.c_str());
     return hardware_interface::CallbackReturn::ERROR;
   }
 
-  if (!info_.gpios.empty()) {
+  if (!get_hardware_info().gpios.empty()) {
     RCLCPP_FATAL(
       get_logger(),
       "GPIO components are not supported on the '%s' interface type, but they were defined.",
-      info_.hardware_plugin_name.c_str());
+      hardware_plugin_name.c_str());
     return hardware_interface::CallbackReturn::ERROR;
   }
 
   // NOTE(SuperJappie08): Theoretically there could also be a interface which listens to multiple encoders/devices.
   //                      However, that makes configuration less clear and the code more complex.
-  if (info_.joints.size() != 1) {
+  if (get_hardware_info().joints.size() != 1) {
     RCLCPP_FATAL(
       get_logger(), "Exactly 1 Joint is expected on the '%s' interface type, but %zu were defined.",
-      info_.hardware_plugin_name.c_str(), info_.joints.size());
+      hardware_plugin_name.c_str(), get_hardware_info().joints.size());
     return hardware_interface::CallbackReturn::ERROR;
   }
 
-  auto joint = info_.joints[0];
+  auto joint = get_hardware_info().joints[0];
 
   // Check if the specified joint is consistent with the capabilities of this hardware interface.
   if (!joint.state_interfaces.empty()) {
     RCLCPP_FATAL(
       get_logger(), "The '%s' interface type does not support any state interfaces.",
-      info_.hardware_plugin_name.c_str());
+      hardware_plugin_name.c_str());
     return hardware_interface::CallbackReturn::ERROR;
   }
 
@@ -131,7 +140,7 @@ hardware_interface::CallbackReturn MotorActuator::on_init(
     // TODO(SuperJappie08): Figure out if supporting mimic joints make sense?
     RCLCPP_FATAL(
       get_logger(), "Mimic joints are currently not supported on '%s' interface types.",
-      info_.hardware_plugin_name.c_str());
+      hardware_plugin_name.c_str());
     return CallbackReturn::ERROR;
   }
 
@@ -141,17 +150,6 @@ hardware_interface::CallbackReturn MotorActuator::on_init(
         joint.command_interfaces.cbegin(), joint.command_interfaces.cend(),
         [interface_name](auto iter) { return iter.name == interface_name; });
     };
-
-    // if (auto position_interface = find_interface(hardware_interface::HW_IF_POSITION);
-    //     position_interface != joint.command_interfaces.cend()) {
-    //   // FIXME(SuperJappie08): Check position interface
-    // } else {
-    //   RCLCPP_FATAL(
-    //     get_logger(),
-    //     "Joint '%s' of hardware interface '%s' [%s] has no 'position' command interface defined.",
-    //     joint.name.c_str(), info_.name.c_str(), info_.hardware_plugin_name.c_str());
-    //   return hardware_interface::CallbackReturn::ERROR;
-    // }
 
     if (auto velocity_interface = find_interface(hardware_interface::HW_IF_VELOCITY);
         velocity_interface != joint.command_interfaces.cend()) {
@@ -175,7 +173,7 @@ hardware_interface::CallbackReturn MotorActuator::on_init(
       RCLCPP_FATAL(
         get_logger(),
         "Joint '%s' of hardware interface '%s' [%s] has no 'velocity' command interface defined.",
-        joint.name.c_str(), info_.name.c_str(), info_.hardware_plugin_name.c_str());
+        joint.name.c_str(), get_name().c_str(), hardware_plugin_name.c_str());
       return hardware_interface::CallbackReturn::ERROR;
     }
   } else {
@@ -183,7 +181,7 @@ hardware_interface::CallbackReturn MotorActuator::on_init(
       get_logger(),
       "Joint '%s' of hardware interface '%s' [%s] has a unexpected amount of command interfaces. "
       "Expected 1 ['velocity'], but found %zu interfaces.",
-      joint.name.c_str(), info_.name.c_str(), info_.hardware_plugin_name.c_str(),
+      joint.name.c_str(), get_name().c_str(), hardware_plugin_name.c_str(),
       joint.command_interfaces.size());
     return hardware_interface::CallbackReturn::ERROR;
   }
@@ -194,7 +192,7 @@ hardware_interface::CallbackReturn MotorActuator::on_init(
   // Setup the communication
   auto node_options =
     rclcpp::NodeOptions().start_parameter_event_publisher(false).start_parameter_services(false);
-  node_ = rclcpp::Node::make_shared(MOTOR_ACTUATOR_NODE_NAME_PREFIX + get_name(), node_options);
+  node_ = rclcpp::Node::make_shared(kNodeNamePrefix + get_name(), node_options);
 
   // FIXME(SuperJappie08): Check if QoS makes sense when only sending updates?
   speed_publisher_ = get_node()->create_publisher<SpeedMsg>(topic_name, rclcpp::SensorDataQoS());

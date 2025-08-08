@@ -33,8 +33,7 @@ namespace
 constexpr const auto kTopicKey = "topic";
 constexpr const auto kMotorNameKey = "motor_name";
 
-constexpr const auto kMultiMotorActuatorNodeNamePrefix =
-  "mirte_modular_hardware_multi_motor_actuator_";
+constexpr const auto kNodeNamePrefix = "mirte_modular_hardware_multi_motor_actuator_";
 }  // namespace
 
 namespace mirte_modular_hardware
@@ -65,7 +64,7 @@ hardware_interface::CallbackReturn MultiMotorActuator::on_init(
     RCLCPP_FATAL(
       get_logger(),
       "Missing the required '%s' hardware parameter, "
-      "to indicate the topic (relative to the the hardware node).",
+      "to indicate the topic (relative to the hardware node).",
       kTopicKey);
     return hardware_interface::CallbackReturn::ERROR;
   }
@@ -201,7 +200,7 @@ hardware_interface::CallbackReturn MultiMotorActuator::on_init(
   // Setup the communication
   auto node_options =
     rclcpp::NodeOptions().start_parameter_event_publisher(false).start_parameter_services(false);
-  node_ = rclcpp::Node::make_shared(kMultiMotorActuatorNodeNamePrefix + get_name(), node_options);
+  node_ = rclcpp::Node::make_shared(kNodeNamePrefix + get_name(), node_options);
 
   return hardware_interface::CallbackReturn::SUCCESS;
 }

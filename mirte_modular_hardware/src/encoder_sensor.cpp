@@ -40,14 +40,17 @@
 #include "mirte_modular_hardware/encoder_sensor.hpp"
 #include "mirte_msgs/msg/encoder.hpp"
 
+namespace
+{
+constexpr const auto kTopicKey = "topic";
+constexpr const auto kTicksPerRotationKey = "ticks_per_rotation";
+constexpr const auto kInitMsgTimeOutKey = "initial_message_timeout_ms";
+
+constexpr const auto kNodeNamePrefix = "mirte_modular_hardware_encoder_sensor_";
+}  // namespace
+
 namespace mirte_modular_hardware
 {
-
-/* FIXME(SuperJappie08): Consider allowing the hardware nodes to be put in a
-  (hidden) namespace. Then for simplicity the topic would need to be defined as
-  from the controller_manager. */
-
-const std::string ENCODER_SENSOR_NODE_NAME_PREFIX = "mirte_modular_hardware_encoder_sensor_";
 
 hardware_interface::CallbackReturn EncoderSensor::on_init(
   const hardware_interface::HardwareInfo & info)
@@ -58,56 +61,54 @@ hardware_interface::CallbackReturn EncoderSensor::on_init(
     return hardware_interface::CallbackReturn::ERROR;
   }
 
-  // Retrieve general parameters
+  const auto hardware_plugin_name = get_hardware_info().hardware_plugin_name;
 
-  if (auto ticks_per_rotation_raw = info_.hardware_parameters.find("ticks_per_rotation");
-      ticks_per_rotation_raw != info_.hardware_parameters.end()) {
+  // Retrieve general parameters
+  if (get_hardware_info().hardware_parameters.contains(kTicksPerRotationKey)) {
     // TODO(SuperJappie08): Possible store this as rad per tick
-    ticks_per_rotation_ = hardware_interface::stod(ticks_per_rotation_raw->second);
-    RCLCPP_INFO(get_logger(), "Loaded 'ticks_per_rotation' [%f]", ticks_per_rotation_);
+    ticks_per_rotation_ =
+      hardware_interface::stod(get_hardware_info().hardware_parameters.at(kTicksPerRotationKey));
+    RCLCPP_INFO(get_logger(), "Loaded '%s' [%f]", kTicksPerRotationKey, ticks_per_rotation_);
   } else {
     RCLCPP_FATAL(
       get_logger(),
-      "Missing required 'ticks_per_rotation' hardware "
-      "parameter, to indicate the number of encoder "
-      "ticks corresponding to a full rotation.");
+      "Missing required '%s' hardware parameter, "
+      "to indicate the number of encoder ticks corresponding to a full rotation.",
+      kTicksPerRotationKey);
     return hardware_interface::CallbackReturn::ERROR;
   }
 
   std::string encoder_topic;
-  if (auto encoder_topic_pair = info_.hardware_parameters.find("topic");
-      encoder_topic_pair != info_.hardware_parameters.end()) {
+  if (get_hardware_info().hardware_parameters.contains(kTopicKey)) {
+    encoder_topic = get_hardware_info().hardware_parameters.at(kTopicKey);
     RCLCPP_INFO(
       get_logger(), "Using '%s' as the topic name (relative to the hardware node).",
-      encoder_topic_pair->second.c_str());
-    encoder_topic = encoder_topic_pair->second;
+      encoder_topic.c_str());
   } else {
-    // TODO(SuperJappie08): Consider making this parameter optional.
     RCLCPP_FATAL(
       get_logger(),
-      "Missing required 'topic' hardware parameter, "
-      "to indicate the topic (relative to the "
-      "the hardware node).");
+      "Missing required '%s' hardware parameter, "
+      "to indicate the topic (relative to the hardware node).",
+      kTopicKey);
     return hardware_interface::CallbackReturn::ERROR;
   }
 
   // Optional hardware parameters
-  if (auto initial_message_timeout = info_.hardware_parameters.find("initial_message_timeout_ms");
-      initial_message_timeout != info_.hardware_parameters.end()) {
+  if (get_hardware_info().hardware_parameters.contains(kInitMsgTimeOutKey)) {
     RCLCPP_INFO(
       get_logger(),
-      "Attempting to parse 'initial_message_timeout_ms' parameter "
-      "[int(in milliseconds)]. (use -1 "
-      "to disable timeout)");
-    initial_message_timeout_ =
-      std::chrono::milliseconds(std::stol(initial_message_timeout->second));
+      "Attempting to parse '%s' parameter [int(in milliseconds)]. (use -1 to disable timeout)",
+      kInitMsgTimeOutKey);
+    initial_message_timeout_ = std::chrono::milliseconds(
+      std::stol(get_hardware_info().hardware_parameters.at(kInitMsgTimeOutKey)));
   }
 
   if (initial_message_timeout_ == std::chrono::milliseconds(-1)) {
     RCLCPP_WARN(
       get_logger(),
-      "The initial message timeout has been disabled, "
-      "controller could wait indefinitely.");
+      "The initial message timeout has been disabled, controller could wait indefinitely. "
+      "[Use hardware parameter '%s' to configure the timeout]",
+      kInitMsgTimeOutKey);
   } else {
     RCLCPP_INFO_STREAM(
       get_logger(), "Using initial message timeout of " << initial_message_timeout_ << ".");
@@ -115,55 +116,47 @@ hardware_interface::CallbackReturn EncoderSensor::on_init(
 
   // Validate if the configuration is valid.
 
-  if (!info_.transmissions.empty()) {
+  if (!get_hardware_info().transmissions.empty()) {
     RCLCPP_FATAL(
       get_logger(),
-      "Transmission components are not supported on the '%s' "
-      "interface type, but they were "
-      "defined.",
-      info_.hardware_plugin_name.c_str());
+      "Transmissions are not supported on the '%s' interface type, but they were defined.",
+      hardware_plugin_name.c_str());
     return hardware_interface::CallbackReturn::ERROR;
   }
 
-  if (!info_.sensors.empty()) {
+  if (!get_hardware_info().sensors.empty()) {
     RCLCPP_FATAL(
       get_logger(),
-      "Sensor components are not supported on the '%s' interface "
-      "type, but they were defined.",
-      info_.hardware_plugin_name.c_str());
+      "Sensor components are not supported on the '%s' interface type, but they were defined.",
+      hardware_plugin_name.c_str());
     return hardware_interface::CallbackReturn::ERROR;
   }
 
-  if (!info_.gpios.empty()) {
+  if (!get_hardware_info().gpios.empty()) {
     RCLCPP_FATAL(
       get_logger(),
-      "GPIO components are not supported on the '%s' interface "
-      "type, but they were defined.",
-      info_.hardware_plugin_name.c_str());
+      "GPIO components are not supported on the '%s' interface type, but they were defined.",
+      hardware_plugin_name.c_str());
     return hardware_interface::CallbackReturn::ERROR;
   }
 
-  // NOTE(SuperJappie08): Theoretically there could also be a interface which
-  // listens to multiple encoders/devices.
-  //                      However, that makes configuration less clear and the
-  //                      code more complex.
-  if (info_.joints.size() != 1) {
+  // NOTE(SuperJappie08): Theoretically there could also be a interface which listens to multiple encoders/devices.
+  //                      However, that makes configuration less clear and the code more complex.
+  if (get_hardware_info().joints.size() != 1) {
     RCLCPP_FATAL(
-      get_logger(),
-      "Exactly 1 Joint is expected on the '%s' interface type, but "
-      "%zu were defined.",
-      info_.hardware_plugin_name.c_str(), info_.joints.size());
+      get_logger(), "Exactly 1 Joint is expected on the '%s' interface type, but %zu were defined.",
+      hardware_plugin_name.c_str(), get_hardware_info().joints.size());
     return hardware_interface::CallbackReturn::ERROR;
   }
 
-  auto joint = info_.joints[0];
+  auto joint = get_hardware_info().joints[0];
 
   // Check if the specified joint is consistent with the capabilities of this
   // hardware interface.
   if (!joint.command_interfaces.empty()) {
     RCLCPP_FATAL(
       get_logger(), "The '%s' interface type does not support any command interfaces.",
-      info_.hardware_plugin_name.c_str());
+      hardware_plugin_name.c_str());
     return hardware_interface::CallbackReturn::ERROR;
   }
 
@@ -171,7 +164,7 @@ hardware_interface::CallbackReturn EncoderSensor::on_init(
     // TODO(SuperJappie08): Figure out if supporting mimic joints make sense?
     RCLCPP_FATAL(
       get_logger(), "Mimic joints are currently not supported on '%s' interface types.",
-      info_.hardware_plugin_name.c_str());
+      hardware_plugin_name.c_str());
     return CallbackReturn::ERROR;
   }
 
@@ -188,9 +181,8 @@ hardware_interface::CallbackReturn EncoderSensor::on_init(
     } else {
       RCLCPP_FATAL(
         get_logger(),
-        "Joint '%s' of hardware interface '%s' [%s] has no "
-        "'position' state interface defined.",
-        joint.name.c_str(), info_.name.c_str(), info_.hardware_plugin_name.c_str());
+        "Joint '%s' of hardware interface '%s' [%s] has no 'position' state interface defined.",
+        joint.name.c_str(), get_name().c_str(), hardware_plugin_name.c_str());
       return hardware_interface::CallbackReturn::ERROR;
     }
 
@@ -202,18 +194,16 @@ hardware_interface::CallbackReturn EncoderSensor::on_init(
 
       RCLCPP_FATAL(
         get_logger(),
-        "Joint '%s' of hardware interface '%s' [%s] has no "
-        "'velocity' state interface defined.",
-        joint.name.c_str(), info_.name.c_str(), info_.hardware_plugin_name.c_str());
+        "Joint '%s' of hardware interface '%s' [%s] has no 'velocity' state interface defined.",
+        joint.name.c_str(), get_name().c_str(), hardware_plugin_name.c_str());
       return hardware_interface::CallbackReturn::ERROR;
     }
   } else {
     RCLCPP_FATAL(
       get_logger(),
-      "Joint '%s' of hardware interface '%s' [%s] has a unexpected amount of "
-      "state interfaces. "
+      "Joint '%s' of hardware interface '%s' [%s] has a unexpected amount of state interfaces. "
       "Expected 2 ['position', 'velocity'], but found %zu interfaces.",
-      joint.name.c_str(), info_.name.c_str(), info_.hardware_plugin_name.c_str(),
+      joint.name.c_str(), get_name().c_str(), hardware_plugin_name.c_str(),
       joint.state_interfaces.size());
     return hardware_interface::CallbackReturn::ERROR;
   }
@@ -228,7 +218,7 @@ hardware_interface::CallbackReturn EncoderSensor::on_init(
 
   auto node_options =
     rclcpp::NodeOptions().start_parameter_event_publisher(false).start_parameter_services(false);
-  node_ = rclcpp::Node::make_shared(ENCODER_SENSOR_NODE_NAME_PREFIX + get_name(), node_options);
+  node_ = rclcpp::Node::make_shared(kNodeNamePrefix + get_name(), node_options);
 
   // TODO(SuperJappie08): Investigate if a single message buffer (1 msg) could
   // be used if the previous position state is used to calculate the speed.
@@ -253,11 +243,12 @@ hardware_interface::CallbackReturn EncoderSensor::on_init(
 hardware_interface::CallbackReturn EncoderSensor::on_configure(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
+  const auto topic_name = get_hardware_info().hardware_parameters.at(kTopicKey);
+
   // Initialize the buffer, so the initial read will also be valid
   auto context = get_node()->get_node_options().context();
 
-  RCLCPP_INFO(
-    get_logger(), "Waiting for first two messages on '%s'", encoder_subscriber_->get_topic_name());
+  RCLCPP_INFO(get_logger(), "Waiting for first two messages on '%s'", topic_name.c_str());
 
   EncoderMsg first_msg;
   if (!rclcpp::wait_for_message(
@@ -268,8 +259,7 @@ hardware_interface::CallbackReturn EncoderSensor::on_configure(
        (https://github.com/ros-controls/ros2_control/issues/2290) */
     RCLCPP_ERROR_STREAM(
       get_logger(), "Timed out waiting for first Encoder message on '"
-                      << encoder_subscriber_->get_topic_name()
-                      << "'. [Timeout = " << initial_message_timeout_ << "]");
+                      << topic_name << "'. [Timeout = " << initial_message_timeout_ << "]");
     return hardware_interface::CallbackReturn::FAILURE;
   }
 
@@ -277,16 +267,13 @@ hardware_interface::CallbackReturn EncoderSensor::on_configure(
   if (!rclcpp::wait_for_message(
         second_msg, encoder_subscriber_, context, initial_message_timeout_)) {
     RCLCPP_ERROR_STREAM(
-      get_logger(),
-      "Timed out waiting for second Encoder message on '"
-        << encoder_subscriber_->get_topic_name() << "'. [Timeout = " << initial_message_timeout_
-        << "] (hint: Check the frequency of '" << encoder_subscriber_->get_topic_name() << "')");
+      get_logger(), "Timed out waiting for second Encoder message on '"
+                      << topic_name << "'. [Timeout = " << initial_message_timeout_
+                      << "] (hint: Check the frequency of '" << topic_name << "')");
     return hardware_interface::CallbackReturn::FAILURE;
   }
 
-  RCLCPP_INFO(
-    get_logger(), "Recieved the intial two messages on '%s'",
-    encoder_subscriber_->get_topic_name());
+  RCLCPP_INFO(get_logger(), "Recieved the intial two messages on '%s'", topic_name.c_str());
 
   latest_msgs_.initRT(
     {std::make_shared<const EncoderMsg>(second_msg),

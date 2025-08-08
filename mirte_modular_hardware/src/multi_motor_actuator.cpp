@@ -28,10 +28,17 @@
 
 #include "mirte_modular_hardware/multi_motor_actuator.hpp"
 
+namespace
+{
+constexpr const auto kTopicKey = "topic";
+constexpr const auto kMotorNameKey = "motor_name";
+
+constexpr const auto kMultiMotorActuatorNodeNamePrefix =
+  "mirte_modular_hardware_multi_motor_actuator_";
+}  // namespace
+
 namespace mirte_modular_hardware
 {
-const std::string MULTI_MOTOR_ACTUATOR_NODE_NAME_PREFIX =
-  "mirte_modular_hardware_multi_motor_actuator_";
 
 hardware_interface::CallbackReturn MultiMotorActuator::on_init(
   const hardware_interface::HardwareInfo & info)
@@ -42,23 +49,24 @@ hardware_interface::CallbackReturn MultiMotorActuator::on_init(
     return hardware_interface::CallbackReturn::ERROR;
   }
 
+  const auto hardware_plugin_name = get_hardware_info().hardware_plugin_name;
+
   // Retrieve general parameters
 
   /* NOTE(SuperJappie08): The initial implementation will support a maximum of 4 motors.
     However in the future this could be expanded and motor groups could be created (with max 4 motors per group).
   */
 
-  if (auto topic_pair = info_.hardware_parameters.find("topic");
-      topic_pair != info_.hardware_parameters.end()) {
+  if (get_hardware_info().hardware_parameters.contains(kTopicKey)) {
     RCLCPP_INFO(
       get_logger(), "Using '%s' as the topic name (relative to the hardware node).",
-      topic_pair->second.c_str());
-    topic_name_ = topic_pair->second;
+      get_hardware_info().hardware_parameters.at(kTopicKey).c_str());
   } else {
     RCLCPP_FATAL(
       get_logger(),
-      "Missing the required 'topic' hardware parameter, "
-      "to indicate the topic (relative to the the hardware node).");
+      "Missing the required '%s' hardware parameter, "
+      "to indicate the topic (relative to the the hardware node).",
+      kTopicKey);
     return hardware_interface::CallbackReturn::ERROR;
   }
 
@@ -69,52 +77,52 @@ hardware_interface::CallbackReturn MultiMotorActuator::on_init(
 
   // Validate if the configuration is valid.
 
-  if (!info_.transmissions.empty()) {
+  if (!get_hardware_info().transmissions.empty()) {
     RCLCPP_FATAL(
       get_logger(),
       "Transmissions are not supported on the '%s' interface type, but they were defined.",
-      info_.hardware_plugin_name.c_str());
+      hardware_plugin_name.c_str());
     return hardware_interface::CallbackReturn::ERROR;
   }
 
-  if (!info_.sensors.empty()) {
+  if (!get_hardware_info().sensors.empty()) {
     RCLCPP_FATAL(
       get_logger(),
       "Sensor components are not supported on the '%s' interface type, but they were defined.",
-      info_.hardware_plugin_name.c_str());
+      hardware_plugin_name.c_str());
     return hardware_interface::CallbackReturn::ERROR;
   }
 
-  if (!info_.gpios.empty()) {
+  if (!get_hardware_info().gpios.empty()) {
     RCLCPP_FATAL(
       get_logger(),
       "GPIO components are not supported on the '%s' interface type, but they were defined.",
-      info_.hardware_plugin_name.c_str());
+      hardware_plugin_name.c_str());
     return hardware_interface::CallbackReturn::ERROR;
   }
 
-  if (info_.joints.empty()) {
+  if (get_hardware_info().joints.empty()) {
     RCLCPP_FATAL(
       get_logger(),
       "Atleast one joint component is required on the '%s' interface type, but none where defined.",
-      info_.hardware_plugin_name.c_str());
+      hardware_plugin_name.c_str());
     return hardware_interface::CallbackReturn::ERROR;
   }
 
-  if (info_.joints.size() > 4) {
+  if (get_hardware_info().joints.size() > 4) {
     /* NOTE(SuperJappie08): This is a limit of the current implementation,
       could introduce 'joint groups' which are motors which will be grouped. */
     RCLCPP_FATAL(
       get_logger(), "The '%s' interface type supports atmost 4 joints, but %ld where provided",
-      info_.hardware_plugin_name.c_str(), info_.joints.size());
+      hardware_plugin_name.c_str(), get_hardware_info().joints.size());
   }
 
-  for (auto joint : info_.joints) {
+  for (auto joint : get_hardware_info().joints) {
     // Check if the specified joint is consistent with the capabilities of this hardware interface.
     if (!joint.state_interfaces.empty()) {
       RCLCPP_FATAL(
         get_logger(), "The '%s' interface type does not support any state interfaces.",
-        info_.hardware_plugin_name.c_str());
+        hardware_plugin_name.c_str());
       return hardware_interface::CallbackReturn::ERROR;
     }
 
@@ -122,7 +130,7 @@ hardware_interface::CallbackReturn MultiMotorActuator::on_init(
       // TODO(SuperJappie08): Figure out if supporting mimic joints make sense?
       RCLCPP_FATAL(
         get_logger(), "Mimic joints are currently not supported on '%s' interface types.",
-        info_.hardware_plugin_name.c_str());
+        hardware_plugin_name.c_str());
       return CallbackReturn::ERROR;
     }
 
@@ -175,7 +183,7 @@ hardware_interface::CallbackReturn MultiMotorActuator::on_init(
         RCLCPP_FATAL(
           get_logger(),
           "Joint '%s' of hardware interface '%s' [%s] has no 'velocity' command interface defined.",
-          joint.name.c_str(), info_.name.c_str(), info_.hardware_plugin_name.c_str());
+          joint.name.c_str(), get_name().c_str(), hardware_plugin_name.c_str());
         return hardware_interface::CallbackReturn::ERROR;
       }
     } else {
@@ -183,7 +191,7 @@ hardware_interface::CallbackReturn MultiMotorActuator::on_init(
         get_logger(),
         "Joint '%s' of hardware interface '%s' [%s] has a unexpected amount of command interfaces. "
         "Expected 1 ['velocity'], but found %zu interfaces.",
-        joint.name.c_str(), info_.name.c_str(), info_.hardware_plugin_name.c_str(),
+        joint.name.c_str(), get_name().c_str(), hardware_plugin_name.c_str(),
         joint.command_interfaces.size());
       return hardware_interface::CallbackReturn::ERROR;
     }
@@ -193,8 +201,7 @@ hardware_interface::CallbackReturn MultiMotorActuator::on_init(
   // Setup the communication
   auto node_options =
     rclcpp::NodeOptions().start_parameter_event_publisher(false).start_parameter_services(false);
-  node_ =
-    rclcpp::Node::make_shared(MULTI_MOTOR_ACTUATOR_NODE_NAME_PREFIX + get_name(), node_options);
+  node_ = rclcpp::Node::make_shared(kMultiMotorActuatorNodeNamePrefix + get_name(), node_options);
 
   return hardware_interface::CallbackReturn::SUCCESS;
 }
@@ -202,16 +209,18 @@ hardware_interface::CallbackReturn MultiMotorActuator::on_init(
 hardware_interface::CallbackReturn MultiMotorActuator::on_configure(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
+  const auto topic_name = get_hardware_info().hardware_parameters.at(kTopicKey);
+
   // FIXME(SuperJappie08): Check if QoS makes sense when only sending updates?
   multi_speed_publisher_ =
-    get_node()->create_publisher<MultiSpeedMsg>(topic_name_, rclcpp::SensorDataQoS());
+    get_node()->create_publisher<MultiSpeedMsg>(topic_name, rclcpp::SensorDataQoS());
   multi_speed_publisher_rt_.reset(
     new realtime_tools::RealtimePublisher<MultiSpeedMsg>(multi_speed_publisher_));
 
   if (multi_speed_publisher_->get_subscription_count() == 0) {
     RCLCPP_WARN(
       get_logger(), "No subscribers on multi motor topic '%s' yet! Is it the correct topic?",
-      topic_name_.c_str());
+      topic_name.c_str());
   }
 
   multi_speed_publisher_rt_->lock();
@@ -348,9 +357,8 @@ hardware_interface::return_type MultiMotorActuator::write(
 const std::string & MultiMotorActuator::retrieve_tmx_motor_name(
   const hardware_interface::ComponentInfo & joint) const
 {
-  if (auto motor_name_iter = joint.parameters.find("motor_name");
-      motor_name_iter != joint.parameters.cend() && !motor_name_iter->second.empty()) {
-    return motor_name_iter->second;
+  if (joint.parameters.contains(kMotorNameKey)) {
+    return joint.parameters.at(kMotorNameKey);
   }
   return joint.name;
 }

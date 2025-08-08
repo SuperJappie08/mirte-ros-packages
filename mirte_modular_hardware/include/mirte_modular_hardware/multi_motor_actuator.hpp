@@ -69,8 +69,6 @@ public:
     const rclcpp::Time & time, const rclcpp::Duration & period) override;
 
 private:
-  std::string topic_name_;
-
   struct MotorHandle
   {
     double max_speed;

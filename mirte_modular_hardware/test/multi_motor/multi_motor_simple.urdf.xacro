@@ -53,9 +53,13 @@ schematypens="http://www.w3.org/2001/XMLSchema"?> -->
   /> -->
   <xacro:multi_motor_actuator hw_device_name="test_multi_motor">
     <joints>
-      <xacro:multi_motor_joint joint_name="test_joint" />
-      <xacro:multi_motor_joint joint_name="second_joint" tmx_motor_name="top_left" max_speed="10"/>
+      <xacro:multi_motor_joint
+        joint_name="test_joint"
+        max_motor_speed="15" />
+      <xacro:multi_motor_joint
+        joint_name="another_joint"
+        tmx_motor_name="top_left"
+        max_motor_speed="10" />
     </joints>
   </xacro:multi_motor_actuator>
-
 </robot>

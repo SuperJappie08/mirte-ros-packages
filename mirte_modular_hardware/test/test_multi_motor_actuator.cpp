@@ -37,14 +37,19 @@ TEST(TestMultiMotorActuator, load_multi_motor_actuator_2motors)
     <hardware>
       <plugin>mirte_modular_hardware/MultiMotorActuator</plugin>
       <param name="topic">some/multimotor/topic</param>
-      <param name="max_motor_speed">100.0</param>
     </hardware>
     <joint name="joint1">
-      <command_interface name="velocity"/>
+      <command_interface name="velocity">
+        <param name="max">10.0</param>
+        <param name="min">-10.0</param>
+      </command_interface>
     </joint>
     <joint name="joint2">
       <param name="tmx_motor">motor2</param>
-      <command_interface name="velocity"/>
+      <command_interface name="velocity">
+        <param name="max">90.0</param>
+        <param name="min">-90.0</param>
+      </command_interface>
     </joint>
   </ros2_control>
 )";

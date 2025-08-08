@@ -17,7 +17,8 @@
 #ifndef MIRTE_MODULAR_HARDWARE__MULTI_MOTOR_ACTUATOR_HPP_
 #define MIRTE_MODULAR_HARDWARE__MULTI_MOTOR_ACTUATOR_HPP_
 
-#include <unordered_map>
+#include <string>
+#include <vector>
 /* FIXME(SuperJappie08): TO SEPERATE INCLUDES */
 #include <hardware_interface/actuator_interface.hpp>
 #include <hardware_interface/hardware_info.hpp>
@@ -48,6 +49,10 @@ public:
     const hardware_interface::HardwareInfo & info) override;
 
   MIRTE_MODULAR_HARDWARE_PUBLIC
+  hardware_interface::CallbackReturn on_configure(
+    const rclcpp_lifecycle::State & previous_state) override;
+
+  MIRTE_MODULAR_HARDWARE_PUBLIC
   hardware_interface::CallbackReturn on_deactivate(
     const rclcpp_lifecycle::State & previous_state) override;
 
@@ -64,12 +69,19 @@ public:
     const rclcpp::Time & time, const rclcpp::Duration & period) override;
 
 private:
-  double max_motor_speed_ = std::numeric_limits<double>::quiet_NaN();
+  std::string topic_name_;
 
-  // Map from ROS2_Control joint name to telemetrix motor name
-  std::unordered_map<std::string, std::string> joint_tmx_map_;
-  // Map from ROS2_Control joint name to msg idx
-  std::unordered_map<std::string, int> joint_idx_map_;
+  struct MotorHandle
+  {
+    double max_speed;
+    std::string interface_name;
+    std::string tmx_motor_name;
+    int idx = -1;
+
+    int calculate_motor_value(double velocity) const { return (int)(velocity / max_speed * 100.0); }
+  };
+  std::vector<MotorHandle> motor_handles_;
+
   rclcpp::Node::SharedPtr node_ = nullptr;
 
   rclcpp::Publisher<MultiSpeedMsg>::SharedPtr multi_speed_publisher_ = nullptr;

@@ -28,9 +28,14 @@
 #include <rclcpp/macros.hpp>
 #include <rclcpp/time.hpp>
 
+#include "mirte_modular_hardware/hardware_interface_helper.hpp"
 #include "mirte_modular_hardware/visibility_control.hpp"
 #include "mirte_msgs/msg/set_speed_named.hpp"
 #include "mirte_msgs/msg/set_speed_named_array.hpp"
+
+#if !HARDWARE_INTERFACE_NODE_AVAILABLE
+#include <rclcpp/node.hpp>
+#endif
 
 namespace mirte_modular_hardware
 {
@@ -80,8 +85,10 @@ private:
   };
   std::vector<MotorHandle> motor_handles_;
 
+#if !HARDWARE_INTERFACE_NODE_AVAILABLE
   rclcpp::Node::SharedPtr node_ = nullptr;
   rclcpp::Node::SharedPtr get_node() const { return node_; }
+#endif
 
   rclcpp::Publisher<MultiSpeedMsg>::SharedPtr multi_speed_publisher_ = nullptr;
   realtime_tools::RealtimePublisher<MultiSpeedMsg>::SharedPtr multi_speed_publisher_rt_ = nullptr;

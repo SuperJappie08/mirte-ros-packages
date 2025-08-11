@@ -17,7 +17,6 @@
 #include <chrono>
 #include <memory>
 #include <numbers>
-#include <thread>
 /* FIXME(SuperJappie08): TO SEPERATE INCLUDES */
 #include <hardware_interface/hardware_info.hpp>
 #include <hardware_interface/lexical_casts.hpp>
@@ -29,17 +28,19 @@
 /* FIXME(SuperJappie08): TO SEPERATE INCLUDES */
 #include <rclcpp/callback_group.hpp>
 #include <rclcpp/context.hpp>
-#include <rclcpp/executor.hpp>
-#include <rclcpp/executors/single_threaded_executor.hpp>
 #include <rclcpp/logging.hpp>
 #include <rclcpp/node.hpp>
-#include <rclcpp/node_options.hpp>
 #include <rclcpp/qos.hpp>
 #include <rclcpp/subscription_options.hpp>
 #include <rclcpp/wait_for_message.hpp>
 #include <rclcpp_lifecycle/state.hpp>
 
 #include "mirte_modular_hardware/encoder_sensor.hpp"
+#include "mirte_modular_hardware/helpers.hpp"
+
+#if !HARDWARE_INTERFACE_NODE_AVAILABLE
+#include <rclcpp/node_options.hpp>
+#endif
 
 namespace
 {
@@ -47,7 +48,9 @@ constexpr const auto kTopicKey = "topic";
 constexpr const auto kTicksPerRotationKey = "ticks_per_rotation";
 constexpr const auto kInitMsgTimeOutKey = "initial_message_timeout_ms";
 
+#if !HARDWARE_INTERFACE_NODE_AVAILABLE
 constexpr const auto kNodeNamePrefix = "mirte_modular_hardware_encoder_sensor_";
+#endif
 }  // namespace
 
 namespace mirte_modular_hardware
@@ -211,14 +214,14 @@ hardware_interface::CallbackReturn EncoderSensor::on_init(
 
   // TODO(SuperJappie08): Process general Parameters
 
+#if !HARDWARE_INTERFACE_NODE_AVAILABLE
   auto node_options =
     rclcpp::NodeOptions().start_parameter_event_publisher(false).start_parameter_services(false);
   node_ = rclcpp::Node::make_shared(kNodeNamePrefix + get_name(), node_options);
+  executor_thread_ = std::make_unique<ExecutorThread>();
 
-  executor_ = rclcpp::executors::SingleThreadedExecutor::make_shared();
-  executor_thread_.reset(new std::thread(std::bind(&rclcpp::Executor::spin, executor_)));
-
-  executor_->add_node(get_node());
+  get_executor()->add_node(get_node());
+#endif
 
   return hardware_interface::CallbackReturn::SUCCESS;
 }
@@ -226,6 +229,14 @@ hardware_interface::CallbackReturn EncoderSensor::on_init(
 hardware_interface::CallbackReturn EncoderSensor::on_configure(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
+  // FIXME: MAYBE MOVE THIS TO INIT
+  if (!get_node()) {
+    RCLCPP_FATAL(
+      get_logger(), "Node has not been started for '%s' [%s]", get_name().c_str(),
+      get_hardware_info().hardware_plugin_name.c_str());
+    return hardware_interface::CallbackReturn::ERROR;
+  }
+
   const auto topic_name = get_hardware_info().hardware_parameters.at(kTopicKey);
 
   // Initialize the buffer, so the initial read will also be valid
@@ -350,24 +361,6 @@ hardware_interface::return_type EncoderSensor::read(
   }
 
   return hardware_interface::return_type::OK;
-}
-
-hardware_interface::CallbackReturn EncoderSensor::on_shutdown(
-  const rclcpp_lifecycle::State & /*previous_state*/)
-{
-  stop_executor();
-
-  return hardware_interface::CallbackReturn::SUCCESS;
-}
-
-void EncoderSensor::stop_executor() noexcept
-{
-  if (executor_ && executor_->is_spinning()) {
-    executor_->cancel();
-    if (executor_thread_ && executor_thread_->joinable()) [[likely]] {
-      executor_thread_->join();
-    }
-  }
 }
 
 }  // namespace mirte_modular_hardware

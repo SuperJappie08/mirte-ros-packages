@@ -17,7 +17,12 @@
 #ifndef MIRTE_MODULAR_HARDWARE__HELPERS_HPP_
 #define MIRTE_MODULAR_HARDWARE__HELPERS_HPP_
 
+#include <memory>
 #include <thread>
+/* FIXME(SuperJappie08): TO SEPERATE INCLUDES */
+#include <rclcpp/executor.hpp>
+#include <rclcpp/executor_options.hpp>
+#include <rclcpp/macros.hpp>
 
 #include "mirte_modular_hardware/visibility_control.hpp"
 
@@ -28,6 +33,29 @@ struct ThreadJoiner
   MIRTE_MODULAR_HARDWARE_LOCAL
   ThreadJoiner(){};
   void operator()(std::thread * ptr) const noexcept;
+};
+
+class ExecutorThread
+{
+public:
+  RCLCPP_DISABLE_COPY(ExecutorThread)
+  RCLCPP_SMART_PTR_DEFINITIONS_NOT_COPYABLE(ExecutorThread)
+
+  MIRTE_MODULAR_HARDWARE_LOCAL
+  ExecutorThread(const rclcpp::ExecutorOptions & options = rclcpp::ExecutorOptions()) noexcept;
+
+  MIRTE_MODULAR_HARDWARE_LOCAL
+  ExecutorThread(rclcpp::Executor::SharedPtr executor) noexcept;
+
+  MIRTE_MODULAR_HARDWARE_LOCAL
+  ~ExecutorThread() noexcept;
+
+  MIRTE_MODULAR_HARDWARE_LOCAL
+  rclcpp::Executor::SharedPtr get_executor() const noexcept { return executor_; }
+
+private:
+  rclcpp::Executor::SharedPtr executor_;
+  std::unique_ptr<std::thread> thread_;
 };
 }  // namespace mirte_modular_hardware
 

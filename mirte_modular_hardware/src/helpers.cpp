@@ -16,6 +16,13 @@
 
 #include "mirte_modular_hardware/helpers.hpp"
 
+#include <functional>
+#include <memory>
+#include <thread>
+/* FIXME(SuperJappie08): TO SEPERATE INCLUDES */
+#include <rclcpp/executors/single_threaded_executor.hpp>
+#include <rcpputils/asserts.hpp>
+
 namespace mirte_modular_hardware
 {
 
@@ -25,6 +32,30 @@ void ThreadJoiner::operator()(std::thread * ptr) const noexcept
     if (ptr->joinable()) {
       ptr->join();
     }
+  }
+}
+
+ExecutorThread::ExecutorThread(const rclcpp::ExecutorOptions & options) noexcept
+: ExecutorThread(rclcpp::executors::SingleThreadedExecutor::make_shared(options))
+{
+}
+
+ExecutorThread::ExecutorThread(rclcpp::Executor::SharedPtr executor) noexcept : executor_(executor)
+{
+  rcpputils::require_true(
+    !executor_->is_spinning(), "The provided executor must not be spinning yet!");
+
+  thread_ = std::make_unique<std::thread>(std::bind(&rclcpp::Executor::spin, executor_));
+}
+
+ExecutorThread::~ExecutorThread() noexcept
+{
+  if (executor_ && executor_->is_spinning()) {
+    executor_->cancel();
+  }
+
+  if (thread_ && thread_->joinable()) {
+    thread_->join();
   }
 }
 

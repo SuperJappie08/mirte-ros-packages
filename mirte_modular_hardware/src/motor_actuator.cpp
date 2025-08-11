@@ -24,7 +24,6 @@
 #include <realtime_tools/realtime_publisher.hpp>
 /* FIXME(SuperJappie08): TO SEPERATE INCLUDES */
 #include <rclcpp/duration.hpp>
-#include <rclcpp/node.hpp>
 #include <rclcpp/publisher_options.hpp>
 #include <rclcpp/qos.hpp>
 #include <rclcpp/time.hpp>
@@ -38,7 +37,9 @@ namespace
 constexpr const auto kTopicKey = "topic";
 constexpr const auto kMaxMotorSpeedKey = "max_motor_speed";
 
+#if !HARDWARE_INTERFACE_NODE_AVAILABLE
 constexpr const auto kNodeNamePrefix = "mirte_modular_hardware_motor_actuator_";
+#endif
 }  // namespace
 
 namespace mirte_modular_hardware
@@ -56,12 +57,10 @@ hardware_interface::CallbackReturn MotorActuator::on_init(
   const auto hardware_plugin_name = get_hardware_info().hardware_plugin_name;
 
   // Retrieve general parameters
-  std::string topic_name;
   if (get_hardware_info().hardware_parameters.contains(kTopicKey)) {
-    topic_name = get_hardware_info().hardware_parameters.at(kTopicKey);
     RCLCPP_INFO(
       get_logger(), "Using '%s' as the topic name (relative to the hardware node).",
-      topic_name.c_str());
+      get_hardware_info().hardware_parameters.at(kTopicKey).c_str());
   } else {
     // TODO(SuperJappie08): Consider making this parameter optional.
     RCLCPP_FATAL(
@@ -188,15 +187,42 @@ hardware_interface::CallbackReturn MotorActuator::on_init(
 
   // FIXME(SuperJappie08): Implement everything
 
-  // TODO(SuperJappie08): This might need to be moved to activate
+#if !HARDWARE_INTERFACE_NODE_AVAILABLE
   // Setup the communication
   auto node_options =
     rclcpp::NodeOptions().start_parameter_event_publisher(false).start_parameter_services(false);
   node_ = rclcpp::Node::make_shared(kNodeNamePrefix + get_name(), node_options);
+#endif
+
+  return hardware_interface::CallbackReturn::SUCCESS;
+}
+
+hardware_interface::CallbackReturn MotorActuator::on_configure(
+  const rclcpp_lifecycle::State & /*previous_state*/)
+{
+  if (!get_node()) {
+    RCLCPP_FATAL(
+      get_logger(), "Node has not been started for '%s' [%s]", get_name().c_str(),
+      get_hardware_info().hardware_plugin_name.c_str());
+    return hardware_interface::CallbackReturn::ERROR;
+  }
+
+  const auto topic_name = get_hardware_info().hardware_parameters.at(kTopicKey);
 
   // FIXME(SuperJappie08): Check if QoS makes sense when only sending updates?
   speed_publisher_ = get_node()->create_publisher<SpeedMsg>(topic_name, rclcpp::SensorDataQoS());
   speed_publisher_rt_.reset(new realtime_tools::RealtimePublisher<SpeedMsg>(speed_publisher_));
+
+  // TODO: Send initial value here.
+
+  return hardware_interface::CallbackReturn::SUCCESS;
+}
+
+hardware_interface::CallbackReturn MotorActuator::on_cleanup(
+  const rclcpp_lifecycle::State & /*previous_state*/)
+{
+  speed_publisher_.reset();
+  speed_publisher_rt_.reset();
 
   return hardware_interface::CallbackReturn::SUCCESS;
 }

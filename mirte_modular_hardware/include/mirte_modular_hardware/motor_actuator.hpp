@@ -25,14 +25,18 @@
 #include <realtime_tools/realtime_publisher.hpp>
 /* FIXME(SuperJappie08): TO SEPERATE INCLUDES */
 #include <rclcpp/macros.hpp>
-#include <rclcpp/node.hpp>
 #include <rclcpp/publisher.hpp>
 #include <rclcpp/time.hpp>
 #include <rclcpp_lifecycle/state.hpp>
 /* FIXME(SuperJappie08): TO SEPERATE INCLUDES */
 
+#include "mirte_modular_hardware/hardware_interface_helper.hpp"
 #include "mirte_modular_hardware/visibility_control.hpp"
 #include "std_msgs/msg/int32.hpp"
+
+#if !HARDWARE_INTERFACE_NODE_AVAILABLE
+#include <rclcpp/node.hpp>
+#endif
 
 namespace mirte_modular_hardware
 {
@@ -48,6 +52,14 @@ public:
   MIRTE_MODULAR_HARDWARE_PUBLIC
   hardware_interface::CallbackReturn on_init(
     const hardware_interface::HardwareInfo & info) override;
+
+  MIRTE_MODULAR_HARDWARE_PUBLIC
+  hardware_interface::CallbackReturn on_configure(
+    const rclcpp_lifecycle::State & previous_state) override;
+
+  MIRTE_MODULAR_HARDWARE_PUBLIC
+  hardware_interface::CallbackReturn on_cleanup(
+    const rclcpp_lifecycle::State & previous_state) override;
 
   MIRTE_MODULAR_HARDWARE_PUBLIC
   hardware_interface::CallbackReturn on_activate(
@@ -73,8 +85,10 @@ public:
 private:
   double max_motor_speed_ = std::numeric_limits<double>::quiet_NaN();
 
+#if !HARDWARE_INTERFACE_NODE_AVAILABLE
   rclcpp::Node::SharedPtr node_ = nullptr;
   rclcpp::Node::SharedPtr get_node() const { return node_; }
+#endif
 
   rclcpp::Publisher<SpeedMsg>::SharedPtr speed_publisher_ = nullptr;
   realtime_tools::RealtimePublisher<SpeedMsg>::SharedPtr speed_publisher_rt_ = nullptr;

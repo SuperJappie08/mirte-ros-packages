@@ -55,11 +55,14 @@ TEST(TestMotorActuator, load_motor_actuator_single_motor)
   params.clock = node->get_clock();
   params.logger = node->get_logger();
   params.executor = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
-  ASSERT_NO_THROW(hardware_interface::ResourceManager rm(params, true));
+  ASSERT_NO_THROW(hardware_interface::ResourceManager rm(params, true);
+                  ASSERT_TRUE(rm.are_components_initialized()););
 // The API of the ResourceManager has changed in hardware_interface 4.13.0
 #elif HARDWARE_INTERFACE_VERSION_GTE(4, 13, 0)
-  ASSERT_NO_THROW(hardware_interface::ResourceManager rm(
-    urdf, node->get_node_clock_interface(), node->get_node_logging_interface(), false));
+  ASSERT_NO_THROW(
+    hardware_interface::ResourceManager rm(
+      urdf, node->get_node_clock_interface(), node->get_node_logging_interface(), false);
+    ASSERT_TRUE(rm.are_components_initialized()););
 #else
   ASSERT_NO_THROW(hardware_interface::ResourceManager rm(urdf, true, false));
 #endif

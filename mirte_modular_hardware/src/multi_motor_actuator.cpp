@@ -33,7 +33,9 @@ namespace
 constexpr const auto kTopicKey = "topic";
 constexpr const auto kMotorNameKey = "motor_name";
 
+#if !HARDWARE_INTERFACE_NODE_AVAILABLE
 constexpr const auto kNodeNamePrefix = "mirte_modular_hardware_multi_motor_actuator_";
+#endif
 }  // namespace
 
 namespace mirte_modular_hardware
@@ -196,11 +198,12 @@ hardware_interface::CallbackReturn MultiMotorActuator::on_init(
     }
   }
 
-  // TODO(SuperJappie08): This might need to be moved to activate
+#if !HARDWARE_INTERFACE_NODE_AVAILABLE
   // Setup the communication
   auto node_options =
     rclcpp::NodeOptions().start_parameter_event_publisher(false).start_parameter_services(false);
   node_ = rclcpp::Node::make_shared(kNodeNamePrefix + get_name(), node_options);
+#endif
 
   return hardware_interface::CallbackReturn::SUCCESS;
 }
@@ -208,6 +211,13 @@ hardware_interface::CallbackReturn MultiMotorActuator::on_init(
 hardware_interface::CallbackReturn MultiMotorActuator::on_configure(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
+  if (!get_node()) {
+    RCLCPP_FATAL(
+      get_logger(), "Node has not been started for '%s' [%s]", get_name().c_str(),
+      get_hardware_info().hardware_plugin_name.c_str());
+    return hardware_interface::CallbackReturn::ERROR;
+  }
+
   const auto topic_name = get_hardware_info().hardware_parameters.at(kTopicKey);
 
   // FIXME(SuperJappie08): Check if QoS makes sense when only sending updates?

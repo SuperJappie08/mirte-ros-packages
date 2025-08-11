@@ -19,7 +19,7 @@
 
 #include <chrono>
 #include <limits>
-#include <thread>
+#include <memory>
 
 /* FIXME(SuperJappie08): TO SEPERATE INCLUDES */
 #include <hardware_interface/hardware_info.hpp>
@@ -27,15 +27,20 @@
 #include <realtime_tools/realtime_buffer.hpp>
 /* FIXME(SuperJappie08): TO SEPERATE INCLUDES */
 #include <rclcpp/duration.hpp>
-#include <rclcpp/executors/static_single_threaded_executor.hpp>
 #include <rclcpp/macros.hpp>
 #include <rclcpp/time.hpp>
 #include <rclcpp_lifecycle/state.hpp>
 /* FIXME(SuperJappie08): TO SEPERATE INCLUDES */
 
-#include "mirte_modular_hardware/helpers.hpp"
+#include "mirte_modular_hardware/hardware_interface_helper.hpp"
 #include "mirte_modular_hardware/visibility_control.hpp"
 #include "mirte_msgs/msg/encoder.hpp"
+
+#if !HARDWARE_INTERFACE_NODE_AVAILABLE
+#include <rclcpp/executor.hpp>
+
+#include "mirte_modular_hardware/helpers.hpp"
+#endif
 
 namespace mirte_modular_hardware
 {
@@ -79,20 +84,18 @@ private:
     latest_msgs_{{nullptr, nullptr}};
   rclcpp::Subscription<EncoderMsg>::SharedPtr encoder_subscriber_ = nullptr;
 
-public:
-  MIRTE_MODULAR_HARDWARE_PUBLIC
-  hardware_interface::CallbackReturn on_shutdown(
-    const rclcpp_lifecycle::State & previous_state) override;
+#if !HARDWARE_INTERFACE_NODE_AVAILABLE
 
 private:
   /* NOTE(SuperJappie08): https://github.com/husarion/rosbot_hardware_interfaces/blob/main/src/rosbot_system.cpp
    and other use multithreaded, test this and non shared? */
-  rclcpp::executors::SingleThreadedExecutor::SharedPtr executor_ = nullptr;
-  std::unique_ptr<std::thread, ThreadJoiner> executor_thread_ = nullptr;
+  // Defaults to SingleThreadedExecutor
+  std::unique_ptr<ExecutorThread> executor_thread_ = nullptr;
   rclcpp::Node::SharedPtr node_ = nullptr;
   rclcpp::Node::SharedPtr get_node() const { return node_; }
+  rclcpp::Executor::SharedPtr get_executor() const { return executor_thread_->get_executor(); }
 
-  void stop_executor() noexcept;
+#endif
 };
 }  // namespace mirte_modular_hardware
 

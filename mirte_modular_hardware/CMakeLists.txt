@@ -18,84 +18,21 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 # find dependencies
-find_package(ament_cmake REQUIRED)
-find_package(backward_ros REQUIRED)
-find_package(rclcpp REQUIRED)
-find_package(rclcpp_lifecycle REQUIRED)
-find_package(rcpputils REQUIRED)
-find_package(hardware_interface REQUIRED)
-find_package(realtime_tools REQUIRED)
-find_package(mirte_msgs REQUIRED)
-find_package(std_msgs REQUIRED)
-find_package(pluginlib REQUIRED)
+find_package(ament_cmake_auto REQUIRED)
+ament_auto_find_build_dependencies()
 
-include_directories(include)
-
-add_library(${PROJECT_NAME} SHARED
+ament_auto_add_library(${PROJECT_NAME} SHARED
   src/encoder_sensor.cpp
   src/helpers.cpp
   src/motor_actuator.cpp
   src/multi_motor_actuator.cpp
 )
 
-# # TODO: Is this desired???
-# target_include_directories(${PROJECT_NAME} PUBLIC
-#   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-#   $<INSTALL_INTERFACE:include/${PROJECT_NAME}>
-# )
-
-# ament_target_dependencies will be deprecated
-target_link_libraries(${PROJECT_NAME}
-PUBLIC
-  ${mirte_msgs_TARGETS}
-  ${std_msgs_TARGETS}
-  hardware_interface::hardware_interface
-  pluginlib::pluginlib
-  rclcpp::rclcpp
-  rclcpp_lifecycle::rclcpp_lifecycle
-  realtime_tools::realtime_tools
-)
-
-
 # Export hardware plugins
 pluginlib_export_plugin_description_file(hardware_interface mirte_modular_hardware.xml)
 
-# Install
-install(
-  DIRECTORY include/
-  DESTINATION include/${PROJECT_NAME}
-)
-
-install(
-  DIRECTORY urdf
-  DESTINATION share/${PROJECT_NAME}/
-)
-
-install(
-  TARGETS ${PROJECT_NAME}
-  EXPORT export_${PROJECT_NAME}
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-)
-
-ament_export_include_directories(include)
-ament_export_libraries(${PROJECT_NAME})
-ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
-ament_export_dependencies(
-  backward_ros
-  rclcpp
-  rclcpp_lifecycle
-  rcpputils
-  hardware_interface
-  realtime_tools
-  pluginlib
-  mirte_msgs
-  std_msgs
-)
-
 if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
+  ament_auto_find_test_dependencies()
   # the following line skips the linter which checks for copyrights
   # comment the line when a copyright and license is added to all source files
   set(ament_cmake_copyright_FOUND TRUE)
@@ -105,28 +42,16 @@ if(BUILD_TESTING)
   set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 
-  find_package(ros2_control_test_assets REQUIRED)
-  find_package(ament_cmake_gtest REQUIRED)
-
   # GTests
-  set(THIS_PACKAGE_HW_INTERFACES_TEST_DEPENDS
-    rclcpp::rclcpp
-    rcpputils::rcpputils
-    hardware_interface::hardware_interface
-    ros2_control_test_assets::ros2_control_test_assets
-  )
+  ament_auto_add_gtest(test_encoder_sensor test/test_encoder_sensor.cpp)
 
-  ament_add_gtest(test_encoder_sensor test/test_encoder_sensor.cpp)
-  target_link_libraries(test_encoder_sensor ${PROJECT_NAME})
-  target_link_libraries(test_encoder_sensor ${THIS_PACKAGE_HW_INTERFACES_TEST_DEPENDS})
+  ament_auto_add_gtest(test_motor_actuator test/test_motor_actuator.cpp)
 
-  ament_add_gtest(test_motor_actuator test/test_motor_actuator.cpp)
-  target_link_libraries(test_motor_actuator ${PROJECT_NAME})
-  target_link_libraries(test_motor_actuator ${THIS_PACKAGE_HW_INTERFACES_TEST_DEPENDS})
-
-  ament_add_gtest(test_multi_motor_actuator test/test_multi_motor_actuator.cpp)
-  target_link_libraries(test_multi_motor_actuator ${PROJECT_NAME})
-  target_link_libraries(test_multi_motor_actuator ${THIS_PACKAGE_HW_INTERFACES_TEST_DEPENDS})
+  ament_auto_add_gtest(test_multi_motor_actuator test/test_multi_motor_actuator.cpp)
 endif()
 
-ament_package()
+ament_auto_package(
+  USE_SCOPED_HEADER_INSTALL_DIR  # Pre-Kilted Fix
+  INSTALL_TO_SHARE
+    urdf
+)

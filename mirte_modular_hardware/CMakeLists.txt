@@ -22,6 +22,7 @@ find_package(ament_cmake REQUIRED)
 find_package(backward_ros REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
+find_package(rcpputils REQUIRED)
 find_package(hardware_interface REQUIRED)
 find_package(realtime_tools REQUIRED)
 find_package(mirte_msgs REQUIRED)
@@ -85,6 +86,7 @@ ament_export_dependencies(
   backward_ros
   rclcpp
   rclcpp_lifecycle
+  rcpputils
   hardware_interface
   realtime_tools
   pluginlib
@@ -109,6 +111,7 @@ if(BUILD_TESTING)
   # GTests
   set(THIS_PACKAGE_HW_INTERFACES_TEST_DEPENDS
     rclcpp::rclcpp
+    rcpputils::rcpputils
     hardware_interface::hardware_interface
     ros2_control_test_assets::ros2_control_test_assets
   )

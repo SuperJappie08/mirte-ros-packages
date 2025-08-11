@@ -2,7 +2,7 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
   <xacro:include filename="$(find mirte_modular_hardware)/urdf/common.xacro" />
 
-  <xacro:macro name="mirte_modular_hardware_motor"
+  <xacro:macro name="motor_actuator"
     params="hardware_namespace:='io' hw_device_name joint_name max_motor_speed:='${6.0*pi}'">
 
     <!-- Strip trailing slash -->

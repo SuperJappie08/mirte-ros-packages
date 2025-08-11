@@ -13,12 +13,12 @@
   <!-- Assumes the device name of the encoder and the motor match -->
   <xacro:macro name="mirte_pioneer_base_control_motor"
     params="hardware_namespace:='io' hw_device_name joint_name ticks_per_rotation:=0 max_motor_speed='${6.0*pi}'">
-    <xacro:mirte_modular_hardware_motor hardware_namespace="${hardware_namespace}"
+    <xacro:motor_actuator hardware_namespace="${hardware_namespace}"
       hw_device_name="${hw_device_name}" joint_name="${joint_name}"
       max_motor_speed="${max_motor_speed}" />
 
     <xacro:if value="${ticks_per_rotation > 0}">
-      <xacro:mirte_modular_hardware_encoder hardware_namespace="${hardware_namespace}"
+      <xacro:encoder_sensor hardware_namespace="${hardware_namespace}"
         hw_device_name="${hw_device_name}" joint_name="${joint_name}"
         ticks_per_rotation="${ticks_per_rotation}" />
     </xacro:if>

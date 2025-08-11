@@ -4,7 +4,7 @@
 
   <!-- NOTE; The standard slot encoders compatible with the yellow TT motors of the MIRTE Pioneer,
              have 20 ticks per rotations -->
-  <xacro:macro name="mirte_modular_hardware_encoder"
+  <xacro:macro name="encoder_sensor"
     params="hardware_namespace:='io' hw_device_name joint_name ticks_per_rotation:=20 initial_message_timeout:=500">
     <!-- Strip leading slash -->
     <xacro:strip_trailing_slash source="${hardware_namespace}" dest="hardware_namespace_" />

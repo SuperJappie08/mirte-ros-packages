@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:include filename="$(find mirte_modular_hardware)/urdf/motor.ros2_control.xacro"/>
+  <!-- Based on loop from xacro wiki -->
+
+  <xacro:macro name="single_motors_loop" params="wheels:=^ base_config:=^">
+      <xacro:if value="${wheels}">
+      <!-- pop first item from list -->
+      <xacro:property name="wheel_name" value="${wheels.pop(0)}" />
+
+      <xacro:property name="wheel_config" value="${base_config.wheels[wheel_name]}"/>
+
+      <!-- Base properties -->
+      <xacro:property name="hardware_namespace" value="${base_config.get('hardware_namespace', 'io')}" />
+
+      <!-- Wheel specific properties -->
+      <xacro:property name="max_motor_speed" value="${wheel_config.max_motor_speed}"/>
+
+      <!-- xacro:eval-comments:on -->
+      <!-- wheel_name: ${wheel_name} -->
+      <!-- hardware_namespace: ${hardware_namespace} -->
+      <!-- max_motor_speed: ${max_motor_speed} -->
+      <!-- xacro:eval-comments:off -->
+
+      <xacro:motor_actuator hw_device_name="${wheel_name}" hardware_namespace="${hardware_namespace}"
+        joint_name="${wheel_name}_wheel_joint" max_motor_speed="${max_motor_speed}" />
+
+      <!-- recursively call myself -->
+      <xacro:single_motors_loop />
+    </xacro:if>
+  </xacro:macro>
+
+  <xacro:macro name="single_motors" params="base_config:=^">
+    <xacro:single_motors_loop wheels="${list(base_config.wheels.keys())}" base_config="${base_config}" />
+  </xacro:macro>
+</robot>

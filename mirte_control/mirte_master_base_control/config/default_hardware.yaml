@@ -1,0 +1,26 @@
+base:
+  hardware_namespace: io
+
+  # [OPTIONAL] initial_message_timeout (int): Waiting duration for initial message in milliseconds (Default to 500ms)
+  #            Set to -1 to disable timeout.
+  #            Used by: mirte_modular_hardware/EncoderSensor
+  initial_message_timeout: 500
+
+  wheels:
+    # wheel_name:  # The name of the joint/tmx_motor (Joint Name = '{wheel_name}_wheel_joint')
+    #   max_motor_speed: 100.0 (double)  # The maximum motor speed in rad/s
+    #   tmx_motor_name: some_tmx_name (str)  # Optional TMX motor key override
+    #   initial_motor_speed: 100.0 (double)  # Optional Intial motor speed in rad/s (Defaults to 0.0)
+    #   ticks_per_rotation: 24 (int)  # Encoder ticks per wheel rotation
+    front_left:
+      max_motor_speed: 20.943951 # rad/s (200 RPM)
+      ticks_per_rotation: 1320
+    front_right:
+      max_motor_speed: 20.943951 # rad/s (200 RPM)
+      ticks_per_rotation: 1320
+    rear_left:
+      max_motor_speed: 20.943951 # rad/s (200 RPM)
+      ticks_per_rotation: 1320
+    rear_right:
+      max_motor_speed: 20.943951 # rad/s (200 RPM)
+      ticks_per_rotation: 1320

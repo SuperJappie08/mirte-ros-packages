@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:include filename="$(find mirte_modular_hardware)/urdf/multi_motor.ros2_control.xacro" />
+  <!-- Based on loop from xacro wiki -->
+  <xacro:macro name="multi_motor_wheel_joints" params="wheels:=^ base_config:=^">
+    <xacro:if value="${wheels}">
+      <!-- pop first item from list -->
+      <xacro:property name="wheel_name" value="${wheels.pop(0)}" />
+
+      <xacro:property name="wheel_config" value="${base_config.wheels[wheel_name]}"/>
+
+      <!-- Wheel specific properties -->
+      <xacro:property name="max_motor_speed" value="${wheel_config.max_motor_speed}" />
+      <xacro:property name="tmx_motor_name" value="${wheel_config.get('tmx_motor_name', wheel_name)}" />
+      <xacro:property name="initial_value" value="${wheel_config.get('initial_motor_speed')}" />
+
+      <!-- xacro:eval-comments:on -->
+      <!-- wheel_name: ${wheel_name} -->
+      <!-- max_motor_speed: ${max_motor_speed} -->
+      <!-- tmx_motor_name: ${tmx_motor_name} -->
+      <!-- initial_value(initial_motor_speed): ${initial_value} -->
+      <!-- xacro:eval-comments:off -->
+
+      <xacro:multi_motor_joint joint_name="${wheel_name}_wheel_joint"
+        max_motor_speed="${max_motor_speed}" tmx_motor_name="${tmx_motor_name}" initial_value="${initial_value}"/>
+
+      <!-- recursively call myself -->
+      <xacro:multi_motor_wheel_joints />
+    </xacro:if>
+  </xacro:macro>
+</robot>

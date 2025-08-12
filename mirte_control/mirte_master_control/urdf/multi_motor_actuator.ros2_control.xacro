@@ -2,7 +2,7 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
   <xacro:macro name="multi_motor_actuator" params="base_config:=^|">
     <xacro:include filename="$(find mirte_modular_hardware)/urdf/multi_motor.ros2_control.xacro" />
-    <xacro:include filename="$(find mirte_master_base_control)/urdf/multi_motor_wheel_joints.xacro" />
+    <xacro:include filename="$(find mirte_master_control)/urdf/multi_motor_wheel_joints.xacro" />
 
     <xacro:property name="hardware_namespace" value="${base_config.hardware_namespace}" />
     <xacro:multi_motor_actuator hw_device_name="motorservocontroller" hardware_namespace="${hardware_namespace}">

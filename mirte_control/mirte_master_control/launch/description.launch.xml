@@ -1,0 +1,33 @@
+<launch>
+  <!-- description.launch.xml: Generate the 'robot_description' launch configuration -->
+
+  <!-- Control Options -->
+  <arg name="config_file"
+    description="The MIRTE control configuration file, if not specified the ENV override or the default config will be used."
+    default="$(env MIRTE_CONTROL_CONFIG '$(find-pkg-share mirte_master_control)/config/default_hardware.yaml')" />
+
+  <arg name="base_motors" default="multi_motor"
+    description="Hardware interface type(s) for the base motors (Used by the Mecanum Drive)">
+    <choice value="multi_motor" />
+    <choice value="single_motors" />
+  </arg>
+
+  <arg name="base_encoders" default="single_encoders"
+    description="Hardware interface type(s) for the base encoders (Used by the Mecanum Drive)">
+    <choice value="single_encoders" />
+  </arg>
+
+  <!-- Global Xacro Options -->
+  <let name="xacro_options" value="include_old_sim_control:=False" />
+
+  <!-- Control Options -->
+  <let name="xacro_options" value="$(var xacro_options) control_config_file:=$(var config_file)" />
+  <let name="xacro_options" value="$(var xacro_options) base_motors:=$(var base_motors)" />
+  <let name="xacro_options" value="$(var xacro_options) base_encoders:=$(var base_encoders)" />
+
+  <!-- XACRO Description Options -->
+  <include file="$(find-pkg-share mirte_master_description)/launch/xacro_options.launch.xml" />
+
+  <let name="robot_description"
+    value="$(command 'xacro $(find-pkg-share mirte_master_control)/urdf/mirte_master_combined.urdf.xacro $(var xacro_options)')" />
+</launch>

@@ -16,7 +16,7 @@
      <xacro:property name="M_PI" value="3.1415926535897931" />
 
      <xacro:macro name="sensor_orbbec_astra_pro_plus"
-          params="name parent *origin color rgb_w:=640 rgb_h:=480 stddev:=0.5">
+          params="name parent *origin color rgb_w:=640 rgb_h:=480 stddev:=0.5 with_gazebo:=True">
 
           <joint name="${name}_rgb_joint" type="fixed">
                <xacro:insert_block name="origin" />
@@ -107,8 +107,10 @@
                </inertial-->
           </link>
 
-          <!-- RGBD sensor for simulation, same as Kinect -->
-          <xacro:sensor_orbbec_astra_pro_plus_gazebo />
+          <xacro:if value="${with_gazebo}">
+               <!-- RGBD sensor for simulation, same as Kinect -->
+               <xacro:sensor_orbbec_astra_pro_plus_gazebo />
+          </xacro:if>
 
      </xacro:macro>
 

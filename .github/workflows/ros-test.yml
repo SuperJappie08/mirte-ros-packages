@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [mirte_modular_hardware]
+        package: [mirte_modular_hardware, mirte_master_control]
         linter:
           - xmllint
           - copyright
@@ -62,6 +62,7 @@ jobs:
         with:
           package-name: |
             mirte_modular_hardware
+            mirte_master_control
           target-ros2-distro: ${{ matrix.ros_distro }}
           vcs-repo-file-url: /tmp/dev.repos
 

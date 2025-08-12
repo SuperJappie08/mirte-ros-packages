@@ -1,0 +1,11 @@
+<launch>
+  <include file="$(find-pkg-share mirte_master_control)/launch/description.launch.xml"/>
+  <arg name="frame_prefix" default=""
+    description="An arbitrary prefix to add to the published tf2 frames. Defaults to the empty string." />
+
+  <!-- NOTE(SuperJappie08): It might be nice to support composition here -->
+  <node pkg="robot_state_publisher" exec="robot_state_publisher">
+    <param name="robot_description" type="str" value="$(var robot_description)" />
+    <param name="frame_prefix" type="str" value="$(var frame_prefix)" />
+  </node>
+</launch>

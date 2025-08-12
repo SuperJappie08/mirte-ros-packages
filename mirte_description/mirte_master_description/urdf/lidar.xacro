@@ -76,7 +76,8 @@
     <xacro:property name="lidar_sensor_link" value="lidar_link" />
   </xacro:unless>
 
-  <gazebo reference="lidar_link">
+  <xacro:if value="$(arg include_old_sim_control)">
+    <gazebo reference="lidar_link">
         <sensor name="lidar" type="ray">
             <pose> 0 0 0 0 0 0 </pose>
             <visualize>${visualize_sensors}</visualize>
@@ -105,6 +106,6 @@
             </plugin>
         </sensor>
     </gazebo>
-
+  </xacro:if>
 
 </robot>

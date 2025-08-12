@@ -583,7 +583,7 @@
     </joint>
 
 
-
+<xacro:if value="$(arg include_old_sim_control)">
 <gazebo>
     <plugin filename="libgazebo_grasp_fix.so" name="gazebo_grasp_fix">
        <arm>
@@ -604,6 +604,6 @@
        <disable_collisions_on_attach>false</disable_collisions_on_attach>
     </plugin>
 </gazebo>
-
+</xacro:if>
 
 </robot>

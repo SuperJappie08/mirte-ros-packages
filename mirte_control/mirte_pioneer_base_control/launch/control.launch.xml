@@ -32,7 +32,7 @@
     value="$(command 'xacro $(find-pkg-share mirte_pioneer_base_control)/urdf/mirte_pioneer_combined.urdf.xacro $(var _extra_xacro_args)')" />
 
   <node pkg="robot_state_publisher" exec="robot_state_publisher">
-    <param name="robot_description" value="$(var robot_description)" />
+    <param name="robot_description" type="str" value="$(var robot_description)" />
     <param name="frame_prefix" value="$(var frame_prefix)" />
   </node>
 

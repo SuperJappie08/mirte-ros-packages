@@ -2,7 +2,7 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
   <xacro:include filename="$(find mirte_modular_hardware)/urdf/common.xacro" />
 
-  <!-- NOTE; The standard slot encoders compatible with the yellow TT motors of the MIRTE Pioneer,
+  <!-- NOTE: The standard slot encoders compatible with the yellow TT motors of the MIRTE Pioneer,
              have 20 ticks per rotations -->
   <xacro:macro name="encoder_sensor"
     params="hardware_namespace:='io' hw_device_name joint_name ticks_per_rotation:=20 initial_message_timeout:=500">
@@ -13,18 +13,18 @@
     <ros2_control name="mirte_modular_hardware_encoder_${hw_device_name}" type="sensor">
       <hardware>
         <plugin>mirte_modular_hardware/EncoderSensor</plugin>
-        <!-- TODO PARAMS GO HERE-->
-        <!-- TODO(SuperJappie08) Check if last / already added-->
-        <!-- TODO(SuperJappie08) Ability to override topic -->
-        <!-- TODO(SuperJappie08) Ability to run inside of a namespace -->
+        <!-- TODO: PARAMS GO HERE-->
+        <!-- TODO(SuperJappie08): Check if last / already added-->
+        <!-- TODO(SuperJappie08): Ability to override topic -->
+        <!-- TODO(SuperJappie08): Ability to run inside of a namespace -->
         <param name="topic">${hardware_namespace_}/encoder/${hw_device_name}</param>
         <param name="ticks_per_rotation">${ticks_per_rotation}</param>
         <param name="initial_message_timeout_ms">${initial_message_timeout}</param>
       </hardware>
       <joint name="${joint_name}">
-        <!-- TODO EXTRA CONFIG LIKE WRAPPING AND LIMITS -->
+        <!-- TODO: EXTRA CONFIG LIKE WRAPPING AND LIMITS -->
         <state_interface name="position" />
-        <!-- TODO(SuperJappie08) Possibly make toggleable state interface velocity? -->
+        <!-- TODO(SuperJappie08): Possibly make toggleable state interface velocity? -->
         <state_interface name="velocity" />
       </joint>
     </ros2_control>

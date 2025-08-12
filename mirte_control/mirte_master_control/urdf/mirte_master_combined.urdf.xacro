@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="mirte_master">
+  <xacro:include filename="$(find mirte_master_description)/urdf/mirte_master.xacro" />
+
+  <xacro:arg name="control_config_file" default="$(find mirte_master_control)/config/default_hardware.yaml" />
+  <xacro:property name="control_config_file" value="$(arg control_config_file)" />
+  <xacro:property name="control_config" value="${xacro.load_yaml(control_config_file)}"/>
+
+  <!-- Options: -->
+  <!-- - multi_motor -->
+  <!-- - single_motors -->
+  <xacro:arg name="base_motors" default="multi_motor"/>
+  <xacro:include filename="$(find mirte_master_control)/urdf/base/motor/$(arg base_motors).ros2_control.xacro"/>
+  <xacro:motors base_config="${control_config.base}" />
+
+  <xacro:arg name="base_encoders" default="single_encoders"/>
+  <xacro:include filename="$(find mirte_master_control)/urdf/base/encoder/$(arg base_encoders).ros2_control.xacro"/>
+  <xacro:encoders base_config="${control_config.base}" />
+
+  <!-- TODO: Add ARM -->
+</robot>

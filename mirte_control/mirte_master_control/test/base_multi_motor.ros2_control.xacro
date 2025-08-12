@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:property name="config_file" value="$(find mirte_master_control)/config/default_hardware.yaml" />
+  <xacro:property name="config" value="${xacro.load_yaml(config_file)}"/>
+
+  <xacro:include filename="$(find mirte_master_control)/urdf/base/motor/multi_motor.ros2_control.xacro"/>
+  <xacro:motors base_config="${config.base}"/>
+
+  <!-- TODO(SuperJappie08): For Now multi load encoders (could make merged encoder (1 hw multi sub) later) -->
+  <xacro:include filename="$(find mirte_master_control)/urdf/base/encoder/single_encoders.ros2_control.xacro" />
+  <xacro:single_encoders base_config="${config.base}"/>
+</robot>

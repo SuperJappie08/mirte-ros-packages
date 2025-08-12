@@ -9,23 +9,23 @@
     <xacro:strip_trailing_slash source="${hardware_namespace}" dest="hardware_namespace_" />
     <!-- <xacro:property name="topic_" value= scope="parent"/> -->
 
-    <!-- NOTE; this *highly* depends on the voltage of the motors!!!! -->
+    <!-- NOTE: this *highly* depends on the voltage of the motors!!!! -->
     <!-- For 5V power bank; 255 pwm = 90 ticks/sec -> ca 2 rot/s (4*pi) -->
     <!-- For 6V power supply; 255 pwm = 120 ticks/sec -> ca 3 rot/s (6*pi) -->
 
     <ros2_control name="mirte_modular_hardware_motor_${hw_device_name}" type="actuator">
       <hardware>
         <plugin>mirte_modular_hardware/MotorActuator</plugin>
-        <!-- TODO PARAMS GO HERE-->
-        <!-- TODO(SuperJappie08) Check if last / already added-->
-        <!-- TODO(SuperJappie08) Ability to override topic -->
-        <!-- TODO(SuperJappie08) Ability to run inside of a namespace -->
+        <!-- TODO: PARAMS GO HERE-->
+        <!-- TODO(SuperJappie08): Check if last / already added-->
+        <!-- TODO(SuperJappie08): Ability to override topic -->
+        <!-- TODO(SuperJappie08): Ability to run inside of a namespace -->
         <param name="topic">${hardware_namespace_}/motor/${hw_device_name}/speed</param>
         <param name="max_motor_speed">${max_motor_speed}</param>
       </hardware>
       <joint name="${joint_name}">
         <command_interface name="velocity" />
-        <!-- TODO EXTRA CONFIG LIKE WRAPPING AND LIMITS -->
+        <!-- TODO: Maybe make configurable like multi_motor (so based on the joint/command_interface) -->
       </joint>
     </ros2_control>
   </xacro:macro>

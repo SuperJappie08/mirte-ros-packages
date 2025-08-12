@@ -7,6 +7,6 @@
   <let name="robot_description" value="$(command 'xacro $(var urdf_path)')" />
 
   <node pkg="robot_state_publisher" exec="robot_state_publisher">
-    <param name="robot_description" value="$(var robot_description)" />
+    <param name="robot_description" type="str" value="$(var robot_description)" />
   </node>
 </launch>

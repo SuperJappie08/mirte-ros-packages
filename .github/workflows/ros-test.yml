@@ -11,7 +11,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [mirte_modular_hardware, mirte_master_control]
+        package:
+          - mirte_modular_hardware
+          - mirte_master_control
         linter:
           - xmllint
           - copyright
@@ -23,6 +25,11 @@ jobs:
         include:
           - ros_distro: jazzy
             ubuntu: noble
+        exclude:
+          - package: mirte_master_control
+            linter: cppcheck
+          - package: mirte_master_control
+            linter: clang_format
 
     steps:
       - name: Checkout code

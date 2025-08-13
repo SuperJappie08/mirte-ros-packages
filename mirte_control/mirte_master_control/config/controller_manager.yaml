@@ -1,0 +1,4 @@
+/**/controller_manager:
+    ros__parameters:
+      # FIXME:(SuperJappie08): Increase??? and limit hardware/controllers
+      update_rate: 10  # Hz

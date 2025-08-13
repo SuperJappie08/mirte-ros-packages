@@ -1,0 +1,28 @@
+<launch>
+  <!-- TODO: Optional PID -->
+  <arg name="use_pid" default="False" description="Enable PID wheel controller"/>
+
+  <let name="ansi-escape" value="$(eval 'chr(0o33)')" /> 
+  <!-- FIXME: frame_prefix resolution probably does not work-->
+  <let name="warning-block" value="$(var ansi-escape)[1;33m[WARNING]$(var ansi-escape)[0m"/>
+  <log message="$(var warning-block) Setting 'frame_prefix' on mirte_base_controller is probably not going to work!"
+    unless="$(equals $(var frame_prefix) '')"/>
+
+  <node pkg="controller_manager" exec="spawner"
+    args="mirte_base_controller -p $(find-pkg-share mirte_master_control)/config/controllers/mirte_base_controller.yaml
+    --controller-ros-args '-r mirte_base_controller:~/odometry:=~/odom'
+    --controller-ros-args '-r mirte_base_controller:~/reference:=~/cmd_vel'
+    --controller-ros-args '-r mirte_base_controller:~/tf_odometry:=/tf'"
+    unless="$(var use_pid)" />
+
+  <node pkg="controller_manager" exec="spawner"
+    args="pid_wheels_controller mirte_base_controller
+      -p $(find-pkg-share mirte_master_control)/config/controllers/mirte_base_controller.yaml
+      -p $(find-pkg-share mirte_master_control)/config/controllers/pid_wheels_controller.yaml
+      --controller-ros-args '-r mirte_base_controller:~/odometry:=~/odom'
+      --controller-ros-args '-r mirte_base_controller:~/reference:=~/cmd_vel'
+      --controller-ros-args '-r mirte_base_controller:~/tf_odometry:=/tf'"
+    if="$(var use_pid)" />
+
+
+</launch>

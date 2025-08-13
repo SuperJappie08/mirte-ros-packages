@@ -6,6 +6,12 @@
   <xacro:property name="control_config_file" value="$(arg control_config_file)" />
   <xacro:property name="control_config" value="${xacro.load_yaml(control_config_file)}"/>
 
+  <!-- Override the config specified (per subsystem) specified hardware interface -->
+  <xacro:arg name="hardware_namespace" default="${control_config.get('hardware_namespace', '')}"/>
+  <xacro:if value="${bool('$(arg hardware_namespace)')}">
+    <xacro:property name="hardware_namespace" value="$(arg hardware_namespace)" />
+  </xacro:if>
+
   <!-- Options: -->
   <!-- - multi_motor -->
   <!-- - single_motors -->

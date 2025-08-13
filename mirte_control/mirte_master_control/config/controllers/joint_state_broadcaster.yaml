@@ -1,0 +1,4 @@
+/**/joint_state_broadcaster:
+  ros__parameters:
+    type: joint_state_broadcaster/JointStateBroadcaster
+    # FIXME:(SuperJappie08): Possibly limit publish rate by limiting controller update rate.

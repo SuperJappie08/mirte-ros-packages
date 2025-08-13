@@ -1,0 +1,11 @@
+<launch>
+  <include file="$(find-pkg-share mirte_master_control)/launch/robot_state_publisher.launch.xml"/>
+
+  <node pkg="controller_manager" exec="ros2_control_node">
+    <param from="$(find-pkg-share mirte_master_control)/config/controller_manager.yaml" />
+  </node>
+
+  <!-- Always spawn the joint_state_broadcaster, as it is essential -->
+  <node pkg="controller_manager" exec="spawner" 
+    args="joint_state_broadcaster -p $(find-pkg-share mirte_master_control)/config/controllers/joint_state_broadcaster.yaml"/>
+</launch>

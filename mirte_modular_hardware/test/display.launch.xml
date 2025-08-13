@@ -3,10 +3,7 @@
     description="The path to the robot description relative to the package test directory" />
 
   <arg name="jsp_gui" default="True"
-    description="Flag to enable joint_state_publisher_gui">
-    <choice value="True" />
-    <choice value="False" />
-  </arg>
+    description="Flag to enable joint_state_publisher_gui" />
 
   <arg name="rviz_config" default="$(find-pkg-share urdf_launch)/config/urdf.rviz"
     description="Absolute path to rviz config file" />

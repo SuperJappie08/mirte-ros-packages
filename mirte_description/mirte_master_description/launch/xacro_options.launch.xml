@@ -3,66 +3,42 @@
 
   <!-- Flag -->
   <arg name="flag_enable" default="False"
-    description="If the Flag is included in the Robot Description">
-    <choice value="True" />
-    <choice value="False" />
-  </arg>
+    description="If the Flag is included in the Robot Description" />
   <let name="xacro_options" value="$(var xacro_options '') flag_enable:=$(var flag_enable)" />
 
   <!-- Arm -->
   <arg name="arm_enable" default="True"
-    description="If the Arm is included in the Robot Description">
-    <choice value="True" />
-    <choice value="False" />
-  </arg>
+    description="If the Arm is included in the Robot Description" />
   <let name="xacro_options" value="$(var xacro_options) arm_enable:=$(var arm_enable)" />
 
   <!-- Screen -->
   <arg name="screen_enable" default="False"
-    description="If the Screen is included in the Robot Description">
-    <choice value="True" />
-    <choice value="False" />
-  </arg>
+    description="If the Screen is included in the Robot Description" />
   <let name="xacro_options" value="$(var xacro_options) screen_enable:=$(var screen_enable)" />
 
   <!-- Front Camera -->
   <arg name="front_camera_enable" default="False"
-    description="If the Front Camera is included in the Robot Description">
-    <choice value="True" />
-    <choice value="False" />
-  </arg>
+    description="If the Front Camera is included in the Robot Description" />
   <let name="xacro_options" value="$(var xacro_options) front_camera_enable:=$(var front_camera_enable)" />
 
   <!-- Sonar -->
   <arg name="sonar_enable" default="True"
-    description="If the Sonars are included in the Robot Description">
-    <choice value="True" />
-    <choice value="False" />
-  </arg>
+    description="If the Sonars are included in the Robot Description" />
   <let name="xacro_options" value="$(var xacro_options) sonar_enable:=$(var sonar_enable)" />
 
   <!-- LiDAR -->
   <arg name="lidar_enable" default="True"
-    description="If the LiDAR is included in the Robot Description">
-    <choice value="True" />
-    <choice value="False" />
-  </arg>
+    description="If the LiDAR is included in the Robot Description" />
   <let name="xacro_options" value="$(var xacro_options) lidar_enable:=$(var lidar_enable)" />
   <!-- NOTE(SuperJappie08): The correction Toggle is currently omitted, as it was for ROS1 compatibility -->
 
   <!-- Depth Camera -->
   <arg name="depth_camera_enable" default="True"
-    description="If the Depth Camera is included in the Robot Description">
-    <choice value="True" />
-    <choice value="False" />
-  </arg>
+    description="If the Depth Camera is included in the Robot Description" />
   <let name="xacro_options" value="$(var xacro_options) depth_camera_enable:=$(var depth_camera_enable)" />
 
   <!-- IMU -->
   <arg name="imu_enable" default="True"
-    description="If the IMU is included in the Robot Description">
-    <choice value="True" />
-    <choice value="False" />
-  </arg>
+    description="If the IMU is included in the Robot Description" />
   <let name="xacro_options" value="$(var xacro_options) imu_enable:=$(var imu_enable)" />
 </launch>

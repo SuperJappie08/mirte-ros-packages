@@ -12,6 +12,8 @@
 
       <!-- Base properties -->
       <xacro:property name="hardware_namespace_" value="${hardware_namespace or base_config.get('hardware_namespace', 'io')}" />
+      <!-- NOTE: The default if omitted is 'rw_rate="0"' which means as fast as the controller manager -->
+      <xacro:property name="rw_rate" value="${base_config.get('rw_rate', 0)}" />
 
       <!-- Wheel specific properties -->
       <xacro:property name="max_motor_speed" value="${wheel_config.max_motor_speed}"/>
@@ -19,11 +21,12 @@
       <!-- xacro:eval-comments:on -->
       <!-- wheel_name: ${wheel_name} -->
       <!-- hardware_namespace: ${hardware_namespace_} -->
+      <!-- rw_rate: ${rw_rate} Hz (0 => cm rate) -->
       <!-- max_motor_speed: ${max_motor_speed} -->
       <!-- xacro:eval-comments:off -->
 
       <xacro:motor_actuator hw_device_name="${wheel_name}" hardware_namespace="${hardware_namespace_}"
-        joint_name="${wheel_name}_wheel_joint" max_motor_speed="${max_motor_speed}" />
+        joint_name="${wheel_name}_wheel_joint" max_motor_speed="${max_motor_speed}" rw_rate="${rw_rate}" />
 
       <!-- recursively call myself -->
       <xacro:single_motors_loop />

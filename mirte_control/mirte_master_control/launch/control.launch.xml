@@ -3,4 +3,6 @@
   <include file="$(find-pkg-share mirte_master_control)/launch/controller_manager.launch.xml"/>
 
   <include file="$(find-pkg-share mirte_master_control)/launch/base.launch.xml" />
+
+  <include file="$(find-pkg-share mirte_master_control)/launch/arm.launch.xml" if="$(var arm_enable)"/>
 </launch>

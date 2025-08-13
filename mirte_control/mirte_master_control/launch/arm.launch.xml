@@ -1,0 +1,9 @@
+<launch>
+  <let name="ansi-escape" value="$(eval 'chr(0o33)')" />
+  <let name="warning-block" value="$(var ansi-escape)[1;33m[WARNING]$(var ansi-escape)[0m"/>
+  <log message="$(var warning-block) The arm controller/hardware interface has not been revised." />
+
+  <node pkg="controller_manager" exec="spawner"
+    args="mirte_master_arm_controller mirte_master_gripper_controller
+      -p $(find-pkg-share mirte_master_control)/config/controllers/arm/arm_controllers.yaml" />
+</launch>

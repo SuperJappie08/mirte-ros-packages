@@ -20,7 +20,11 @@
     <choice value="single_encoders" />
   </arg>
 
-  <!-- FIXME: Add Arm -->
+  <!-- TODO: Maybe split into arm and gripper/end-effector -->
+  <arg name="hardware_interface_arm" default="old"
+    description="Hardware interface type(s) for the arm">
+    <choice value="old" />
+  </arg>
 
   <!-- Global Xacro Options -->
   <let name="xacro_options" value="include_old_sim_control:=False" />
@@ -30,14 +34,15 @@
   <let name="xacro_options" value="$(var xacro_options) control_config_file:=$(var config_file)" />
   <let name="xacro_options" value="$(var xacro_options) base_motors:=$(var base_motors)" />
   <let name="xacro_options" value="$(var xacro_options) base_encoders:=$(var base_encoders)" />
+  <let name="xacro_options" value="$(var xacro_options) hardware_interface_arm:=$(var hardware_interface_arm)" />
+
+  <!-- XACRO Description Options -->
+  <include file="$(find-pkg-share mirte_master_description)/launch/xacro_options.launch.xml" />
 
   <!-- NOTE(SuperJappie08): The next argument allows for shell escaping, which could be a security
         risk. However it provides unrestricted functionality in the most flexible way -->
   <arg name="extra_xacro_args" default="" description="Additional xacro configuration commands" />
   <let name="xacro_options" value="$(var xacro_options) $(var extra_xacro_args)" />
-
-  <!-- XACRO Description Options -->
-  <include file="$(find-pkg-share mirte_master_description)/launch/xacro_options.launch.xml" />
 
   <let name="robot_description"
     value="$(command 'xacro $(find-pkg-share mirte_master_control)/urdf/mirte_master_combined.urdf.xacro $(var xacro_options)')" />

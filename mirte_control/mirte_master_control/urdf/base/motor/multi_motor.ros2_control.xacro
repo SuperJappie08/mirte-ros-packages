@@ -36,8 +36,17 @@
     <xacro:property name="hardware_namespace_"
       value="${hardware_namespace or base_config.get('hardware_namespace', 'io')}" />
 
+    <!-- NOTE: The default if omitted is 'rw_rate="0"' which means as fast as the controller manager -->
+    <xacro:property name="rw_rate" value="${base_config.get('rw_rate', 0)}" />
+
+    <!-- xacro:eval-comments:on -->
+    <!-- hw_interface: multi_motor -->
+    <!-- hardware_namespace: ${hardware_namespace_} -->
+    <!-- rw_rate: ${rw_rate} Hz (0 => cm rate) -->
+    <!-- xacro:eval-comments:off -->
+
     <xacro:multi_motor_actuator hw_device_name="motorservocontroller"
-      hardware_namespace="${hardware_namespace_}">
+      hardware_namespace="${hardware_namespace_}" rw_rate="${rw_rate}">
       <joints>
         <xacro:single_multi_motor_wheel_joints wheels="${list(base_config.wheels.keys())}"
           base_config="${base_config}" />

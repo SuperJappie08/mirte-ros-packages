@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="hardware_interface_arm" params="arm_config:=^ hardware_namespace:=^|${None}">
+    <!-- TODO: Could also separate into gripper and arm under manipulator namespace (config.manipulator.{arm,gripper}) -->
+
+    <!-- NOTE: The default if omitted is 'rw_rate="0"' which means as fast as the controller manager -->
+    <xacro:property name="rw_rate" value="${arm_config.get('rw_rate', 0)}" />
+
+    <ros2_control name="ros2_arm_control" type="system" rw_rate="${rw_rate}">
+      <hardware>
+        <plugin>mirte_master_arm_control/MirteMasterArmHWInterface</plugin>
+      </hardware>
+
+      <joint name="shoulder_pan_joint">
+        <command_interface name="position" />
+        <state_interface name="position" />
+        <state_interface name="velocity" />
+      </joint>
+
+      <joint name="shoulder_lift_joint">
+        <command_interface name="position"/>
+        <state_interface name="position">
+          <param name="initial_value">-1.56</param>
+        </state_interface>
+        <state_interface name="velocity" />
+      </joint>
+
+      <joint name="elbow_joint">
+        <command_interface name="position" />
+        <state_interface name="position">
+          <param name="initial_value">-1.56</param>
+        </state_interface>
+        <state_interface name="velocity" />
+      </joint>
+
+      <joint name="wrist_joint">
+        <command_interface name="position" />
+        <state_interface name="position">
+          <param name="initial_value">1.56</param>
+        </state_interface>
+        <state_interface name="velocity" />
+      </joint>
+    </ros2_control>
+
+    <!-- Q(SuperJappie08): Why are they separate? -->
+    <!-- A(mklomp): Probably for mental separation and future alternatives -->
+    <ros2_control name="ros2_gripper_control" type="system" rw_rate="${rw_rate}">
+      <hardware>
+        <plugin>mirte_master_arm_control/MirteMasterArmHWInterface</plugin>
+      </hardware>
+
+      <joint name="gripper_joint">
+        <command_interface name="position" />
+        <state_interface name="position" />
+        <state_interface name="velocity" />
+      </joint>
+    </ros2_control>
+  </xacro:macro>
+</robot>

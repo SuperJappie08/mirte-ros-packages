@@ -1,10 +1,27 @@
-base:
-  hardware_namespace: io
+# MIRTE Master ros2_control Hardware Interface Config
 
-  # [OPTIONAL] initial_message_timeout (int): Waiting duration for initial message in milliseconds (Default to 500ms)
-  #            Set to -1 to disable timeout.
-  #            Used by: mirte_modular_hardware/EncoderSensor
-  initial_message_timeout: 500
+# [OPTIONAL] hardware_namespace (str):
+#     Hardware namespace for the hardware interfaces, will be overwritten by default launch file.
+#     Defaults to 'io' if higher priority/scope is not available.
+# hardware_namespace: io
+
+base:
+  # [OPTIONAL] hardware_namespace (str):
+  #     Hardware namespace for the base_controller interfaces, will be overwritten by default launch file.
+  #     Defaults to 'io' if higher priority/scope is not available.
+  # hardware_namespace: io
+
+  # [OPTIONAL] rw_rate (int):
+  #     Read-Write rate of the hardware interfaces for the base
+  #     (can only slowdown with respect to the controller manager).
+  #     Defaults to 0 Hz, which means it will use the controller manager rate.
+  # rw_rate: 0 # Hz (read-write rate, 0 -> controller_manager.rate)
+
+  # [OPTIONAL] initial_message_timeout (int):
+  #     Waiting duration for initial message in milliseconds.
+  #     Defaults to 500ms, can be set to -1 to disable timeout.
+  #     Used by: mirte_modular_hardware/EncoderSensor
+  initial_message_timeout: 500 # ms (Defaults to 500ms)
 
   wheels:
     # wheel_name:  # The name of the joint/tmx_motor (Joint Name = '{wheel_name}_wheel_joint')
@@ -24,3 +41,15 @@ base:
     rear_right:
       max_motor_speed: 20.943951 # rad/s (200 RPM)
       ticks_per_rotation: 1320
+
+arm:
+  # [OPTIONAL] hardware_namespace (str):
+  #     Hardware namespace for the manipulator interfaces, will be overwritten by default launch file.
+  #     Defaults to 'io' if higher priority/scope is not available.
+  # hardware_namespace: io
+
+  # [OPTIONAL] rw_rate (int):
+  #     Read-Write rate of the hardware interfaces for the manipulator
+  #     (can only slowdown with respect to the controller manager).
+  #     Defaults to 0 Hz, which means it will use the controller manager rate.
+  # rw_rate: 0 # Hz (read-write rate, 0 -> controller_manager.rate)

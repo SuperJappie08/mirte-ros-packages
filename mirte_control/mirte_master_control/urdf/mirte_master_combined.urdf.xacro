@@ -12,16 +12,20 @@
     <xacro:property name="hardware_namespace" value="$(arg hardware_namespace)" />
   </xacro:if>
 
-  <!-- Options: -->
-  <!-- - multi_motor -->
-  <!-- - single_motors -->
+  <!-- The options are the filenames -->
   <xacro:arg name="base_motors" default="multi_motor"/>
   <xacro:include filename="$(find mirte_master_control)/urdf/base/motor/$(arg base_motors).ros2_control.xacro"/>
   <xacro:motors base_config="${control_config.base}" />
 
+  <!-- The options are the filenames -->
   <xacro:arg name="base_encoders" default="single_encoders"/>
   <xacro:include filename="$(find mirte_master_control)/urdf/base/encoder/$(arg base_encoders).ros2_control.xacro"/>
   <xacro:encoders base_config="${control_config.base}" />
 
-  <!-- TODO: Add ARM -->
+  <!-- The options are the filenames -->
+  <xacro:arg name="hardware_interface_arm" default="old"/>
+  <xacro:if value="$(arg arm_enable)">
+    <xacro:include filename="$(find mirte_master_control)/urdf/arm/$(arg hardware_interface_arm).ros2_control.xacro"/>
+    <xacro:hardware_interface_arm arm_config="${control_config.arm if python.isinstance(control_config.get('arm'), dict) else xacro.dotify(dict())}" />
+  </xacro:if>
 </robot>

@@ -2,8 +2,9 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
   <xacro:include filename="$(find mirte_modular_hardware)/urdf/common.xacro" />
 
+  <!-- NOTE: The default if omitted is 'rw_rate="0"' which means as fast as the controller manager -->
   <xacro:macro name="motor_actuator"
-    params="hardware_namespace:='io' hw_device_name joint_name max_motor_speed:='${6.0*pi}'">
+    params="hardware_namespace:='io' hw_device_name joint_name max_motor_speed:='${6.0*pi}' rw_rate:=0">
 
     <!-- Strip trailing slash -->
     <xacro:strip_trailing_slash source="${hardware_namespace}" dest="hardware_namespace_" />
@@ -13,7 +14,7 @@
     <!-- For 5V power bank; 255 pwm = 90 ticks/sec -> ca 2 rot/s (4*pi) -->
     <!-- For 6V power supply; 255 pwm = 120 ticks/sec -> ca 3 rot/s (6*pi) -->
 
-    <ros2_control name="mirte_modular_hardware_motor_${hw_device_name}" type="actuator">
+    <ros2_control name="mirte_modular_hardware_motor_${hw_device_name}" type="actuator" rw_rate="${rw_rate}">
       <hardware>
         <plugin>mirte_modular_hardware/MotorActuator</plugin>
         <!-- TODO: PARAMS GO HERE-->

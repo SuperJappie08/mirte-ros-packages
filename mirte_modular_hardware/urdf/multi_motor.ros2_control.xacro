@@ -3,13 +3,14 @@
   <xacro:include filename="$(find mirte_modular_hardware)/urdf/common.xacro" />
   <xacro:include filename="$(find mirte_modular_hardware)/urdf/ros2_control.xacro" />
 
+  <!-- NOTE: The default if omitted is 'rw_rate="0"' which means as fast as the controller manager -->
   <xacro:macro name="multi_motor_actuator"
-    params="hardware_namespace:='io' hw_device_name **joints">
+    params="hardware_namespace:='io' hw_device_name **joints rw_rate:=0">
 
     <!-- Strip trailing slash -->
     <xacro:strip_trailing_slash source="${hardware_namespace}" dest="hardware_namespace_" />
 
-    <ros2_control name="mirte_modular_hardware_multi_motor_${hw_device_name}" type="actuator">
+    <ros2_control name="mirte_modular_hardware_multi_motor_${hw_device_name}" type="actuator" rw_rate="${rw_rate}">
       <hardware>
         <plugin>mirte_modular_hardware/MultiMotorActuator</plugin>
         <param name="topic">${hardware_namespace_}/motor/${hw_device_name}/multi_speed</param>

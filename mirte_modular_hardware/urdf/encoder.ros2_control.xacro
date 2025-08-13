@@ -4,13 +4,14 @@
 
   <!-- NOTE: The standard slot encoders compatible with the yellow TT motors of the MIRTE Pioneer,
              have 20 ticks per rotations -->
+  <!-- NOTE: The default if omitted is 'rw_rate="0"' which means as fast as the controller manager -->
   <xacro:macro name="encoder_sensor"
-    params="hardware_namespace:='io' hw_device_name joint_name ticks_per_rotation:=20 initial_message_timeout:=500">
+    params="hardware_namespace:='io' hw_device_name joint_name ticks_per_rotation:=20 initial_message_timeout:=500 rw_rate:=0">
     <!-- Strip leading slash -->
     <xacro:strip_trailing_slash source="${hardware_namespace}" dest="hardware_namespace_" />
     <!-- <xacro:property name="topic_" value= scope="parent"/> -->
 
-    <ros2_control name="mirte_modular_hardware_encoder_${hw_device_name}" type="sensor">
+    <ros2_control name="mirte_modular_hardware_encoder_${hw_device_name}" type="sensor" rw_rate="${rw_rate}">
       <hardware>
         <plugin>mirte_modular_hardware/EncoderSensor</plugin>
         <!-- TODO: PARAMS GO HERE-->

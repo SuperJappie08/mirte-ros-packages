@@ -15,3 +15,7 @@ repositories:
     type: git
     url: https://github.com/SuperJappie08/xacro.git
     version: ros2
+  launch_ros2_control: # Unsure if this will every be upstreamed, simplifies controller spawning
+    type: git
+    url: https://github.com/SuperJappie08/launch_ros2_control.git
+    version: jazzy

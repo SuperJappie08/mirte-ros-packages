@@ -3,7 +3,14 @@
   <let name="warning-block" value="$(var ansi-escape)[1;33m[WARNING]$(var ansi-escape)[0m"/>
   <log message="$(var warning-block) The arm controller/hardware interface has not been revised." />
 
-  <node pkg="controller_manager" exec="spawner"
-    args="mirte_master_arm_controller mirte_master_gripper_controller
-      -p $(find-pkg-share mirte_master_control)/config/controllers/arm/arm_controllers.yaml" />
+  <spawn_controller>
+    <controller name="mirte_master_arm_controller">
+      <param from="$(find-pkg-share mirte_master_control)/config/controllers/arm/arm_controllers.yaml"/>
+    </controller>
+    <controller name="mirte_master_gripper_controller">
+      <!-- This file can technically be omitted, since it is loaded
+        by the previous controller and by the controller manager at startup -->
+      <param from="$(find-pkg-share mirte_master_control)/config/controllers/arm/arm_controllers.yaml"/>
+    </controller>
+  </spawn_controller>
 </launch>

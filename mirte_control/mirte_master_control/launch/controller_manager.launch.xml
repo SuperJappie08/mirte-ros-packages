@@ -6,6 +6,9 @@
   </node>
 
   <!-- Always spawn the joint_state_broadcaster, as it is essential -->
-  <node pkg="controller_manager" exec="spawner" 
-    args="joint_state_broadcaster -p $(find-pkg-share mirte_master_control)/config/controllers/joint_state_broadcaster.yaml"/>
+  <spawn_controller>
+    <controller name="joint_state_broadcaster">
+      <param from="$(find-pkg-share mirte_master_control)/config/controllers/joint_state_broadcaster.yaml"/>
+    </controller>
+  </spawn_controller>
 </launch>

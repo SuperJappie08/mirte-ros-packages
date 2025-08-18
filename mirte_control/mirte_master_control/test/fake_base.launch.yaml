@@ -1,0 +1,46 @@
+launch:
+  - arg: { name: pub_rate, default: '1.0' }
+  - arg: { name: print_rate, default: '0' }
+  - arg: { name: use_sim_time, default: 'false' }
+
+  - arg: { name: topic_prefix, default: /io/encoder }
+
+  - let: {name: flags, value: $(if $(var use_sim_time) '-sp' '-p') $(var print_rate) }
+  - let: {name: print_flag, value: $(if $(var use_sim_time) '-sp' '-p') }
+
+  - executable:
+      name: front_left
+      cmd: >-
+        ros2 topic pub -r $(var pub_rate)
+        $(var print_flag) $(var print_rate)
+        $(var topic_prefix)/front_left
+        mirte_msgs/msg/Encoder 'header: auto'
+      output: screen
+      emulate_tty: true
+  - executable:
+      name: front_right
+      cmd: >-
+        ros2 topic pub -r $(var pub_rate)
+        $(var print_flag) $(var print_rate)
+        $(var topic_prefix)/front_right
+        mirte_msgs/msg/Encoder 'header: auto'
+      output: screen
+      emulate_tty: true
+  - executable:
+      name: rear_left
+      cmd: >-
+        ros2 topic pub -r $(var pub_rate)
+        $(var print_flag) $(var print_rate)
+        $(var topic_prefix)/rear_left
+        mirte_msgs/msg/Encoder 'header: auto'
+      output: screen
+      emulate_tty: true
+  - executable:
+      name: rear_right
+      cmd: >-
+        ros2 topic pub -r $(var pub_rate)
+        $(var print_flag) $(var print_rate)
+        $(var topic_prefix)/rear_right
+        mirte_msgs/msg/Encoder 'header: auto'
+      output: screen
+      emulate_tty: true

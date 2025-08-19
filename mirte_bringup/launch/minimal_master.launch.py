@@ -6,7 +6,10 @@ from launch.substitutions import (
     PathJoinSubstitution,
     TextSubstitution,
     LaunchConfiguration,
+    EnvironmentVariable,
+    EqualsSubstitution,
 )
+from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 from launch_xml.launch_description_sources import XMLLaunchDescriptionSource
@@ -33,8 +36,17 @@ def generate_launch_description():
                 default_value="true",
                 description="Use speed PID control for the wheels, you might need to change the gains in mirte_master_base_control/bringup/config/mirte_base_cotnrol.yaml",
             ),
+            DeclareLaunchArgument(
+                "control_method",
+                default_value=EnvironmentVariable(
+                    "MIRTE_CONTROL_METHOD", default_value="old"
+                ),
+                choices=["old", "new", "none"],
+            ),
         ],
     )
+
+    control_method = LaunchConfiguration("control_method")
 
     machine_namespace = LaunchConfiguration("machine_namespace")
     hardware_namespace = LaunchConfiguration("hardware_namespace")
@@ -232,14 +244,39 @@ def generate_launch_description():
             [
                 PushRosNamespace(machine_namespace),
                 telemetrix,
-                ros2_control,
-                state_publishers,
+                GroupAction(
+                    [
+                        ros2_control,
+                        state_publishers,
+                        arm_control,
+                        mecanum_drive_control,
+                    ],
+                    condition=IfCondition(EqualsSubstitution(control_method, "old")),
+                ),
+                GroupAction(
+                    [
+                        IncludeLaunchDescription(
+                            PathJoinSubstitution(
+                                [
+                                    FindPackageShare("mirte_master_control"),
+                                    "launch",
+                                    "control.launch.xml",
+                                ]
+                            ),
+                            launch_arguments={
+                                "hardware_namespace": LaunchConfiguration(
+                                    "hardware_namespace"
+                                ),
+                                "use_pid": LaunchConfiguration("use_base_pid_control"),
+                            },
+                        )
+                    ],
+                    condition=IfCondition(EqualsSubstitution(control_method, "new")),
+                ),
                 cameras,
                 web_video_server,
                 lidar,
                 depth_cam,
-                arm_control,
-                mecanum_drive_control,
                 rosbridge,
             ],
             launch_configurations={

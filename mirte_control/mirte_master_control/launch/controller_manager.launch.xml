@@ -1,14 +1,25 @@
 <launch>
   <include file="$(find-pkg-share mirte_master_control)/launch/robot_state_publisher.launch.xml"/>
 
+  <!-- Exposed for THESIS research -->
+  <arg name="controller_manager_rate" default="$(env MIRTE_CONTROL_THESIS_CONTROLLER_MANAGER_RATE 10)"/>
+  <arg name="joint_state_broadcaster_rate"
+    default="$(env MIRTE_CONTROL_THESIS_JOINT_STATE_BROADCASTER_RATE $(var controller_manager_rate))"/>
+
   <node pkg="controller_manager" exec="ros2_control_node">
     <param from="$(find-pkg-share mirte_master_control)/config/controller_manager.yaml" />
+
+    <!-- Exposed for THESIS research -->
+    <param name="update_rate" value="$(var controller_manager_rate)"/>
   </node>
 
   <!-- Always spawn the joint_state_broadcaster, as it is essential -->
   <spawn_controller>
     <controller name="joint_state_broadcaster">
       <param from="$(find-pkg-share mirte_master_control)/config/controllers/joint_state_broadcaster.yaml"/>
+
+      <!-- Exposed for THESIS research -->
+      <param name="update_rate" value="$(var joint_state_broadcaster_rate)" />
     </controller>
   </spawn_controller>
 </launch>

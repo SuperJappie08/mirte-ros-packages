@@ -2,6 +2,10 @@
   <!-- TODO: Possibly make PID tune config also based on envvar, so it can be easily overwritten -->
   <arg name="use_pid" default="True" description="Enable PID wheel controller"/>
 
+  <!-- Exposed for THESIS research -->
+  <arg name="base_controller_rate"
+    default="$(env MIRTE_CONTROL_THESIS_BASE_CONTROLLER_RATE $(var controller_manager_rate))"/>
+
   <spawn_controller activate_as_group="True">
     <controller name="mirte_base_controller">
       <param allow_substs="True"
@@ -9,9 +13,15 @@
       <remap from="~/odometry" to="~/odom"/>
       <remap from="~/reference" to="~/cmd_vel"/>
       <remap from="~/tf_odometry" to="/tf"/>
+
+      <!-- Exposed for THESIS research -->
+      <param name="update_rate" value="$(var base_controller_rate)"/>
     </controller>
     <controller name="pid_wheels_controller" if="$(var use_pid)">
       <param from="$(find-pkg-share mirte_master_control)/config/controllers/base/pid_wheels_controller.yaml" />
+
+      <!-- Exposed for THESIS research -->
+      <param name="update_rate" value="$(var base_controller_rate)"/>
     </controller>
   </spawn_controller>
 </launch>

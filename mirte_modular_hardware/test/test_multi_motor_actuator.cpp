@@ -45,7 +45,7 @@ TEST(TestMultiMotorActuator, load_multi_motor_actuator_2motors)
       </command_interface>
     </joint>
     <joint name="joint2">
-      <param name="tmx_motor">motor2</param>
+      <param name="motor_name">motor2</param>
       <command_interface name="velocity">
         <param name="max">90.0</param>
         <param name="min">-90.0</param>

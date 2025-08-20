@@ -58,7 +58,7 @@ schematypens="http://www.w3.org/2001/XMLSchema"?> -->
         max_motor_speed="15" />
       <xacro:multi_motor_joint
         joint_name="another_joint"
-        tmx_motor_name="top_left"
+        motor_name="top_left"
         max_motor_speed="10" />
     </joints>
   </xacro:multi_motor_actuator>

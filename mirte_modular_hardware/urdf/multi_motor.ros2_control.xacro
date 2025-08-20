@@ -20,9 +20,9 @@
   </xacro:macro>
 
   <xacro:macro name="multi_motor_joint"
-    params="joint_name tmx_motor_name:=${None} max_motor_speed initial_value:=${None}">
+    params="joint_name motor_name:=${None} max_motor_speed initial_value:=${None}">
     <joint name="${joint_name}">
-      <xacro:optional_param name="tmx_motor" value="${tmx_motor_name}" />
+      <xacro:optional_param name="motor_name" value="${motor_name}" />
       <command_interface name="velocity">
         <param name="max">${max_motor_speed}</param>
         <param name="min">${-max_motor_speed}</param>

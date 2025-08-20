@@ -12,19 +12,18 @@
 
       <!-- Wheel specific properties -->
       <xacro:property name="max_motor_speed" value="${wheel_config.max_motor_speed}" />
-      <xacro:property name="tmx_motor_name"
-        value="${wheel_config.get('tmx_motor_name', wheel_name)}" />
+      <xacro:property name="motor_name" value="${wheel_config.get('motor_name', wheel_name)}" />
       <xacro:property name="initial_value" value="${wheel_config.get('initial_motor_speed')}" />
 
       <!-- xacro:eval-comments:on -->
       <!-- wheel_name: ${wheel_name} -->
       <!-- max_motor_speed: ${max_motor_speed} -->
-      <!-- tmx_motor_name: ${tmx_motor_name} -->
+      <!-- motor_name: ${motor_name} -->
       <!-- initial_value(initial_motor_speed): ${initial_value} -->
       <!-- xacro:eval-comments:off -->
 
       <xacro:multi_motor_joint joint_name="${wheel_name}_wheel_joint"
-        max_motor_speed="${max_motor_speed}" tmx_motor_name="${tmx_motor_name}"
+        max_motor_speed="${max_motor_speed}" motor_name="${motor_name}"
         initial_value="${initial_value}" />
 
       <!-- recursively call myself -->

@@ -15,7 +15,7 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_xml.launch_description_sources import XMLLaunchDescriptionSource
 
 from launch_ros.substitutions import FindPackageShare
-from launch_ros.actions import Node, PushRosNamespace, SetRemap
+from launch_ros.actions import Node, PushRosNamespace, SetRemap, RosTimer
 
 
 def generate_launch_description():
@@ -244,34 +244,42 @@ def generate_launch_description():
             [
                 PushRosNamespace(machine_namespace),
                 telemetrix,
-                GroupAction(
-                    [
-                        ros2_control,
-                        state_publishers,
-                        arm_control,
-                        mecanum_drive_control,
-                    ],
-                    condition=IfCondition(EqualsSubstitution(control_method, "old")),
-                ),
-                GroupAction(
-                    [
-                        IncludeLaunchDescription(
-                            PathJoinSubstitution(
-                                [
-                                    FindPackageShare("mirte_master_control"),
-                                    "launch",
-                                    "control.launch.xml",
-                                ]
+                RosTimer(
+                    # 3 * TMX respawn timeout than it is definetly initialized
+                    period=15.0,
+                    actions=[
+                        GroupAction(
+                            [
+                                ros2_control,
+                                state_publishers,
+                                arm_control,
+                                mecanum_drive_control,
+                            ],
+                            condition=IfCondition(
+                                EqualsSubstitution(control_method, "old")
                             ),
-                            launch_arguments={
-                                "hardware_namespace": LaunchConfiguration(
-                                    "hardware_namespace"
-                                ),
-                                "use_pid": LaunchConfiguration("use_base_pid_control"),
-                            },
-                        )
+                        ),
+                        GroupAction(
+                            [
+                                IncludeLaunchDescription(
+                                    PathJoinSubstitution(
+                                        [
+                                            FindPackageShare("mirte_master_control"),
+                                            "launch",
+                                            "control.launch.xml",
+                                        ]
+                                    ),
+                                    launch_arguments={
+                                        "hardware_namespace": hardware_namespace,
+                                        "use_pid": use_base_pid_control,
+                                    }.items(),
+                                )
+                            ],
+                            condition=IfCondition(
+                                EqualsSubstitution(control_method, "new"),
+                            ),
+                        ),
                     ],
-                    condition=IfCondition(EqualsSubstitution(control_method, "new")),
                 ),
                 cameras,
                 web_video_server,

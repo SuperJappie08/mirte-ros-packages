@@ -15,6 +15,7 @@
 // Authors: Jasper van Brakel
 
 #include <chrono>
+#include <cstdint>
 #include <memory>
 #include <numbers>
 /* FIXME(SuperJappie08): TO SEPERATE INCLUDES */
@@ -286,10 +287,8 @@ hardware_interface::CallbackReturn EncoderSensor::on_configure(
     {std::make_shared<const EncoderMsg>(second_msg),
      std::make_shared<const EncoderMsg>(first_msg)});
 
-  // TODO(SuperJappie08): Investigate if a single message buffer (1 msg) could
-  // be used if the previous position state is used to calculate the speed.
-  //                    - Pros: Less confusing and coping, out-zeroing when crashed
-  //                    - Cons: If message arrive late it zeros the velocity, could introduce chatter
+  // NOTE(SuperJappie08): Using 2 messages allows to get something closer to
+  //                      the instantaneous speed of the wheel
   encoder_subscriber_ = get_node()->create_subscription<EncoderMsg>(
     topic_name, qos, [this](const EncoderMsg::ConstSharedPtr msg) {
       this->latest_msgs_.writeFromNonRT({msg, this->latest_msgs_.readFromNonRT()->first});
@@ -333,8 +332,11 @@ hardware_interface::return_type EncoderSensor::read(
         continue;
       }
     } else if (joint_state->get_interface_name() == hardware_interface::HW_IF_VELOCITY) {
-      double difference = ((double)(newest_msg->value - older_msg->value)) / ticks_per_rotation_ *
-                          std::numbers::pi * 2.0;
+      int32_t new_ticks = newest_msg->value;
+      int32_t old_ticks = older_msg->value;
+      int32_t tick_difference = new_ticks - old_ticks;
+
+      double difference = ((double)tick_difference) / ticks_per_rotation_ * std::numbers::pi * 2.0;
       auto dt =
         (rclcpp::Time(newest_msg->header.stamp) - rclcpp::Time(older_msg->header.stamp)).seconds();
 

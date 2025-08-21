@@ -24,6 +24,10 @@ if(CMAKE_EXPORT_COMPILE_COMMANDS)
       ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES})
 endif()
 
+if($ENV{ROS_DISTRO} MATCHES "humble")
+  add_compile_definitions(ROS2_HUMBLE)
+endif()
+
 # to time compilation time. Will gnerate json files you can open in
 # chrome://tracing SET (CMAKE_CXX_FLAGS_INIT                "-ftime-trace")
 

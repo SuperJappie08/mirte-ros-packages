@@ -6,6 +6,9 @@
   <description>Telemetrix cpp implementation</description>
   <maintainer email="tmxcpp@arend-jan.com">Arend-Jan van Hilten</maintainer> 
   <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ros_environment</buildtool_depend>
   
   <exec_depend>launch</exec_depend>
   <exec_depend>launch_ros</exec_depend>

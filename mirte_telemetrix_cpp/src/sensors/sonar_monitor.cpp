@@ -92,7 +92,10 @@ void SonarMonitor::update() {
           .min_range(this->min_range)
           .max_range(this->max_range)
           .range(this->distance)
-          .variance(this->variance);
+#ifndef ROS2_HUMBLE
+          .variance(this->variance)
+#endif
+      ;
 
   this->sonar_pub->publish(msg);
   const std::lock_guard<std::mutex> lock(msg_mutex);

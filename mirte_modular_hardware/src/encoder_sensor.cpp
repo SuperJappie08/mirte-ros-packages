@@ -49,6 +49,7 @@ namespace
 constexpr const auto kTopicKey = "topic";
 constexpr const auto kTicksPerRotationKey = "ticks_per_rotation";
 constexpr const auto kInitMsgTimeOutKey = "initial_message_timeout_ms";
+constexpr const auto kUpdates = "update";
 
 #if !HARDWARE_INTERFACE_NODE_AVAILABLE
 constexpr const auto kNodeNamePrefix = "mirte_modular_hardware_encoder_sensor_";
@@ -116,6 +117,17 @@ hardware_interface::CallbackReturn EncoderSensor::on_init(
   } else {
     RCLCPP_INFO_STREAM(
       get_logger(), "Using initial message timeout of " << initial_message_timeout_ << ".");
+  }
+
+  if (get_hardware_info().hardware_parameters.contains(kUpdates)) {
+    updates_only_ =
+      hardware_interface::parse_bool(get_hardware_info().hardware_parameters.at(kUpdates));
+    RCLCPP_INFO_EXPRESSION(get_logger(), updates_only_, "Using the updates topic.");
+    RCLCPP_INFO_EXPRESSION(get_logger(), !updates_only_, "Using the normal topic.");
+  } else {
+    RCLCPP_INFO(
+      get_logger(),
+      "Using the normal encoder topic. [use param 'update' to toggle using the updates]");
   }
 
   // Validate if the configuration is valid.
@@ -288,10 +300,15 @@ hardware_interface::CallbackReturn EncoderSensor::on_configure(
     {std::make_shared<const EncoderMsg>(second_msg),
      std::make_shared<const EncoderMsg>(first_msg)});
 
+  std::string final_topic_name = topic_name;
+  if (this->updates_only_) {
+    final_topic_name += "/update";
+  }
+
   // NOTE(SuperJappie08): Using 2 messages allows to get something closer to
   //                      the instantaneous speed of the wheel
   encoder_subscriber_ = get_node()->create_subscription<EncoderMsg>(
-    topic_name, qos, [this](const EncoderMsg::ConstSharedPtr msg) {
+    final_topic_name, qos, [this](const EncoderMsg::ConstSharedPtr msg) {
       this->latest_msgs_.writeFromNonRT({msg, this->latest_msgs_.readFromNonRT()->first});
     });
 

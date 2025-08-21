@@ -25,10 +25,12 @@ public:
   void data_callback(int16_t value);
 
 private:
-  std::atomic<int16_t> value = 0;
+  std::atomic<int32_t> value = 0;
 
   // Publisher: encoder/NAME
   rclcpp::Publisher<mirte_msgs::msg::Encoder>::SharedPtr encoder_pub;
+  // Publisher: encoder/NAME/update
+  rclcpp::Publisher<mirte_msgs::msg::Encoder>::SharedPtr encoder_update_pub;
   // Service: encoder/NAME/get_encoder
   rclcpp::Service<mirte_msgs::srv::GetEncoder>::SharedPtr encoder_service;
 

@@ -20,6 +20,10 @@ EncoderMonitor::EncoderMonitor(NodeData node_data, EncoderData encoder_data)
   encoder_pub = nh->create_publisher<mirte_msgs::msg::Encoder>(
       "encoder/" + encoder_data.name, rclcpp::SystemDefaultsQoS());
 
+  // Use default QOS for sensor publishers as specified in REP2003
+  encoder_update_pub = nh->create_publisher<mirte_msgs::msg::Encoder>(
+      "encoder/" + encoder_data.name + "/update", rclcpp::SystemDefaultsQoS());
+
   encoder_service = srv_manager->create_service<mirte_msgs::srv::GetEncoder>(
       "encoder/" + encoder_data.name + "/get_encoder",
       std::bind(&EncoderMonitor::service_callback, this, _1, _2),
@@ -32,8 +36,12 @@ EncoderMonitor::EncoderMonitor(NodeData node_data, EncoderData encoder_data)
 
 void EncoderMonitor::data_callback(int16_t value) {
   this->value += value;
-  // this->update();
-  // this->device_timer->reset();
+
+  if (encoder_update_pub->get_subscription_count() > 0) {
+    encoder_update_pub->publish(mirte_msgs::build<mirte_msgs::msg::Encoder>()
+                                    .header(get_header())
+                                    .value(this->value));
+  }
 }
 
 void EncoderMonitor::update() {

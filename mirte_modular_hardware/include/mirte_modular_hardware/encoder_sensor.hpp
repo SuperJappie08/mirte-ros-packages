@@ -78,6 +78,7 @@ private:
   // NOTE(SuperJappie08): Maybe convert this to ticks/rad (or rad/ticks) whatever makes sense
   double ticks_per_rotation_ = std::numeric_limits<double>::quiet_NaN();
   std::chrono::milliseconds initial_message_timeout_{500};
+  std::chrono::milliseconds message_timeout_{31};
   bool updates_only_ = false;
 
   realtime_tools::RealtimeBuffer<std::pair<EncoderMsg::ConstSharedPtr, EncoderMsg::ConstSharedPtr>>

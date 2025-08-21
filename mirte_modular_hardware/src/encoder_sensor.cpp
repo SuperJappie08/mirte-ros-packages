@@ -49,7 +49,8 @@ namespace
 constexpr const auto kTopicKey = "topic";
 constexpr const auto kTicksPerRotationKey = "ticks_per_rotation";
 constexpr const auto kInitMsgTimeOutKey = "initial_message_timeout_ms";
-constexpr const auto kUpdates = "update";
+constexpr const auto kUpdatesOnly = "update";
+constexpr const auto kMsgTimeOut = "message_timout_ms";
 
 #if !HARDWARE_INTERFACE_NODE_AVAILABLE
 constexpr const auto kNodeNamePrefix = "mirte_modular_hardware_encoder_sensor_";
@@ -119,15 +120,36 @@ hardware_interface::CallbackReturn EncoderSensor::on_init(
       get_logger(), "Using initial message timeout of " << initial_message_timeout_ << ".");
   }
 
-  if (get_hardware_info().hardware_parameters.contains(kUpdates)) {
+  if (get_hardware_info().hardware_parameters.contains(kUpdatesOnly)) {
     updates_only_ =
-      hardware_interface::parse_bool(get_hardware_info().hardware_parameters.at(kUpdates));
+      hardware_interface::parse_bool(get_hardware_info().hardware_parameters.at(kUpdatesOnly));
     RCLCPP_INFO_EXPRESSION(get_logger(), updates_only_, "Using the updates topic.");
     RCLCPP_INFO_EXPRESSION(get_logger(), !updates_only_, "Using the normal topic.");
   } else {
     RCLCPP_INFO(
       get_logger(),
-      "Using the normal encoder topic. [use param 'update' to toggle using the updates]");
+      "Using the normal encoder topic. "
+      "[Use param '%s' to toggle using the updates]",
+      kUpdatesOnly);
+  }
+
+  if (get_hardware_info().hardware_parameters.contains(kMsgTimeOut)) {
+    RCLCPP_INFO(
+      get_logger(),
+      "Attempting to parse '%s' parameter [int(in milliseconds)]. (use -1 to disable timeout)",
+      kMsgTimeOut);
+    message_timeout_ =
+      std::chrono::milliseconds(std::stol(get_hardware_info().hardware_parameters.at(kMsgTimeOut)));
+  }
+
+  if (message_timeout_ == std::chrono::milliseconds(-1)) {
+    RCLCPP_WARN(
+      get_logger(),
+      "The message timeout has been disabled, controller could possibly not register 0 speed."
+      "[Use hardware parameter '%s' to configure the timeout]",
+      kMsgTimeOut);
+  } else {
+    RCLCPP_INFO_STREAM(get_logger(), "Using message timeout of " << message_timeout_ << ".");
   }
 
   // Validate if the configuration is valid.
@@ -350,21 +372,26 @@ hardware_interface::return_type EncoderSensor::read(
         continue;
       }
     } else if (joint_state->get_interface_name() == hardware_interface::HW_IF_VELOCITY) {
-      int32_t new_ticks = newest_msg->value;
-      int32_t old_ticks = older_msg->value;
-      int32_t tick_difference = new_ticks - old_ticks;
+      auto dt = (rclcpp::Time(newest_msg->header.stamp) - rclcpp::Time(older_msg->header.stamp));
 
-      double difference = ((double)tick_difference) / ticks_per_rotation_ * std::numbers::pi * 2.0;
-      auto dt =
-        (rclcpp::Time(newest_msg->header.stamp) - rclcpp::Time(older_msg->header.stamp)).seconds();
+      double velocity = 0.0;
+      if (dt < message_timeout_) {
+        int32_t new_ticks = newest_msg->value;
+        int32_t old_ticks = older_msg->value;
+        int32_t tick_difference = new_ticks - old_ticks;
 
-      RCLCPP_WARN_EXPRESSION(
-        get_logger(), dt <= 0.0,
-        "The time difference between the encoder steps is %fs, "
-        "check if its source is setup correctly.",
-        dt);
+        double difference =
+          ((double)tick_difference) / ticks_per_rotation_ * std::numbers::pi * 2.0;
+        double dt_s = dt.seconds();
 
-      double velocity = difference / dt;
+        RCLCPP_WARN_EXPRESSION(
+          get_logger(), dt_s <= 0.0,
+          "The time difference between the encoder steps is %fs, "
+          "check if its source is setup correctly.",
+          dt_s);
+
+        velocity = difference / dt_s;
+      }
 
       if (joint_state->set_value(velocity)) [[likely]] {
         continue;

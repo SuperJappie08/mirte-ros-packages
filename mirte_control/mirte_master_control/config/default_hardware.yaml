@@ -28,6 +28,13 @@ base:
   #     Defaults to None, which means it will use the hardware default.
   # encoder_updates_only: true # (Defaults to None)
 
+  # [OPTIONAL] message_timeout (int):
+  #     Max duration between encoder message in milliseconds.
+  #     Defaults to None, can be set to -1 to disable timeout.
+  #     None means it will use the hardware default.
+  #     Used by: mirte_modular_hardware/EncoderSensor
+  # message_timeout: 31 # ms (Defaults to None)
+
   wheels:
     # wheel_name:  # The name of the joint/motor (Joint Name = '{wheel_name}_wheel_joint')
     #   max_motor_speed: 100.0 (double)  # The maximum motor speed in rad/s

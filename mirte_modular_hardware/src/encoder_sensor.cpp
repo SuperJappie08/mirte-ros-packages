@@ -37,10 +37,11 @@
 #include <rclcpp_lifecycle/state.hpp>
 
 #include "mirte_modular_hardware/encoder_sensor.hpp"
-#include "mirte_modular_hardware/helpers.hpp"
 
 #if !HARDWARE_INTERFACE_NODE_AVAILABLE
 #include <rclcpp/node_options.hpp>
+
+#include "mirte_modular_hardware/helpers.hpp"
 #endif
 
 namespace
@@ -58,10 +59,10 @@ namespace mirte_modular_hardware
 {
 
 hardware_interface::CallbackReturn EncoderSensor::on_init(
-  const hardware_interface::HardwareInfo & info)
+  const HARDWARE_INTERFACE_INIT_PARAM & params)
 {
   if (
-    hardware_interface::SensorInterface::on_init(info) !=
+    hardware_interface::SensorInterface::on_init(params) !=
     hardware_interface::CallbackReturn::SUCCESS) {
     return hardware_interface::CallbackReturn::ERROR;
   }

@@ -50,8 +50,7 @@ public:
   RCLCPP_SHARED_PTR_DEFINITIONS(MotorActuator)
 
   MIRTE_MODULAR_HARDWARE_PUBLIC
-  hardware_interface::CallbackReturn on_init(
-    const hardware_interface::HardwareInfo & info) override;
+  hardware_interface::CallbackReturn on_init(const HARDWARE_INTERFACE_INIT_PARAM & params) override;
 
   MIRTE_MODULAR_HARDWARE_PUBLIC
   hardware_interface::CallbackReturn on_configure(

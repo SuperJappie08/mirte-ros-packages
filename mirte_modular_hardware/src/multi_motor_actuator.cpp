@@ -42,10 +42,10 @@ namespace mirte_modular_hardware
 {
 
 hardware_interface::CallbackReturn MultiMotorActuator::on_init(
-  const hardware_interface::HardwareInfo & info)
+  const HARDWARE_INTERFACE_INIT_PARAM & params)
 {
   if (
-    hardware_interface::ActuatorInterface::on_init(info) !=
+    hardware_interface::ActuatorInterface::on_init(params) !=
     hardware_interface::CallbackReturn::SUCCESS) {
     return hardware_interface::CallbackReturn::ERROR;
   }

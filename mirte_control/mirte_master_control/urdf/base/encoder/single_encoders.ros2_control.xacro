@@ -16,7 +16,6 @@
       <xacro:property name="rw_rate" value="${base_config.get('rw_rate', 0)}" />
       <xacro:property name="initial_message_timeout" value="${base_config.get('initial_message_timeout', 500)}" />
       <xacro:property name="updates_only" value="${base_config.get('encoder_updates_only', None)}" />
-      <xacro:property name="message_timeout" value="${base_config.get('message_timeout', None)}" />
 
       <!-- Wheel specific properties -->
       <xacro:property name="ticks_per_rotation" value="${wheel_config.ticks_per_rotation}"/>
@@ -27,14 +26,12 @@
       <!-- rw_rate: ${rw_rate} Hz (0 => cm rate) -->
       <!-- initial_message_timeout: ${initial_message_timeout} ms -->
       <!-- updates_only: ${updates_only} -->
-      <!-- message_timeout: ${message_timeout} ms -->
       <!-- ticks_per_rotation: ${ticks_per_rotation} -->
       <!-- xacro:eval-comments:off -->
 
       <xacro:encoder_sensor hw_device_name="${wheel_name}" hardware_namespace="${hardware_namespace_}"
         joint_name="${wheel_name}_wheel_joint" initial_message_timeout="${initial_message_timeout}"
         ticks_per_rotation="${ticks_per_rotation}" rw_rate="${rw_rate}" updates_only="${updates_only}"
-        message_timeout="${message_timeout}"
       />
 
       <!-- recursively call myself -->

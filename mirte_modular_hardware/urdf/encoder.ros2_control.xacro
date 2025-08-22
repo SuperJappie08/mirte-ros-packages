@@ -7,7 +7,7 @@
              have 20 ticks per rotations -->
   <!-- NOTE: The default if omitted is 'rw_rate="0"' which means as fast as the controller manager -->
   <xacro:macro name="encoder_sensor"
-    params="hardware_namespace:='io' hw_device_name joint_name ticks_per_rotation:=20 initial_message_timeout:=500 rw_rate:=0 updates_only:=${None} message_timeout:=${None}">
+    params="hardware_namespace:='io' hw_device_name joint_name ticks_per_rotation:=20 initial_message_timeout:=500 rw_rate:=0 updates_only:=${None}">
     <!-- Strip leading slash -->
     <xacro:strip_trailing_slash source="${hardware_namespace}" dest="hardware_namespace_" />
     <!-- <xacro:property name="topic_" value= scope="parent"/> -->
@@ -23,7 +23,6 @@
         <param name="ticks_per_rotation">${ticks_per_rotation}</param>
         <param name="initial_message_timeout_ms">${initial_message_timeout}</param>
         <xacro:optional_param name="update" value="${updates_only}"/>
-        <xacro:optional_param name="message_timeout_ms" value="${message_timeout}"/>
       </hardware>
       <joint name="${joint_name}">
         <!-- TODO: EXTRA CONFIG LIKE WRAPPING AND LIMITS -->

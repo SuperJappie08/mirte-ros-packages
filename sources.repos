@@ -11,10 +11,6 @@ repositories:
     type: git
     url: https://github.com/ArendJan/usb_cam.git # for lazy publishing
     version: main
-  xacro: # FIXME: Remove this when 2.1.0 is shipped
-    type: git
-    url: https://github.com/ros/xacro.git
-    version: ros2
   launch_ros2_control: # Unsure if this will every be upstreamed, simplifies controller spawning
     type: git
     url: https://github.com/SuperJappie08/launch_ros2_control.git

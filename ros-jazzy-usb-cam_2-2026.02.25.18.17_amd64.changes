@@ -1,0 +1,53 @@
+Format: 1.8
+Date: Wed, 01 May 2024 00:00:00 -0000
+Source: ros-jazzy-usb-cam
+Binary: ros-jazzy-usb-cam
+Built-For-Profiles: noudeb
+Architecture: amd64
+Version: 2-2026.02.25.18.17
+Distribution: noble
+Urgency: high
+Maintainer: Evan Flynn <evanflynn.msu@gmail.com>
+Changed-By: Evan Flynn <evanflynn.msu@gmail.com>
+Description:
+ ros-jazzy-usb-cam - A ROS Driver for V4L USB Cameras
+Changes:
+ ros-jazzy-usb-cam (2-2026.02.25.18.17) noble; urgency=high
+ .
+   * Merge pull request #330 <https://github.com/ros-drivers/usb_cam/issues/330> from ros-drivers/fix-rolling-builds
+     Update comment in CI from Jammy to Noble
+   * Fix linter error in uyvy file
+     - Update comment in CI from Jammy to Noble
+   * Merge pull request #324 <https://github.com/ros-drivers/usb_cam/issues/324> from clalancette/clalancette/const-avcodec
+     Switch to a const AVCodec *.
+   * Switch to a const AVCodec *.
+     This is because newer versions of avcodec return a const AVCodec *.
+   * Merge pull request #313 <https://github.com/ros-drivers/usb_cam/issues/313> from ros-drivers/v4l2-devices-might-not-be-named-video
+     V4l2 devices might not be named video
+   * Use /sys/class/video4linux/ to get list of v4l2 devices
+   * Merge pull request #311 <https://github.com/ros-drivers/usb_cam/issues/311> from firesurfer/ros2
+     Resolve Symlinks
+   * Update usb_cam_node.cpp
+     Fix formatting
+   * try to fix formatting issue
+   * resolve symlinks
+   * Merge pull request #305 <https://github.com/ros-drivers/usb_cam/issues/305> from ros-drivers/fix-docs-deployment
+   * Remove unnecessary steps from docs CI
+   * Merge pull request #304 <https://github.com/ros-drivers/usb_cam/issues/304> from ros-drivers/fix-docs-ci
+     Fix docs ci
+   * Trigger docs CI on every push to ros2 branch
+   * Merge pull request #303 <https://github.com/ros-drivers/usb_cam/issues/303> from ros-drivers/add-mkdocs-documentation
+   * Standup basic mkdocs documentation site
+   * Contributors: Chris Lalancette, Evan Flynn, Lennart Nachtigall
+Checksums-Sha1:
+ 49768bb3486459b6eaf36cf07e23ca12435d052a 2495216 ros-jazzy-usb-cam-dbgsym_2-2026.02.25.18.17_amd64.ddeb
+ 2cf80fac54a029caf97e7bae97220d60527ad790 34356 ros-jazzy-usb-cam_2-2026.02.25.18.17_amd64.buildinfo
+ f49e54776ac9d183c4eb10b94e14d6aa637cd2a3 171458 ros-jazzy-usb-cam_2-2026.02.25.18.17_amd64.deb
+Checksums-Sha256:
+ 9fce3b6d2cbac57d8d17a06b114e6dc1628c4611a2b9c113fd1702e3aae957be 2495216 ros-jazzy-usb-cam-dbgsym_2-2026.02.25.18.17_amd64.ddeb
+ a1f8954f5257f2629682287c189874c3bffe53f3bc005b55e76e86fad0367572 34356 ros-jazzy-usb-cam_2-2026.02.25.18.17_amd64.buildinfo
+ 576694b4d616d44013f4f7e2f14878b1878211373ea1864d1433854e8e1a014d 171458 ros-jazzy-usb-cam_2-2026.02.25.18.17_amd64.deb
+Files:
+ 6ed149a265719d6ef0951a8e361bb394 2495216 debug optional ros-jazzy-usb-cam-dbgsym_2-2026.02.25.18.17_amd64.ddeb
+ 6613d78e546688ec55880bc0978800f2 34356 misc optional ros-jazzy-usb-cam_2-2026.02.25.18.17_amd64.buildinfo
+ a4f6a3aabf1414759b88d9f6cae2225a 171458 misc optional ros-jazzy-usb-cam_2-2026.02.25.18.17_amd64.deb

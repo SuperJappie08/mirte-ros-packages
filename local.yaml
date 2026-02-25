@@ -1,0 +1,51 @@
+launch_ros2_control:
+  ubuntu:
+  - ros-jazzy-launch-ros2-control
+mirte_bringup:
+  ubuntu:
+  - ros-jazzy-mirte-bringup
+mirte_master_control:
+  ubuntu:
+  - ros-jazzy-mirte-master-control
+mirte_master_description:
+  ubuntu:
+  - ros-jazzy-mirte-master-description
+mirte_moveit_config:
+  ubuntu:
+  - ros-jazzy-mirte-moveit-config
+mirte_msgs:
+  ubuntu:
+  - ros-jazzy-mirte-msgs
+mirte_base_control:
+  ubuntu:
+  - ros-jazzy-mirte-base-control
+mirte_control:
+  ubuntu:
+  - ros-jazzy-mirte-control
+mirte_master_arm_control:
+  ubuntu:
+  - ros-jazzy-mirte-master-arm-control
+mirte_modular_hardware:
+  ubuntu:
+  - ros-jazzy-mirte-modular-hardware
+mirte_pioneer_base_control:
+  ubuntu:
+  - ros-jazzy-mirte-pioneer-base-control
+mirte_pioneer_description:
+  ubuntu:
+  - ros-jazzy-mirte-pioneer-description
+mirte_telemetrix_cpp:
+  ubuntu:
+  - ros-jazzy-mirte-telemetrix-cpp
+mirte_teleop:
+  ubuntu:
+  - ros-jazzy-mirte-teleop
+mirte_test:
+  ubuntu:
+  - ros-jazzy-mirte-test
+mirte_zenoh_setup:
+  ubuntu:
+  - ros-jazzy-mirte-zenoh-setup
+usb_cam:
+  ubuntu:
+  - ros-jazzy-usb-cam

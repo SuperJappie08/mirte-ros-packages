@@ -260,8 +260,8 @@ hardware_interface::CallbackReturn EncoderSensor::on_configure(
 
   RCLCPP_INFO(get_logger(), "Waiting for first two messages on '%s'", topic_name.c_str());
 
-  // FIXME(SuperJappie08): Figure out if keep_last(5) (default) or keep_last(1/2/3) is better
-  const auto qos = rclcpp::SensorDataQoS() /* .keep_last(1)*/;
+  // NOTE(SuperJappie08): keep_last 1 ensures old messages are skipped.
+  const auto qos = rclcpp::SensorDataQoS().keep_last(1);
 
   EncoderMsg first_msg;
   EncoderMsg second_msg;
@@ -337,8 +337,12 @@ hardware_interface::CallbackReturn EncoderSensor::on_error(
 hardware_interface::return_type EncoderSensor::read(
   const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
 {
-  auto newest_msg = latest_msgs_.readFromRT()->first;
-  auto older_msg = latest_msgs_.readFromRT()->second;
+  EncoderMsg::ConstSharedPtr newest_msg = nullptr;
+  EncoderMsg::ConstSharedPtr older_msg = nullptr;
+  if (auto latest_msgs = latest_msgs_.readFromRT()) {
+    newest_msg = latest_msgs->first;
+    older_msg = latest_msgs->second;
+  }
 
   if (!newest_msg || !older_msg) {
     RCLCPP_ERROR(get_logger(), "There are no msgs");

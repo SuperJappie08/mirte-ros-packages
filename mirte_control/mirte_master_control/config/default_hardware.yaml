@@ -27,7 +27,7 @@ base:
   #     Use the update topic for the the encoders.
   #     Defaults to None, which means it will use the hardware default.
   #     Used by: mirte_modular_hardware/EncoderSensor
-  # encoder_updates_only: true # (Defaults to None)
+  encoder_updates_only: true # (Defaults to None)
 
   wheels:
     # wheel_name:  # The name of the joint/motor (Joint Name = '{wheel_name}_wheel_joint')

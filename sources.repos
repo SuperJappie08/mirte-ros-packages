@@ -1,0 +1,9 @@
+repositories:
+  launch_ros2_control:
+    type: git
+    url: https://github.com/SuperJappie08/launch_ros2_control.git
+    version: f05b08750a9c01165fdbacaa9443798caac399ac
+  usb_cam:
+    type: git
+    url: https://github.com/ArendJan/usb_cam.git
+    version: 9f456347c993df94aac2351b305a391506c406c4

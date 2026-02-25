@@ -1,0 +1,411 @@
+Package: ros-jazzy-launch-ros2-control
+Architecture: arm64
+Version: 2-2026.02.25.17.57
+Priority: optional
+Section: misc
+Maintainer: Jasper van Brakel <36795178+SuperJappie08@users.noreply.github.com>
+Installed-Size: 83
+Depends: ros-jazzy-controller-manager, ros-jazzy-launch, ros-jazzy-launch-ros
+Filename: ./ros-jazzy-launch-ros2-control_2-2026.02.25.17.57_arm64.deb
+Size: 15776
+MD5sum: eb28b4adf0e00e6d8782764cdced11f3
+SHA1: 0ab7f00f1ae66f4d5ea1799b34c4403bfb5515b2
+SHA256: 2b0dd125c53b2539a196e97c3e9f73faaa8a5ba285d45a13f67094871a6cc749
+SHA512: 928763eaa5134eaa6913cfcbe7f79eb5068e42bb533e246f5d52096f27f8f761061d76905b0e297a3b96638bdaf83aa967fe0399aa61df7b668e678a3e13f3b1
+Description: A launch extension for ros2_control
+
+Package: ros-jazzy-mirte-base-control-dbgsym
+Package-Type: ddeb
+Architecture: arm64
+Version: 2-2026.02.25.18.03
+Auto-Built-Package: debug-symbols
+Priority: optional
+Section: debug
+Source: ros-jazzy-mirte-base-control
+Maintainer: Martin Klomp <m.klomp@tudelft.nl>
+Installed-Size: 3558
+Depends: ros-jazzy-mirte-base-control (= 2-2026.02.25.18.03)
+Filename: ./ros-jazzy-mirte-base-control-dbgsym_2-2026.02.25.18.03_arm64.ddeb
+Size: 3110300
+MD5sum: 68060b7c403696730ad756669b497fce
+SHA1: 29cad6602abff150d10a4d85ab0db9d5bb33047b
+SHA256: 209e355b8e4c6a89b8f6464c57fe360ac0a0ec6f5eb656812d37f4caf12e6f5b
+SHA512: 7f2c73ae54e1cc4bae22f40b3df13f7ab156164dccf643313a9c49d6a3bd605c528e9f6b9a71203d53deec1459ee1bd07c093b23e341790c93cc0ade25eae08c
+Description: debug symbols for ros-jazzy-mirte-base-control
+Build-Ids: bb2f1e3741f91f118e699378bd56408c4dcbf772
+
+Package: ros-jazzy-mirte-base-control
+Architecture: arm64
+Version: 2-2026.02.25.18.03
+Priority: optional
+Section: misc
+Maintainer: Martin Klomp <m.klomp@tudelft.nl>
+Installed-Size: 739
+Depends: libc6 (>= 2.34), libconsole-bridge1.0 (>= 1.0.1+dfsg2), libgcc-s1 (>= 3.3.1), libstdc++6 (>= 13.1), libyaml-cpp0.8 (>= 0.7.0), ros-jazzy-backward-ros, ros-jazzy-control-toolbox, ros-jazzy-controller-manager, ros-jazzy-effort-controllers, ros-jazzy-forward-command-controller, ros-jazzy-hardware-interface, ros-jazzy-joint-state-broadcaster, ros-jazzy-joint-trajectory-controller, ros-jazzy-mecanum-drive-controller, ros-jazzy-mirte-msgs, ros-jazzy-pluginlib, ros-jazzy-rclcpp, ros-jazzy-rclcpp-lifecycle, ros-jazzy-robot-state-publisher, ros-jazzy-ros2controlcli, ros-jazzy-ros2launch, ros-jazzy-std-msgs, ros-jazzy-std-srvs, ros-jazzy-trajectory-msgs, ros-jazzy-twist-stamper, ros-jazzy-xacro, ros-jazzy-yaml-cpp-vendor
+Filename: ./ros-jazzy-mirte-base-control_2-2026.02.25.18.03_arm64.deb
+Size: 161912
+MD5sum: 7e111462330ae529ec31d38b59ab4bb8
+SHA1: 1759d1dcfdf6f8016ed5fb12603bbe95cc66409f
+SHA256: 67af5a43b07ca485f042ae2386268830ca3a4d81d31512463a67288ef64ed0e5
+SHA512: 971420da5c9bb8abe0b829a8859130dd07b78ccdc9aeaa1b897e6a46d5a50a2864d256c2f768061a775b69694d3307443af35ea0fc3d3eb49e1083c5a10d3fd3
+Description: The mirte_base_control package
+
+Package: ros-jazzy-mirte-bringup
+Architecture: arm64
+Version: 2-2026.02.25.17.57
+Priority: optional
+Section: misc
+Maintainer: Martin Klomp <m.klomp@tudelft.nl>
+Installed-Size: 99
+Depends: ros-jazzy-mirte-telemetrix-cpp, ros-jazzy-rosbridge-server, ros-jazzy-usb-cam, ros-jazzy-web-video-server
+Filename: ./ros-jazzy-mirte-bringup_2-2026.02.25.17.57_arm64.deb
+Size: 11882
+MD5sum: 6d2bf7434f8200f8169f86ac790a8c4d
+SHA1: 3d94b809c7e8c99aadf52bacb12806546daa9597
+SHA256: 19ef078348868d282c9e81833b204fc5396c0773ee9f3383dfb3fb094e3389f1
+SHA512: 51461eda77c9d34e254e254b10367c2a41843f11f3d5e1d0f92d4d5ba5d58e54507980d3323701632a9a0ac416bff27f0f5f73a01be4870f65568225070274ca
+Description: TODO: Package description
+
+Package: ros-jazzy-mirte-control-dbgsym
+Package-Type: ddeb
+Architecture: arm64
+Version: 2-2026.02.25.18.05
+Auto-Built-Package: debug-symbols
+Priority: optional
+Section: debug
+Source: ros-jazzy-mirte-control
+Maintainer: Martin Klomp <m.klomp@tudelft.nl>
+Installed-Size: 875
+Depends: ros-jazzy-mirte-control (= 2-2026.02.25.18.05)
+Filename: ./ros-jazzy-mirte-control-dbgsym_2-2026.02.25.18.05_arm64.ddeb
+Size: 820904
+MD5sum: 590a0d3d411c9529aea0b992eb5277b3
+SHA1: be4b7037111b1b2086bf5a51f74cde64e7da67b7
+SHA256: e02587ab0e0b85e658ef424060a3fd76f2dadc9b7fc5b46b8f9a2dbe5e213d4f
+SHA512: 73993bc5b846b5a52b7e1c43326cd8ff11b8a243ad890a7693907f865363c904362d19fa164de70e6ab9be5e0fbe7293a626f1479821879e9bc58bfbf2012efd
+Description: debug symbols for ros-jazzy-mirte-control
+Build-Ids: cec2da79abb91e7feafe84af78e244b038e1531e
+
+Package: ros-jazzy-mirte-control
+Architecture: arm64
+Version: 2-2026.02.25.18.05
+Priority: optional
+Section: misc
+Maintainer: Martin Klomp <m.klomp@tudelft.nl>
+Installed-Size: 243
+Depends: libc6 (>= 2.34), libconsole-bridge1.0 (>= 1.0.1+dfsg2), libgcc-s1 (>= 3.3.1), libstdc++6 (>= 13.1), ros-jazzy-controller-manager, ros-jazzy-diff-drive-controller, ros-jazzy-hardware-interface, ros-jazzy-joint-state-broadcaster, ros-jazzy-mirte-msgs, ros-jazzy-pluginlib, ros-jazzy-rclcpp, ros-jazzy-rclcpp-lifecycle, ros-jazzy-robot-state-publisher, ros-jazzy-ros2-controllers-test-nodes, ros-jazzy-ros2controlcli, ros-jazzy-twist-stamper
+Filename: ./ros-jazzy-mirte-control_2-2026.02.25.18.05_arm64.deb
+Size: 53248
+MD5sum: 325dfa005fdbca5d8fe81f6073125cad
+SHA1: 2915a4d9752ee975ac154c9d0d0a28a05721a9a4
+SHA256: e8ea1b915b2de2a52d6e73575680e27737abc30c16de5a712b03abca5f8a5751
+SHA512: bcf6887632193eedd64fe3de864ec6f756a55a684513a8377ec5b08a3a1eed23833add1a0a1fe19441e94c396cb96ff176c5c703fe70f3a11b633d5f15c5687a
+Description: Mirte Pioneer Hardware interface
+
+Package: ros-jazzy-mirte-master-arm-control-dbgsym
+Package-Type: ddeb
+Architecture: arm64
+Version: 2-2026.02.25.18.07
+Auto-Built-Package: debug-symbols
+Priority: optional
+Section: debug
+Source: ros-jazzy-mirte-master-arm-control
+Maintainer: Martin Klomp <m.klomp@tudelft.nl>
+Installed-Size: 3277
+Depends: ros-jazzy-mirte-master-arm-control (= 2-2026.02.25.18.07)
+Filename: ./ros-jazzy-mirte-master-arm-control-dbgsym_2-2026.02.25.18.07_arm64.ddeb
+Size: 2864884
+MD5sum: 7de3dcfba624f66dd5e6d88bbbb3d7bc
+SHA1: 402a4a50dff79fad256e176ace6d1b9581a86f4d
+SHA256: 73700f512de034ed7105803591dc0f06ff138c6fa14f5e5c8a15fb161fae6694
+SHA512: 49c428d3db0cf37311e0f841a766b90dd4f849c562c20a4ef6acfd89518954de3e796767fa3c99aff26ab4f087f105a91f98d4eb7eaa9bc3ecb2515abd1148ba
+Description: debug symbols for ros-jazzy-mirte-master-arm-control
+Build-Ids: 12a0c00bc7963a53e5ab27d2df630f08eeb49239
+
+Package: ros-jazzy-mirte-master-arm-control
+Architecture: arm64
+Version: 2-2026.02.25.18.07
+Priority: optional
+Section: misc
+Maintainer: Martin Klomp <m.klomp@tudelft.nl>
+Installed-Size: 682
+Depends: libc6 (>= 2.34), libconsole-bridge1.0 (>= 1.0.1+dfsg2), libgcc-s1 (>= 3.3.1), libstdc++6 (>= 13.1), ros-jazzy-backward-ros, ros-jazzy-control-toolbox, ros-jazzy-controller-manager, ros-jazzy-diff-drive-controller, ros-jazzy-effort-controllers, ros-jazzy-forward-command-controller, ros-jazzy-hardware-interface, ros-jazzy-joint-state-broadcaster, ros-jazzy-joint-trajectory-controller, ros-jazzy-mirte-master-description, ros-jazzy-mirte-msgs, ros-jazzy-pluginlib, ros-jazzy-rclcpp, ros-jazzy-rclcpp-lifecycle, ros-jazzy-robot-state-publisher, ros-jazzy-ros2-controllers, ros-jazzy-ros2controlcli, ros-jazzy-ros2launch, ros-jazzy-std-msgs, ros-jazzy-std-srvs, ros-jazzy-trajectory-msgs, ros-jazzy-twist-stamper, ros-jazzy-xacro, ros-jazzy-yaml-cpp-vendor
+Filename: ./ros-jazzy-mirte-master-arm-control_2-2026.02.25.18.07_arm64.deb
+Size: 150524
+MD5sum: ba066d37e11560b247dab0a9bc8d182c
+SHA1: c8755a0b22cc2893adc15d90f259eb013f4ccf2f
+SHA256: 7aa1c693d7d8a2abe8321feef4ccc3f77525fd8b109c502f45591470c75d4cbd
+SHA512: cec13521ad5bc25195c9af48668c39f8da20a9f298a1790b4b33b54d3ccd5a84f77c4100e47612aea1f1462a890a6832a85ccc827e4a40cd3db7551ad3b8717c
+Description: Simple simulation interface and template for setting up a hardware interface for ros_control
+
+Package: ros-jazzy-mirte-master-control
+Architecture: arm64
+Version: 2-2026.02.25.17.58
+Priority: optional
+Section: misc
+Maintainer: Jasper van Brakel <36795178+SuperJappie08@users.noreply.github.com>
+Installed-Size: 86
+Depends: ros-jazzy-controller-manager, ros-jazzy-gripper-controllers, ros-jazzy-joint-state-broadcaster, ros-jazzy-joint-trajectory-controller, ros-jazzy-launch, ros-jazzy-launch-ros, ros-jazzy-launch-ros2-control, ros-jazzy-launch-xml, ros-jazzy-mecanum-drive-controller, ros-jazzy-mirte-master-arm-control, ros-jazzy-mirte-master-description, ros-jazzy-mirte-modular-hardware, ros-jazzy-pid-controller, ros-jazzy-robot-state-publisher, ros-jazzy-xacro
+Filename: ./ros-jazzy-mirte-master-control_2-2026.02.25.17.58_arm64.deb
+Size: 11102
+MD5sum: cba4c99f5eca05345e263f0d703e539b
+SHA1: 8870b838a5e619948ae919a2fb8b8ecd032e7ed5
+SHA256: 9f2b8399c706bb6ea2732af652e24f611ca5f470466a56c3dbbedd09001da2b5
+SHA512: 293cb91dbf1c65d47b36e85376ff07802f621406d8600ca12d51b2058cf6da41f8e9cd2d00d6006300237151130d41282e2c2fefc4f3f89637c0275594564313
+Description: The ros2_control configuration for the MIRTE Master
+
+Package: ros-jazzy-mirte-master-description
+Architecture: arm64
+Version: 2-2026.02.25.17.59
+Priority: optional
+Section: misc
+Maintainer: Martin Klomp <m.klomp@tudelft.nl>
+Installed-Size: 32087
+Filename: ./ros-jazzy-mirte-master-description_2-2026.02.25.17.59_arm64.deb
+Size: 6158378
+MD5sum: ccc4856ec9b84d9b81fd5f6d023c1f07
+SHA1: 78cc2f54a046f304e3f2287f16cd0fd40e4f6beb
+SHA256: a2e9bb9e8d9f22efb81c336b181ffce413cc5e2ff562916bc7c31809e8f03a40
+SHA512: a95b7b52161a1793944130526cb5631b54a9f5cc747bb935dc0144d9c534657e2dd874b1d199b6cebc54a39dfd189b8f1e185bf08507cc56bf01af8a640a1609
+Description: TODO: Package description
+
+Package: ros-jazzy-mirte-modular-hardware-dbgsym
+Package-Type: ddeb
+Architecture: arm64
+Version: 2-2026.02.25.18.10
+Auto-Built-Package: debug-symbols
+Priority: optional
+Section: debug
+Source: ros-jazzy-mirte-modular-hardware
+Maintainer: jap <36795178+SuperJappie08@users.noreply.github.com>
+Installed-Size: 4206
+Depends: ros-jazzy-mirte-modular-hardware (= 2-2026.02.25.18.10)
+Filename: ./ros-jazzy-mirte-modular-hardware-dbgsym_2-2026.02.25.18.10_arm64.ddeb
+Size: 3679622
+MD5sum: e12c66814d1d5fab3b0edff728242a5e
+SHA1: 3664998182feb1552663454645831bf86273da1a
+SHA256: 132c1dec7a256e004e671e95e2828b89c75b7a27d3da3b930994bfcf85e9cda6
+SHA512: 5b5509dab94b6d9bbf3330f7c72bde5be428374e76f5982768a92f382aa86af1048517501ac2b35adec42e6125ac585e02a1d36799973a60e60b575f3beba83d
+Description: debug symbols for ros-jazzy-mirte-modular-hardware
+Build-Ids: 7820b3a331f462bdd95625e5270d52ee2d68196c
+
+Package: ros-jazzy-mirte-modular-hardware
+Architecture: arm64
+Version: 2-2026.02.25.18.10
+Priority: optional
+Section: misc
+Maintainer: jap <36795178+SuperJappie08@users.noreply.github.com>
+Installed-Size: 803
+Depends: libc6 (>= 2.38), libconsole-bridge1.0 (>= 1.0.1+dfsg2), libfmt9 (>= 9.1.0+ds1), libgcc-s1 (>= 3.3.1), libstdc++6 (>= 13.1), ros-jazzy-backward-ros, ros-jazzy-hardware-interface, ros-jazzy-mirte-msgs, ros-jazzy-pluginlib, ros-jazzy-rclcpp, ros-jazzy-rclcpp-lifecycle, ros-jazzy-rcpputils, ros-jazzy-realtime-tools, ros-jazzy-std-msgs
+Filename: ./ros-jazzy-mirte-modular-hardware_2-2026.02.25.18.10_arm64.deb
+Size: 177602
+MD5sum: 41351bf838a95a19141e127601569f51
+SHA1: e0ec151738868b52b2726f9961b228f00cc4a9dc
+SHA256: 78a6b1d8c23fb82581821ef21c67a960295316b55b409dee76e907c4b7c86ef5
+SHA512: 9668c8c2c36d88e81e5374b39331d737e11d34b1abebe81833a0b0fac06d1e08da68ebb455e2fecfdde07e6c33550868dd703006847ea013c0ed7a38737ebad3
+Description: Modular ros2_control hardware interfaces for the MIRTE robot series
+
+Package: ros-jazzy-mirte-moveit-config
+Architecture: arm64
+Version: 2-2026.02.25.18.00
+Priority: optional
+Section: misc
+Maintainer: Martin Klomp <m.klomp@tudelft.nl>
+Installed-Size: 84
+Depends: ros-jazzy-controller-manager, ros-jazzy-joint-state-publisher, ros-jazzy-joint-state-publisher-gui, ros-jazzy-mirte-master-description, ros-jazzy-moveit-configs-utils, ros-jazzy-moveit-kinematics, ros-jazzy-moveit-planners, ros-jazzy-moveit-ros-move-group, ros-jazzy-moveit-ros-visualization, ros-jazzy-moveit-setup-assistant, ros-jazzy-moveit-simple-controller-manager, ros-jazzy-robot-state-publisher, ros-jazzy-rviz-common, ros-jazzy-rviz-default-plugins, ros-jazzy-rviz2, ros-jazzy-tf2-ros, ros-jazzy-xacro
+Filename: ./ros-jazzy-mirte-moveit-config_2-2026.02.25.18.00_arm64.deb
+Size: 10902
+MD5sum: f52bf04012e9252d8156ea36d46cfb9a
+SHA1: ca43d92cc2c52e450fc5ed0a186fc2f50038ce92
+SHA256: 322308583d465b9b982fa49e7250119a5065e4dbedd323feadb7f28791d14ad5
+SHA512: f70923e68bdf59cf75047f008b719cfb214499bd07fa555f1cfc71a2721995b7a2606c9f9d49215044ee87f407b933c846f689d9930acae6d410b8b87c523e28
+Homepage: http://moveit.ros.org/
+Description: An automatically generated package with all the configuration and launch files for using the mirte_master with the MoveIt Motion Planning Framework
+
+Package: ros-jazzy-mirte-msgs-dbgsym
+Package-Type: ddeb
+Architecture: arm64
+Version: 2-2026.02.25.18.01
+Auto-Built-Package: debug-symbols
+Priority: optional
+Section: debug
+Source: ros-jazzy-mirte-msgs
+Maintainer: Martin Klomp <m.klomp@tudelft.nl>
+Installed-Size: 9244
+Depends: ros-jazzy-mirte-msgs (= 2-2026.02.25.18.01)
+Filename: ./ros-jazzy-mirte-msgs-dbgsym_2-2026.02.25.18.01_arm64.ddeb
+Size: 6869468
+MD5sum: a89e9e8dcc56dc7410300468b3195961
+SHA1: b0c01b510a53c893b6440dbb60c7ae56af95819b
+SHA256: 12bf3a2b6ad76d4c733247fbc6e96b5489ec3981bd80ce224dc250a904e30aa5
+SHA512: 40f2d12f90ceee1b9c7296581a27d249c507aa058527362127b7962ec60aefd78aaf5b17a2f15ca9f4358fc5624fddab0e2ae1b4adc39aa18b14968fab7136bc
+Description: debug symbols for ros-jazzy-mirte-msgs
+Build-Ids: 239bc1f01d366f60076ee97555d96ded580c78a3 327a1fc62a0d677b1f4fb17275295c66da60d2e8 64add29f1edb9393ba82b2705b6549fc783cb32a 670b3883bc21a5a95946503c14e982f73347cada 683548874fa54143689814e966f2a3af66828f7c 72315fa03751b8ccd5f3452b78fc593e47ddefad 94a646e71fb05c3f1e5e78d3fa019ee72eefd331 97a3502df4102d6f6cc431f5011e157085a3a3f9 a0ee4c877ba51392faa745f2bfdb3b4dd3b039b2 a5fdb85d5903f382eceb1caeb9f871edd53216f5 beb1d2b71e41e7e4e08123be5473870fdeb9aa1f
+
+Package: ros-jazzy-mirte-msgs
+Architecture: arm64
+Version: 2-2026.02.25.18.01
+Priority: optional
+Section: misc
+Maintainer: Martin Klomp <m.klomp@tudelft.nl>
+Installed-Size: 12403
+Depends: libc6 (>= 2.17), libgcc-s1 (>= 3.3.1), libpython3.12t64 (>= 3.12.1), libstdc++6 (>= 11), ros-jazzy-fastcdr, ros-jazzy-rosidl-default-runtime, ros-jazzy-sensor-msgs, ros-jazzy-std-msgs
+Filename: ./ros-jazzy-mirte-msgs_2-2026.02.25.18.01_arm64.deb
+Size: 668416
+MD5sum: 16c9f132be8316bfdfd50762aff5d184
+SHA1: e25b587d2811a91e56aee8ce84839822c639690c
+SHA256: 949e6f5d24f5c6d8b47c122bacef20068b18c02c28ee9609876e4f56d14163eb
+SHA512: f926784b1faad5efd43a1f604bd2b11d1f5a65f72cc3a168ab6fdb60f27175f7ad603b4c2119df2f3488eb04b0217fdbd252711f8e3e2c721705df6bf71768e4
+Description: The mirte_msgs package
+
+Package: ros-jazzy-mirte-pioneer-base-control
+Architecture: arm64
+Version: 2-2026.02.25.18.12
+Priority: optional
+Section: misc
+Maintainer: Jasper van Brakel <36795178+SuperJappie08@users.noreply.github.com>
+Installed-Size: 54
+Depends: ros-jazzy-controller-manager, ros-jazzy-diff-drive-controller, ros-jazzy-joint-state-broadcaster, ros-jazzy-launch, ros-jazzy-launch-ros, ros-jazzy-mirte-modular-hardware, ros-jazzy-mirte-pioneer-description, ros-jazzy-robot-state-publisher, ros-jazzy-xacro
+Filename: ./ros-jazzy-mirte-pioneer-base-control_2-2026.02.25.18.12_arm64.deb
+Size: 7470
+MD5sum: 9b4910b89ed3de393d8e45aa03cce20c
+SHA1: 87debcd04a933df02f5f3e4d2314e5c650821676
+SHA256: 5f674dd73b741570d3fa04cd57d559e5694b4dc12e5fe2dbdc745e0c8441ce06
+SHA512: caf4fd30357f6491250bba9138f9cf0eb87ae9b6ade7646516b7703ec9f7dae9da4b5d01974e043a21535f6d8bfb47c42fe3ec4bbd1d0aec95066b3194545190
+Description: The ros2_control configuration for the MIRTE Pioneer (base)
+
+Package: ros-jazzy-mirte-pioneer-description
+Architecture: arm64
+Version: 2-2026.02.25.18.13
+Priority: optional
+Section: misc
+Maintainer: Martin Klomp <m.klomp@tudelft.nl>
+Installed-Size: 15631
+Filename: ./ros-jazzy-mirte-pioneer-description_2-2026.02.25.18.13_arm64.deb
+Size: 2407438
+MD5sum: 920606555f459a284aa90a77b6af7664
+SHA1: 7c98294d1745defd267c7a7d440fd83dbe9c87e0
+SHA256: 508cf920dcbbb81d498a8c734a5ede7e18c412b8638e04c5cca025cd5093e372
+SHA512: 93326dc4ba2cf54f454cceec002cc39ac1231a26d4d13156e577bd2468feaacca275c9190d8c27f04edded1dcbfb4d3f96e07b558b653e636df0bf8517ee720f
+Description: TODO: Package description
+
+Package: ros-jazzy-mirte-telemetrix-cpp-dbgsym
+Package-Type: ddeb
+Architecture: arm64
+Version: 2-2026.02.25.18.14
+Auto-Built-Package: debug-symbols
+Priority: optional
+Section: debug
+Source: ros-jazzy-mirte-telemetrix-cpp
+Maintainer: Arend-Jan van Hilten <tmxcpp@arend-jan.com>
+Installed-Size: 32413
+Depends: ros-jazzy-mirte-telemetrix-cpp (= 2-2026.02.25.18.14)
+Filename: ./ros-jazzy-mirte-telemetrix-cpp-dbgsym_2-2026.02.25.18.14_arm64.ddeb
+Size: 28747062
+MD5sum: 6a3a8ca3a1faba4aa1073eb47f88596e
+SHA1: e045709af3b112735ce2cc21a192146d8417a755
+SHA256: 91f0fbe90e894e7dc9ee4a6c55b885c5ba68301f01b619d5024e45368e56a4ce
+SHA512: 3f7231744aad27966e7860e987dd860e6d5e4a8a6d8de768383f91861b17a172c9711ad85187f64638e45a728f296bbdb0c1bcc5b4471598c315c7fad98ad19b
+Description: debug symbols for ros-jazzy-mirte-telemetrix-cpp
+Build-Ids: 0d631e65499d81d32c8d0ca5e14aab79bf253ede
+
+Package: ros-jazzy-mirte-telemetrix-cpp
+Architecture: arm64
+Version: 2-2026.02.25.18.14
+Priority: optional
+Section: misc
+Maintainer: Arend-Jan van Hilten <tmxcpp@arend-jan.com>
+Installed-Size: 8520
+Depends: libc6 (>= 2.38), libgcc-s1 (>= 3.3.1), libgpiod2t64 (>= 1.1), libopencv-core406t64 (>= 4.6.0+dfsg), libopencv-imgcodecs406t64 (>= 4.6.0+dfsg), libopencv-stitching406t64 (>= 4.6.0+dfsg), libstdc++6 (>= 13.1), libboost-all-dev, libgpiod-dev, libopencv-dev, ros-jazzy-ament-index-cpp, ros-jazzy-backward-ros, ros-jazzy-color-util, ros-jazzy-cv-bridge, ros-jazzy-launch, ros-jazzy-launch-ros, ros-jazzy-mirte-msgs, ros-jazzy-rclcpp, ros-jazzy-rcpputils, ros-jazzy-sensor-msgs, ros-jazzy-std-msgs, ros-jazzy-std-srvs
+Filename: ./ros-jazzy-mirte-telemetrix-cpp_2-2026.02.25.18.14_arm64.deb
+Size: 880670
+MD5sum: 52726789a379fc12b3c1a3a86eac2347
+SHA1: 778178fc1eeabf4ad61cfafb306c4b233e2a4465
+SHA256: a0774e1f895f94f20f0b3218ab8225c25273b8f5ba5f9f3ebe60b72c2480c3f8
+SHA512: 152d08da0ceb979d1be2c9e08b1d7fcddd02918c25dfec4c8debfb1001a15afa3b5d7518e1cfe7753690030b5c3954c9ed141b8dff665d5c902336222c3af908
+Description: Telemetrix cpp implementation
+
+Package: ros-jazzy-mirte-teleop
+Architecture: arm64
+Version: 2-2026.02.25.18.20
+Priority: optional
+Section: misc
+Maintainer: Martin Klomp <m.klomp@tudelft.nl>
+Installed-Size: 46
+Depends: ros-jazzy-diagnostic-updater, ros-jazzy-teleop-twist-keyboard
+Filename: ./ros-jazzy-mirte-teleop_2-2026.02.25.18.20_arm64.deb
+Size: 5980
+MD5sum: 757ecaa4ce3fa808063ac0f7b45b0afa
+SHA1: 449b94dbb93bd0daddbc755a436c8191a5ff6299
+SHA256: d6fbfa79d92e861b971e8e415df078ba061071274185a6a4e1effa9ef50cbeb2
+SHA512: 3444e4ffd74bb6ff34f341815d0fbb317fa216897ad2641e90f1825639083f69b1337d30213e1c8a0ff8ca447e2303c9fc19cc002fb362b03f62157cd1791ae0
+Description: The mirte_teleop package
+
+Package: ros-jazzy-mirte-test
+Architecture: arm64
+Version: 2-2026.02.25.18.21
+Priority: optional
+Section: misc
+Maintainer: Arend-Jan van Hilten <a.j.vanhilten@tudelft.nl>
+Installed-Size: 102
+Filename: ./ros-jazzy-mirte-test_2-2026.02.25.18.21_arm64.deb
+Size: 19916
+MD5sum: b9161bb5d55cc3004ce92314bed622d0
+SHA1: f3271d4f101345a3ab3785f441cbaffebbf0eaf5
+SHA256: b9e8f2a5387244259e0dd2cab582dfe9c52811a7582c342caaa7b6449fcda1e4
+SHA512: b57090b5cb98b4c2b06a4a64e757a4ebedb77ec6f42eeb9636c27e80bfc6ac3e46525d51ea52d4ffe1714f1b9068e2b42a2d731105b3e8dcd3b298f70b190efe
+Description: TODO: Package description
+
+Package: ros-jazzy-mirte-zenoh-setup
+Architecture: arm64
+Version: 2-2026.02.25.18.22
+Priority: optional
+Section: misc
+Maintainer: Martin Klomp <m.klomp@tudelft.nl>
+Installed-Size: 137
+Depends: ros-jazzy-rmw-zenoh-cpp
+Filename: ./ros-jazzy-mirte-zenoh-setup_2-2026.02.25.18.22_arm64.deb
+Size: 14736
+MD5sum: 893b51c48501a19d56bf8b65c2eeba9e
+SHA1: 0a5ed639fbabc3ffea273786aa19162f03723779
+SHA256: b442089fb44eeaa3563c3f11f5f54bb81500c969d6ec4e5065e1a3d45e70947a
+SHA512: 00288e842667d524c69eff868a5a8e948581f1e4f3362edc428070cfe7659d2f77781a2117bacd17232579b17b10e7d13daf91979d3ebc745fe18c31c713f91a
+Description: The mirte_zenoh_setup package
+
+Package: ros-jazzy-usb-cam-dbgsym
+Package-Type: ddeb
+Architecture: arm64
+Version: 2-2026.02.25.18.23
+Auto-Built-Package: debug-symbols
+Priority: optional
+Section: debug
+Source: ros-jazzy-usb-cam
+Maintainer: Evan Flynn <evanflynn.msu@gmail.com>
+Installed-Size: 2727
+Depends: ros-jazzy-usb-cam (= 2-2026.02.25.18.23)
+Filename: ./ros-jazzy-usb-cam-dbgsym_2-2026.02.25.18.23_arm64.ddeb
+Size: 2428980
+MD5sum: d7bf6e4933261c53df2475b5243cec04
+SHA1: 06248fefd1b81476e1be8764c9b768fd30581615
+SHA256: a4273e4dce0d472e5906ba73533bd41319728f724e1cab97ea2bdfbc42466348
+SHA512: d5f382cc8e9f97655f3b0bdddf364e496167f51564360c83faf24c5f435609a5ebf35cce0a36db8dfd0355796349133635edc3afbb3f4aa0d4ed451d9864aa8b
+Description: debug symbols for ros-jazzy-usb-cam
+Build-Ids: 1001286e4068a1c718cdf6e8a1d15d1d2899ec7b 8ce815da0299a4dbc68074224f180bd8bdf2ee00 f30bcd1bfc368fc9ead1bdd68f7b117a88251634
+
+Package: ros-jazzy-usb-cam
+Architecture: arm64
+Version: 2-2026.02.25.18.23
+Priority: optional
+Section: misc
+Maintainer: Evan Flynn <evanflynn.msu@gmail.com>
+Installed-Size: 804
+Depends: libavcodec60 (>= 7:6.0), libavutil58 (>= 7:6.0), libc6 (>= 2.34), libconsole-bridge1.0 (>= 1.0.1+dfsg2), libgcc-s1 (>= 3.3.1), libopencv-core406t64 (>= 4.6.0+dfsg), libopencv-imgproc406t64 (>= 4.6.0+dfsg), libstdc++6 (>= 13.1), libswscale7 (>= 7:6.0), ffmpeg, libavcodec-dev, libavformat-dev, libavutil-dev, libswscale-dev, python3-pydantic, ros-jazzy-builtin-interfaces, ros-jazzy-camera-info-manager, ros-jazzy-cv-bridge, ros-jazzy-image-transport, ros-jazzy-image-transport-plugins, ros-jazzy-rclcpp, ros-jazzy-rclcpp-components, ros-jazzy-rosidl-default-runtime, ros-jazzy-sensor-msgs, ros-jazzy-std-msgs, ros-jazzy-std-srvs, v4l-utils
+Filename: ./ros-jazzy-usb-cam_2-2026.02.25.18.23_arm64.deb
+Size: 162676
+MD5sum: d1a7c2e24ff262ace94b0a7d43565f5e
+SHA1: 7c15f25333a01d94e4c50f66322549c79a3e1940
+SHA256: 79b88d4f5b737fe50c2895e41dd511cca99cc6f16bdbde3276023056d76f4daa
+SHA512: 3c8fcd08c844a86c9a64c9f2261fa2a0b21d8c1c007b36513fd3b3958764332e9838f79657c46c588e1997b515c618df1283642511e940cd2e22f32374ba2246
+Homepage: http://wiki.ros.org/usb_cam
+Description: A ROS Driver for V4L USB Cameras
+
